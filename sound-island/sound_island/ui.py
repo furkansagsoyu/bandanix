@@ -11,6 +11,7 @@ from PySide6.QtGui import (QColor, QCursor, QFont, QFontMetrics, QGuiApplication
 from PySide6.QtNetwork import QNetworkAccessManager, QNetworkRequest
 from PySide6.QtWidgets import QApplication, QMenu, QWidget
 
+from .audio import AudioBars
 from .config import Theme
 from .lyrics import LyricsFetcher
 from .parsing import Track, fmt_time, line_at
@@ -80,6 +81,10 @@ class Island(QWidget):
         self.nam = QNetworkAccessManager(self)
         self.lyrics_fetcher = LyricsFetcher(self.nam, self)
         self.lyrics_fetcher.ready.connect(self._on_lyrics)
+
+        self.audio = None
+        if self.theme.bars == "auto" and AudioBars.available():
+            self.audio = AudioBars(BAR_COUNT, self)
 
         self.anim = QVariantAnimation(self)
         self.anim.setDuration(280)
@@ -153,7 +158,17 @@ class Island(QWidget):
 
     def _on_status(self, status: str) -> None:
         self.status = status
+        if self.audio is not None:
+            # cava only runs while music plays: zero cost when paused or idle
+            if status == "Playing":
+                self.audio.start()
+            else:
+                self.audio.stop()
         self.update()
+
+    def shutdown(self) -> None:
+        if self.audio is not None:
+            self.audio.stop()
 
     def _load_art(self, track: Track) -> None:
         url = track.art_url
@@ -192,15 +207,18 @@ class Island(QWidget):
     # ---- frame loop -------------------------------------------------------
     def _tick(self) -> None:
         playing = self.status == "Playing"
+        real = playing and self.audio is not None and self.audio.live()
         moving = False
         for i in range(BAR_COUNT):
-            if playing:
+            if real:
+                self.targets[i] = 0.12 + 0.88 * self.audio.levels[i]
+            elif playing:
                 if random.random() < 0.18:
                     self.targets[i] = random.uniform(0.25, 1.0)
             else:
                 self.targets[i] = 0.12
             delta = self.targets[i] - self.levels[i]
-            self.levels[i] += delta * 0.25
+            self.levels[i] += delta * (0.5 if real else 0.25)
             moving = moving or abs(delta) > 0.005
         if playing:
             self.angle = (self.angle + 0.8) % 360

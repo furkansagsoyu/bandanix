@@ -5,12 +5,18 @@
 Apple'ın Dynamic Island'ından esinlenen, Linux masaüstü için yüzen bir "şimdi çalıyor" adası.
 Ekranın üstünde ince bir hap olarak durur, üzerine gelince küçük bir oynatıcıya dönüşür.
 
+<p align="center">
+  <img src="../docs/sound-island-hap.png" alt="Hap modu" width="329"><br><br>
+  <img src="../docs/sound-island-oynatici.png" alt="Oynatıcı modu" width="467">
+</p>
+
 **Spotify** ve [MPRIS](https://specifications.freedesktop.org/mpris-spec/latest/) destekleyen her oynatıcıyla çalışır
 (VLC, Firefox, Brave, Chromium, mpv, Rhythmbox…). Spotify hesabı, API anahtarı ya da Premium gerekmez: her şey bilgisayarından okunur.
 
 ## Özellikler
 
-- **Hap modu:** dönen albüm kapağı, şarkı adı ve sanatçı, ince bir ilerleme çizgisi ve hareketli çubuklar
+- **Hap modu:** dönen albüm kapağı, şarkı adı ve sanatçı, ince bir ilerleme çizgisi ve müziğin ritmine göre zıplayan çubuklar
+- **Gerçek ses çubukları:** [cava](https://github.com/karlstav/cava) ile hoparlörden çıkan sesi dinler. cava yalnızca müzik çalarken açıktır, duraklatınca kapanır; yani boştayken işlemciye yük bindirmez
 - **Oynatıcı modu (üzerine gelince):** büyük kapak, oynat/duraklat, önceki/sonraki, tıklayınca o saniyeye atlayan ilerleme çubuğu
 - **Senkron şarkı sözleri:** o an söylenen satır, ücretsiz [LRCLIB](https://lrclib.net) servisinden
 - **Uyumlu renk:** vurgu rengi albüm kapağından seçilir (ya da Bandanix'in vurgu rengi kullanılır)
@@ -42,12 +48,23 @@ sound-island --player vlc
 [sound-island]
 follow_cover = true       # vurgu rengini albüm kapağından al
 hide_when_idle = true     # çalan bir şey yokken gizlen
+bars = "auto"             # "auto" = cava ile gerçek ses, "simulated" = temsili çubuklar
+```
+
+Not: cava bilgisayarın çaldığı **bütün** sesi dinler, sadece Spotify'ı değil. Aynı anda bir video açıksa çubuklar onun sesine de tepki verir.
+
+## Sorun giderme
+
+Şarkı sözleri gelmiyorsa adayı hata ayıklama modunda başlat, terminalde her söz isteğinin sonucu yazılır:
+
+```bash
+SOUND_ISLAND_DEBUG=1 sound-island
 ```
 
 ## Kaynak koddan çalıştırma (geliştirme)
 
 ```bash
-sudo apt install playerctl python3-venv libxcb-cursor0
+sudo apt install playerctl cava python3-venv libxcb-cursor0
 cd sound-island
 python3 -m venv .venv
 source .venv/bin/activate
@@ -58,7 +75,7 @@ python -m sound_island
 
 ## Yol haritası
 
-- [ ] Gerçek sese tepki veren çubuklar (PipeWire / cava); çubuklar şimdilik temsili
+- [x] Gerçek sese tepki veren çubuklar (cava)
 - [ ] Daha fazla ayar: konum, boyut, hap ve söz seçenekleri
 - [ ] Cinnamon panel uygulamacığı
 

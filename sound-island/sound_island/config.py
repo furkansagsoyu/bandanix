@@ -27,6 +27,10 @@ class Theme:
     font: str = ""
     follow_cover: bool = True
     hide_when_idle: bool = True
+    bars: str = "auto"          # "auto" = real audio via cava if installed, "simulated"
+
+
+BAR_MODES = ("auto", "simulated")
 
 
 def load_theme(path: Path | None = None) -> Theme:
@@ -47,7 +51,9 @@ def load_theme(path: Path | None = None) -> Theme:
     font = fonts.get("ui")
     follow = own.get("follow_cover")
     hide = own.get("hide_when_idle")
+    bars = own.get("bars")
     return Theme(
+        bars=bars if bars in BAR_MODES else defaults.bars,
         accent=accent if isinstance(accent, str) and _HEX.match(accent) else defaults.accent,
         font=font.strip() if isinstance(font, str) else defaults.font,
         follow_cover=follow if isinstance(follow, bool) else defaults.follow_cover,

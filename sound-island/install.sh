@@ -21,7 +21,7 @@ ask() {
 
 # 1) system packages
 missing=()
-for pkg in playerctl python3-venv libxcb-cursor0; do
+for pkg in playerctl cava python3-venv libxcb-cursor0; do
   dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -q "install ok installed" \
     || missing+=("$pkg")
 done

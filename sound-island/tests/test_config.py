@@ -20,15 +20,19 @@ class ThemeTests(unittest.TestCase):
     def test_reads_values(self):
         theme = load_theme(self.write(
             '[colors]\naccent = "#1DB954"\n[fonts]\nui = " Inter "\n'
-            '[sound-island]\nfollow_cover = false\nhide_when_idle = false\n'))
+            '[sound-island]\nfollow_cover = false\nhide_when_idle = false\n'
+            'bars = "simulated"\n'))
         self.assertEqual(theme, Theme(accent="#1DB954", font="Inter",
-                                      follow_cover=False, hide_when_idle=False))
+                                      follow_cover=False, hide_when_idle=False,
+                                      bars="simulated"))
 
     def test_bad_values_fall_back(self):
         theme = load_theme(self.write(
-            '[colors]\naccent = "red"\n[sound-island]\nfollow_cover = "yes"\n'))
+            '[colors]\naccent = "red"\n[sound-island]\nfollow_cover = "yes"\n'
+            'bars = "laser"\n'))
         self.assertEqual(theme.accent, BANDANA_RED)
         self.assertTrue(theme.follow_cover)
+        self.assertEqual(theme.bars, "auto")
 
     def test_broken_toml_gives_defaults(self):
         self.assertEqual(load_theme(self.write("this is [ not toml")), Theme())

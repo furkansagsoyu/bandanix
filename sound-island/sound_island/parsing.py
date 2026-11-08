@@ -114,6 +114,28 @@ def pick_search_result(items, length: float) -> dict | None:
     return synced[0]
 
 
+def parse_cava_frame(line: str, count: int) -> list[float] | None:
+    """Parse one cava raw-ascii frame like '12;80;3;0;55;' into `count` 0..1 levels.
+
+    If cava sends a different number of bars (it may round them), the values are
+    resampled to `count` so the island never silently loses real audio.
+    """
+    parts = [p for p in line.strip().split(";") if p != ""]
+    if not parts:
+        return None
+    try:
+        values = [min(1.0, max(0.0, int(p) / 100)) for p in parts]
+    except ValueError:
+        return None
+    if len(values) == count:
+        return values
+    n = len(values)
+    if count <= 1:
+        return [max(values)]
+    # spread `count` picks evenly from the first to the last bar (keeps bass and treble)
+    return [values[int(i * (n - 1) / (count - 1) + 0.5)] for i in range(count)]
+
+
 def fmt_time(seconds: float) -> str:
     s = max(0, int(seconds))
     return f"{s // 60}:{s % 60:02d}"

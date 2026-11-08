@@ -49,6 +49,7 @@ def main() -> int:
         island.show()
     player.start()
     app.aboutToQuit.connect(player.stop)
+    app.aboutToQuit.connect(island.shutdown)
     code = app.exec()
     lock.unlock()
     return code

@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import os
+import sys
 from urllib.parse import urlencode
 
 from PySide6.QtCore import QObject, QUrl, Signal
@@ -11,7 +13,14 @@ from PySide6.QtNetwork import QNetworkAccessManager, QNetworkRequest
 from .parsing import Track, parse_lrc, pick_search_result
 
 API = "https://lrclib.net/api"
-USER_AGENT = b"sound-island/0.1 (https://github.com/furkansagsoyu/sound-island)"
+USER_AGENT = b"sound-island/0.2 (https://github.com/furkansagsoyu/bandanix)"
+DEBUG = bool(os.environ.get("SOUND_ISLAND_DEBUG"))
+
+
+def log(message: str) -> None:
+    """Printed only when started with SOUND_ISLAND_DEBUG=1."""
+    if DEBUG:
+        print(f"[lyrics] {message}", file=sys.stderr, flush=True)
 
 
 class LyricsFetcher(QObject):
@@ -41,6 +50,8 @@ class LyricsFetcher(QObject):
         def done():
             status = reply.attribute(QNetworkRequest.Attribute.HttpStatusCodeAttribute) or 0
             data = bytes(reply.readAll())
+            log(f"{path} {params.get('artist_name')} - {params.get('track_name')}"
+                f" -> HTTP {status} {reply.errorString() if not status else ''}")
             reply.deleteLater()
             callback(int(status), data)
 
@@ -74,5 +85,6 @@ class LyricsFetcher(QObject):
         self._done(track, lines)
 
     def _done(self, track: Track, lines: list) -> None:
+        log(f"{track.title}: {len(lines)} synced lines (album sent: {track.album!r})")
         self.cache[track.track_id] = lines
         self.ready.emit(track.track_id, lines)

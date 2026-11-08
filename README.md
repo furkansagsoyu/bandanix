@@ -19,6 +19,11 @@ Birbirine yakışan küçük araçlar. İstersen hepsini kur, istersen sadece be
 |---|---|
 | [**Sound Island**](sound-island/) | Spotify ve diğer oynatıcılar için ekranın üstünde duran "şimdi çalıyor" hapı. Üzerine gelince kontrolleri ve senkron şarkı sözleriyle küçük bir oynatıcıya dönüşür. |
 
+<p align="center">
+  <img src="docs/sound-island-hap.png" alt="Sound Island hap modu" width="329"><br><br>
+  <img src="docs/sound-island-oynatici.png" alt="Sound Island oynatıcı modu" width="467">
+</p>
+
 Yeni parçalar yolda.
 
 ## Kurulum
