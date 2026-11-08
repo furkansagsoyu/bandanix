@@ -50,3 +50,9 @@ echo
 echo "${RED}${BOLD}Bandanix hazır.${RESET}"
 echo "Renkleri ve yazı tipini $BANDANIX_CONFIG/theme.toml dosyasından değiştirebilirsin."
 echo "Masaüstü yedeklerin için: bandanix-yedek liste"
+if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
+  echo
+  echo "Not: Bandanix komutları ~/.local/bin içinde ve bu klasör henüz komut yolunda değil."
+  echo "Yeni bir terminal aç (terminal paketi kuruluysa) ya da oturumu kapatıp aç."
+  echo "Bu terminalde hemen kullanmak için: export PATH=\"\$HOME/.local/bin:\$PATH\""
+fi

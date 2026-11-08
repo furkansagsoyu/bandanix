@@ -3,6 +3,10 @@
 
 [[ $- == *i* ]] || return 0   # only interactive shells
 
+# Bandanix commands (bandanix-yedek, bandanix-duvar, ...) live in ~/.local/bin. Mint adds it
+# to PATH only at login, so a folder created later is missing until the next login.
+[[ ":$PATH:" == *":$HOME/.local/bin:"* ]] || PATH="$HOME/.local/bin:$PATH"
+
 . "${BASH_SOURCE[0]%/*}/theme.bash"
 __bx_read_theme
 
