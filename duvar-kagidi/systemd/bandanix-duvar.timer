@@ -1,0 +1,10 @@
+[Unit]
+Description=Bandanix: her saat başı ve oturum açılışında duvar kağıdını güncelle
+
+[Timer]
+OnStartupSec=15s
+OnCalendar=*-*-* *:00:05
+Persistent=true
+
+[Install]
+WantedBy=timers.target

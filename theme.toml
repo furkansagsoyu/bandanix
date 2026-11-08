@@ -17,3 +17,6 @@ bars = "auto"             # "auto" = cava ile gerçek ses çubukları, "simulate
 [terminal]
 prompt = true             # iki satırlı Bandanix prompt'u
 fetch_on_open = true      # terminal penceresi açılınca bandanix-fetch göster
+
+[duvar-kagidi]
+stil = "gece"             # gece, bandana, dalga ya da logo (değiştirmek için: bandanix-duvar <stil>)

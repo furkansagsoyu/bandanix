@@ -1,0 +1,6 @@
+[Unit]
+Description=Bandanix: duvar kağıdını günün saatine göre seç
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/bandanix-duvar guncelle
