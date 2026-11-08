@@ -1,0 +1,189 @@
+#!/usr/bin/env bash
+# bandanix-fetch: system info next to the Bandanix bandana.
+#   bandanix-fetch         small bandana + info (shown when a terminal opens)
+#   bandanix-fetch --big   big BANDANIX logo + info
+# Built to be fast (< 0.1 s): slow facts (CPU/GPU model) are cached for a day.
+
+SELF_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
+for f in "$SELF_DIR/../theme.bash" \
+         "${XDG_DATA_HOME:-$HOME/.local/share}/bandanix/terminal/theme.bash"; do
+  if [[ -r $f ]]; then . "$f"; break; fi
+done
+if declare -F __bx_read_theme >/dev/null; then
+  __bx_read_theme
+else
+  BX_R=200 BX_G=16 BX_B=46
+fi
+
+A=$'\e[38;2;'"$BX_R;$BX_G;$BX_B"'m'
+W=$'\e[38;2;232;230;227m'
+M=$'\e[38;2;150;150;160m'
+BOLD=$'\e[1m'
+R=$'\e[0m'
+CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/bandanix/fetch.cache"
+
+# ---- slow facts, cached -----------------------------------------------------
+cache_fresh() {
+  [[ -f $CACHE ]] || return 1
+  local now mtime
+  printf -v now '%(%s)T' -1
+  mtime=$(stat -c %Y "$CACHE" 2>/dev/null) || return 1
+  (( now - mtime < 86400 ))
+}
+
+build_cache() {
+  local line cpu="" gpu="" name vendor best=""
+  while IFS= read -r line; do
+    if [[ $line == "model name"* ]]; then cpu=${line#*: }; break; fi
+  done < /proc/cpuinfo
+  cpu=${cpu//(R)/}; cpu=${cpu//(TM)/}; cpu=${cpu//(tm)/}
+  cpu=${cpu%% CPU @*}; cpu=${cpu%% @ *}; cpu=${cpu% *-Core Processor}
+  cpu=$(printf '%s' "$cpu" | tr -s ' ')
+
+  if command -v lspci >/dev/null; then
+    while IFS= read -r line; do
+      name=${line#*: }
+      case $name in
+        NVIDIA*) vendor=NVIDIA ;;
+        *AMD*|*ATI*) vendor=AMD ;;
+        Intel*) vendor=Intel ;;
+        *) vendor=${name%% *} ;;
+      esac
+      if [[ $name =~ .*\[([^]]+)\] ]]; then
+        name="$vendor ${BASH_REMATCH[1]}"
+      else
+        name=${name/ Corporation/}
+        name=${name% (rev *)}
+      fi
+      [[ -z $gpu ]] && gpu=$name
+      [[ $vendor != Intel && -z $best ]] && best=$name   # prefer the dedicated card
+    done < <(lspci 2>/dev/null | grep -E 'VGA|3D|Display')
+    [[ -n $best ]] && gpu=$best
+  fi
+
+  mkdir -p "${CACHE%/*}"
+  printf 'CPU=%s\nGPU=%s\n' "$cpu" "$gpu" > "$CACHE"
+}
+
+cache_fresh || build_cache
+CPU="" GPU=""
+while IFS='=' read -r key value; do
+  case $key in CPU) CPU=$value ;; GPU) GPU=$value ;; esac
+done < "$CACHE"
+
+# ---- fast facts ---------------------------------------------------------------
+USERHOST="${USER:-$(id -un)}@${HOSTNAME:-$(hostname)}"
+
+OS="Linux"
+if [[ -r /etc/os-release ]]; then
+  OS=$(. /etc/os-release && printf '%s' "${PRETTY_NAME:-$NAME}")
+fi
+DESK=${XDG_CURRENT_DESKTOP:-}
+DESK=${DESK#X-}; DESK=${DESK%%:*}
+[[ -n $DESK ]] && OS="$OS · $DESK"
+
+read -r KERNEL < /proc/sys/kernel/osrelease
+KERNEL=${KERNEL%-generic}
+
+read -r up _ < /proc/uptime
+up=${up%.*}
+days=$((up / 86400)); hours=$((up % 86400 / 3600)); mins=$((up % 3600 / 60))
+if (( days > 0 )); then UPTIME="$days gün $hours sa"
+elif (( hours > 0 )); then UPTIME="$hours sa $mins dk"
+else UPTIME="$mins dk"; fi
+
+shopt -s nullglob
+debs=(/var/lib/dpkg/info/*.list)
+flats=(/var/lib/flatpak/app/*/ "$HOME"/.local/share/flatpak/app/*/)
+shopt -u nullglob
+PKGS=""
+(( ${#debs[@]} > 0 )) && PKGS="${#debs[@]} apt"
+(( ${#flats[@]} > 0 )) && PKGS="${PKGS:+$PKGS · }${#flats[@]} flatpak"
+
+gb10() { echo $(( ($1 * 10 + 524288) / 1048576 )); }      # KiB -> tenths of GiB
+fmt10() { printf '%d.%d' $(($1 / 10)) $(($1 % 10)); }
+mem_total=0 mem_avail=0
+while read -r key value _; do
+  case $key in
+    MemTotal:) mem_total=$value ;;
+    MemAvailable:) mem_avail=$value; break ;;
+  esac
+done < /proc/meminfo
+MEM="$(fmt10 "$(gb10 $((mem_total - mem_avail)))") / $(fmt10 "$(gb10 "$mem_total")") GB"
+
+DISK=""
+{ read -r _; read -r _ dsize dused _; } < <(df -Pk / 2>/dev/null)
+[[ -n ${dsize:-} ]] && DISK="$((dused / 1048576)) / $((dsize / 1048576)) GB"
+
+BATT=""
+for b in /sys/class/power_supply/BAT*; do
+  [[ -r $b/capacity ]] || continue
+  read -r cap < "$b/capacity"
+  read -r st < "$b/status"
+  case $st in
+    Charging) st="şarjda" ;; Discharging) st="pilde" ;; Full) st="dolu" ;; *) st="takılı" ;;
+  esac
+  BATT="%$cap · $st"
+  break
+done
+
+SONG=""
+if command -v playerctl >/dev/null; then
+  out=$(timeout 0.3 playerctl -p spotify,%any metadata \
+        --format '{{status}}|{{title}}|{{artist}}' 2>/dev/null)
+  if [[ $out == Playing\|* ]]; then
+    IFS='|' read -r _ title artist <<< "$out"
+    SONG="$title${artist:+ · $artist}"
+  fi
+fi
+
+# ---- layout -------------------------------------------------------------------
+COLS=$(tput cols 2>/dev/null || echo 80)
+labels=("Sistem   " "Çekirdek " "Açık     " "Paket    " "CPU      " "GPU      " \
+        "Bellek   " "Disk     " "Pil      " "Çalıyor  ")
+values=("$OS" "$KERNEL" "$UPTIME" "$PKGS" "$CPU" "$GPU" "$MEM" "$DISK" "$BATT" "$SONG")
+
+info=("${A}${BOLD}${USERHOST}${R}")
+sep=""; for ((i = 0; i < ${#USERHOST}; i++)); do sep+="─"; done
+info+=("${M}${sep}${R}")
+
+big=0; [[ ${1:-} == --big ]] && big=1
+indent=21; (( big )) && indent=2
+maxlen=$((COLS - indent - 10))
+(( maxlen < 10 )) && maxlen=10
+for i in "${!labels[@]}"; do
+  v=${values[$i]}
+  [[ -z $v ]] && continue
+  (( ${#v} > maxlen )) && v="${v:0:maxlen-1}…"
+  info+=("${A}${labels[$i]}${R}${W}${v}${R}")
+done
+blocks=""; for c in 0 1 2 3 4 5 6 7; do blocks+=$'\e[4'"$c"'m   '; done
+info+=("" "${blocks}${R}")
+
+echo
+if (( big )); then
+  printf '%s' "$A$BOLD"
+  cat <<'EOF'
+   ____      _     _   _  ____      _     _   _  ___ __  __
+  | __ )    / \   | \ | ||  _ \    / \   | \ | ||_ _|\ \/ /
+  |  _ \   / _ \  |  \| || | | |  / _ \  |  \| | | |  \  /
+  | |_) | / ___ \ | |\  || |_| | / ___ \ | |\  | | |  /  \
+  |____/ /_/   \_\|_| \_||____/ /_/   \_\|_| \_||___|/_/\_\
+EOF
+  printf '%s\n' "$R"
+  for line in "${info[@]}"; do printf '  %s\n' "$line"; done
+else
+  # each art line is padded to the same visible width (19)
+  art=("  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄  "
+       "  ▀█▓░▓░▓░▓░▓░▓█▀  "
+       "    ▀█▓░▓░▓░▓█▀    "
+       "      ▀█▓░▓█▀      "
+       "        ▀█▀        ")
+  rows=${#info[@]}; (( ${#art[@]} > rows )) && rows=${#art[@]}
+  for ((i = 0; i < rows; i++)); do
+    a=${art[$i]:-"                   "}
+    a=${a//░/$W░$A}                      # the paisley dots
+    printf '%s%s%s  %s\n' "$A" "$a" "$R" "${info[$i]:-}"
+  done
+fi
+echo

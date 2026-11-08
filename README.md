@@ -18,6 +18,7 @@ Birbirine yakışan küçük araçlar. İstersen hepsini kur, istersen sadece be
 | Parça | Ne yapar |
 |---|---|
 | [**Sound Island**](sound-island/) | Spotify ve diğer oynatıcılar için ekranın üstünde duran "şimdi çalıyor" hapı. Üzerine gelince kontrolleri ve senkron şarkı sözleriyle küçük bir oynatıcıya dönüşür. |
+| [**Terminal**](terminal/) | İki satırlı prompt (git, Python ortamı, hata kodu), bandana kırmızısı renk şeması ve her yeni pencerede `bandanix-fetch`. |
 
 <p align="center">
   <img src="docs/sound-island-hap.png" alt="Sound Island hap modu" width="329"><br><br>
@@ -39,7 +40,7 @@ Menüyü atlamak da mümkün:
 
 ```bash
 ./install.sh --all            # hepsini kur
-./install.sh sound-island     # sadece bir parçayı kur
+./install.sh terminal         # sadece bir parçayı kur
 ```
 
 Her şey yalnızca senin kullanıcın için kurulur (`~/.local`), her parça kendi Python ortamında çalışır.
