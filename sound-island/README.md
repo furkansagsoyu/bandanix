@@ -53,7 +53,7 @@ bars = "auto"             # "auto" = cava ile gerçek ses, "simulated" = temsili
 gosterge = true           # ses ve parlaklık göstergesi (false = Cinnamon'ın kendi göstergesi)
 ```
 
-`gosterge` ayarını değiştirdikten sonra `./install.sh sound-island` komutunu çalıştır.
+Bu ayarlar Bandanix Ayarlar → Sound Island'dan da değiştirilebilir; orada ada kendiliğinden yeniden başlar. Dosyayı elle düzenlediysen adayı yeniden başlat; `gosterge` ayarını değiştirdiysen `./install.sh sound-island` komutunu çalıştır.
 
 Not: cava bilgisayarın çaldığı **bütün** sesi dinler, sadece Spotify'ı değil. Aynı anda bir video açıksa çubuklar onun sesine de tepki verir.
 
@@ -82,7 +82,8 @@ Qt kurulumu diğer Bandanix adalarıyla (Sistem adası) ortaktır: `~/.local/sha
 ## Yol haritası
 
 - [x] Gerçek sese tepki veren çubuklar (cava)
-- [ ] Daha fazla ayar: konum, boyut, hap ve söz seçenekleri
-- [ ] Cinnamon panel uygulamacığı
+- [x] Ses ve parlaklık göstergesi
+- [x] Ayarlar penceresi (Bandanix Ayarlar)
+- [ ] Konum ve boyut seçenekleri
 
 Şarkı sözleri topluluk tarafından oluşturulan LRCLIB veritabanından gelir.

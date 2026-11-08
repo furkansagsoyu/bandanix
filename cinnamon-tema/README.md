@@ -31,7 +31,7 @@ VS Code, Spotify, Discord gibi Electron uygulamaları kendi görünümlerini kul
 | Metin | `#E8E6E3` |
 | Vurgu | `#C8102E` |
 
-Vurgu rengi `~/.config/bandanix/theme.toml` dosyasındaki `accent` değerinden okunur. Değiştirdikten sonra temayı yeniden üretmek için:
+Vurgu rengi `~/.config/bandanix/theme.toml` dosyasındaki `accent` değerinden okunur. En kolayı Bandanix Ayarlar → Görünüm: renk seçip "Uygula"ya basınca tema, ikonlar, imleç ve panel birlikte yeniden üretilir. Sadece temayı yeniden üretmek için:
 
 ```bash
 ./install.sh cinnamon-tema

@@ -9,7 +9,6 @@ only; if Pillow is available the PNG assets (checkboxes, radios...) are recolour
 from __future__ import annotations
 
 import argparse
-import os
 import re
 import shutil
 import sys
@@ -17,7 +16,7 @@ from collections import Counter
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "core"))
-from bandanix_renk import (DEFAULT_ACCENT, from_hls, hex_to_rgb, hls,  # noqa: E402
+from bandanix_renk import (from_hls, hex_to_rgb, hls,  # noqa: E402
                            is_accent, is_neutral, read_accent, rgb_to_hex, shift_accent)
 
 try:

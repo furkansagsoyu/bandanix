@@ -34,7 +34,7 @@ Mint'in **Mint-Y-Red** ikon teması kopyalanıp kırmızıları bandana kırmız
 
 Kurulum ikonların ve imlecin uygulanıp uygulanmayacağını ayrı ayrı sorar. Uygularken değiştirdiği ayarların eski değerini `bandanix-yedek` ile saklar; kaldırınca yalnızca bu ayarlar eski hâline döner.
 
-Üretim birkaç saniye sürer; imleç dosyaları işlemcinin bütün çekirdeklerine paylaştırılır. Vurgu rengi `~/.config/bandanix/theme.toml` dosyasındaki `accent` değerinden okunur; değiştirdikten sonra `./install.sh ikonlar` ile yeniden üretilir.
+Üretim birkaç saniye sürer; imleç dosyaları işlemcinin bütün çekirdeklerine paylaştırılır. Vurgu rengi `~/.config/bandanix/theme.toml` dosyasındaki `accent` değerinden okunur; Bandanix Ayarlar → Görünüm'den değiştirince ikonlar da kendiliğinden yeniden üretilir (elle: `./install.sh ikonlar`).
 
 Gerekenler: `mint-y-icons`, `bibata-cursor-theme` (Mint'te yüklü gelir) ve `python3-pil` (yoksa kurulum kendisi kurar).
 

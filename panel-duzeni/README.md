@@ -7,7 +7,7 @@ Cinnamon panelini yüzen adalara çevirir. Sound Island'ın hap tasarımıyla ay
 - **Orta** (varsayılan, Windows 11 gibi): menü düğmesi ve açık pencereler ortada tek bir adada, sistem tepsisi ve saat sağdaki adada.
 - **Üç ada:** solda menü, ortada açık pencereler, sağda tepsi ve saat.
 
-Seçmek için `~/.config/bandanix/theme.toml` içinde `[panel]` bölümüne `duzen = "orta"` ya da `duzen = "uc-ada"` yazıp `./install.sh panel-duzeni` komutunu çalıştır.
+Seçmek için Bandanix Ayarlar → Panel'i kullan ya da `~/.config/bandanix/theme.toml` içinde `[panel]` bölümüne `duzen = "orta"` veya `duzen = "uc-ada"` yazıp `./install.sh panel-duzeni` komutunu çalıştır.
 
 ## Nasıl çalışır
 

@@ -145,7 +145,6 @@ def new_heights(heights: list[str], panel_id: str = "1") -> list[str]:
 # ---- CSS -----------------------------------------------------------------------------
 ISLAND_SVG = "bandanix-ada.svg"
 GAP = 6              # transparent space above and below each island, in px
-RADIUS = 18
 
 
 def radius() -> int:

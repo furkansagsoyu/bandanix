@@ -15,28 +15,39 @@ Birbirine yakışan küçük araçlar. İstersen hepsini kur, istersen sadece be
 
 ## Parçalar
 
+**Görünüm**
+
 | Parça | Ne yapar |
 |---|---|
-| [**Giriş Ekranı**](giris-ekrani/) | Şifre yazdığın giriş ekranında duvar kağıdının bulanık hâli, Bandanix teması, ikonları ve imleci. |
-| [**Hızlı Not**](not-kutusu/) | Super+N ile açılan küçük not kutusu: yaz, Enter'a bas, kaybolsun. Notlar tek bir Markdown dosyasında, yapılacak işler işaretlenebilir. |
-| [**Panel Düzeni**](panel-duzeni/) | Paneli yüzen adalara çevirir: Windows 11 gibi ortada menü ve pencereler, sağda tepsi (ya da üç ada). |
-| [**Pano Geçmişi**](pano/) | Super+V ile son kopyaladıkların: ara, seç, otomatik yapıştır. Sık kullandıklarını sabitle; şifre yöneticilerinden kopyalananlar saklanmaz. |
-| [**Pil Sağlığı**](pil/) | Şarjı %80'de durdurarak pilin ömrünü uzatır, pil azalınca uyarır; gerektiğinde tek komutla bir seferlik tam şarj. |
-| [**Sistem Adası**](sistem-adasi/) | Normalde görünmez; işlemci, sıcaklık, RAM ya da disk sınırı aşınca Sound Island'ın yanında beliren uyarı hapı. Üzerine gelince sorunun kaynağını gösterir. |
-| [**Sound Island**](sound-island/) | Spotify ve diğer oynatıcılar için ekranın üstünde duran "şimdi çalıyor" hapı. Üzerine gelince kontrolleri ve senkron şarkı sözleriyle küçük bir oynatıcıya dönüşür; ses ya da parlaklık değişince kısa bir süre göstergeye dönüşür. |
-| [**Bandanix Ayarlar**](ayarlar/) | Bütün parçaların ayarları tek pencerede: renk, duvar kağıdı, panel, adalar, pil, kısayollar; parça kurma ve kaldırma, yedekler. |
 | [**Cinnamon Teması**](cinnamon-tema/) | Mint-Y tabanlı koyu tema: pencereler, menüler, dosya yöneticisi ve panel bandana kırmızısı vurgularla. |
-| [**Duvar Kağıtları**](duvar-kagidi/) | Bandana kumaşı ve kırmızı gökyüzüyle bir seri: Kemer, Galata, Gün Batımı, İpek. |
 | [**İkonlar ve İmleç**](ikonlar/) | Bandana kırmızısı klasörler ve siyah gövdeli, kırmızı kenarlı fare imleci. |
+| [**Duvar Kağıtları**](duvar-kagidi/) | Bandana kumaşı ve kırmızı gökyüzüyle bir seri: Kemer, Galata, Gün Batımı, İpek. |
+| [**Panel Düzeni**](panel-duzeni/) | Paneli yüzen adalara çevirir: Windows 11 gibi ortada menü ve pencereler, sağda tepsi (ya da üç ada). |
+| [**Giriş Ekranı**](giris-ekrani/) | Şifre yazdığın giriş ekranında duvar kağıdının bulanık hâli, Bandanix teması, ikonları ve imleci. |
 | [**Terminal**](terminal/) | İki satırlı prompt (git, Python ortamı, hata kodu), bandana kırmızısı renk şeması ve her yeni pencerede `bandanix-fetch`. |
+
+**Adalar ve masaüstü**
+
+| Parça | Ne yapar |
+|---|---|
+| [**Sound Island**](sound-island/) | Spotify ve diğer oynatıcılar için ekranın üstünde duran "şimdi çalıyor" hapı. Üzerine gelince kontrolleri ve senkron şarkı sözleriyle küçük bir oynatıcıya dönüşür; ses ya da parlaklık değişince kısa bir süre göstergeye dönüşür. |
+| [**Sistem Adası**](sistem-adasi/) | Normalde görünmez; işlemci, sıcaklık, RAM ya da disk sınırı aşınca Sound Island'ın yanında beliren uyarı hapı. Üzerine gelince sorunun kaynağını gösterir. |
 | [**Saat Widget'ı**](widget/) | Masaüstünün ortasında büyük ince saat, Türkçe tarih ve tek satırda hava durumu ile sistem bilgisi. Üzerine gelince 3 günlük tahmin. |
 
+**Araçlar**
+
+| Parça | Ne yapar |
+|---|---|
+| [**Hızlı Not**](not-kutusu/) | Super+N ile açılan küçük not kutusu: yaz, Enter'a bas, kaybolsun. Notlar tek bir Markdown dosyasında, yapılacak işler işaretlenebilir. |
+| [**Pano Geçmişi**](pano/) | Super+V ile son kopyaladıkların: ara, seç, otomatik yapıştır. Sık kullandıklarını sabitle; şifre yöneticilerinden kopyalananlar saklanmaz. |
+| [**Pil Sağlığı**](pil/) | Şarjı %80'de durdurarak pilin ömrünü uzatır, pil azalınca uyarır; gerektiğinde tek komutla bir seferlik tam şarj. |
+| [**Bandanix Ayarlar**](ayarlar/) | Bütün parçaların ayarları tek pencerede: renk, duvar kağıdı, panel, adalar, pil, kısayollar; parça kurma ve kaldırma, yedekler. |
+
 <p align="center">
+  <img src="docs/duvar-kagitlari.jpg" alt="Bandanix duvar kağıtları" width="100%"><br><br>
   <img src="docs/sound-island-hap.png" alt="Sound Island hap modu" width="329"><br><br>
   <img src="docs/sound-island-oynatici.png" alt="Sound Island oynatıcı modu" width="467">
 </p>
-
-Yeni parçalar yolda.
 
 ## Kurulum
 
@@ -54,8 +65,18 @@ Menüyü atlamak da mümkün:
 ./install.sh terminal         # sadece bir parçayı kur
 ```
 
-Her şey yalnızca senin kullanıcın için kurulur (`~/.local`), her parça kendi Python ortamında çalışır.
-Eksik sistem paketleri `apt` ile kurulur (şifren sorulur).
+Her şey yalnızca senin kullanıcın için kurulur (`~/.local`). Parçaların çoğu Mint'te zaten yüklü olan Python ve GTK ile çalışır; sadece adalar (Sound Island, Sistem Adası) Qt kullanır ve onu ortak tek bir Python ortamına kurar.
+Eksik sistem paketleri `apt` ile kurulur (şifren sorulur). Sistem dosyalarına sadece Pil Sağlığı ve Giriş Ekranı dokunur; ikisi de önce yedek alır.
+
+Kurduktan sonra her şeyi menüdeki **Bandanix Ayarlar** uygulamasından (ya da terminalde `bandanix`) yönetebilirsin.
+
+### Güncelleme
+
+```bash
+cd ~/bandanix
+git pull
+./install.sh            # değişen parçaları yeniden kur
+```
 
 ## Ortak tema
 
@@ -102,9 +123,9 @@ bandanix-yedek ice-aktar dosya.tar.gz # başka bilgisayardan gelen yedeği ekle
 
 Kaldırma işlemi masaüstü yedeklerini ve `bandanix-yedek` komutunu **silmez**, böylece Bandanix'i kaldırdıktan sonra da orijinal masaüstüne dönebilirsin.
 
-## Test edildiği sistem
+## Gereksinimler
 
-Linux Mint 22 (Cinnamon, X11). X11 kullanan diğer Debian/Ubuntu tabanlı masaüstlerinde de çalışması beklenir.
+Linux Mint 22 Cinnamon (X11) için yazıldı ve orada test edildi. Tema, panel, saat widget'ı, kısayollar ve ses göstergesi Cinnamon'a özeldir; Sound Island, Terminal ve Pil Sağlığı başka X11 masaüstlerinde de çalışabilir. Wayland desteklenmez.
 
 ## Notlar
 
