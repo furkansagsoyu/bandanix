@@ -13,6 +13,10 @@ Birbirine yakışan küçük araçlar. İstersen hepsini kur, istersen sadece be
 
 </div>
 
+<p align="center">
+  <img src="docs/masaustu.jpg" alt="Bandanix masaüstü: Galata duvar kağıdı, saat widget'ı, Sound Island ve panel adaları" width="100%">
+</p>
+
 ## Parçalar
 
 **Görünüm**
