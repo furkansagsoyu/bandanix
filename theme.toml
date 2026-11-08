@@ -1,14 +1,14 @@
-# Bandanix shared theme
-# Every Bandanix component reads this file, so they all look like one family.
-# Installed to: ~/.config/bandanix/theme.toml  (your edits there are kept on reinstall)
-# After editing, restart the component (e.g. right-click Sound Island → Quit, then open it again).
+# Bandanix ortak tema dosyası
+# Bütün Bandanix parçaları bu dosyayı okur, böylece hepsi aynı ailedenmiş gibi görünür.
+# Kurulduğu yer: ~/.config/bandanix/theme.toml  (oradaki değişikliklerin yeniden kurulumda korunur)
+# Düzenledikten sonra parçayı yeniden başlat (ör. Sound Island'a sağ tık → Çıkış, sonra tekrar aç).
 
 [colors]
-accent = "#C8102E"        # bandana red; any "#RRGGBB" colour
+accent = "#C8102E"        # bandana kırmızısı; "#RRGGBB" biçiminde herhangi bir renk
 
 [fonts]
-ui = ""                   # font family name, empty = system default (e.g. "Ubuntu", "Inter")
+ui = ""                   # yazı tipi adı, boş = sistemin yazı tipi (ör. "Ubuntu", "Inter")
 
 [sound-island]
-follow_cover = true       # take the accent colour from the album cover (false = always use accent)
-hide_when_idle = true     # hide the island when nothing is playing
+follow_cover = true       # vurgu rengini albüm kapağından al (false = hep accent rengini kullan)
+hide_when_idle = true     # çalan bir şey yokken adayı gizle

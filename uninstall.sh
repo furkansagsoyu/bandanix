@@ -16,16 +16,16 @@ for arg in "$@"; do
 done
 
 banner
-choose_components "remove" "$@"
+choose_components "kaldırmak istiyorsun" "$@"
 
 for c in "${CHOSEN[@]}"; do
-  echo "${RED}${BOLD}==> removing $c${RESET}"
+  echo "${RED}${BOLD}==> $c kaldırılıyor${RESET}"
   "$ROOT/$c/uninstall.sh"
 done
 
 if [ "$PURGE" -eq 1 ]; then
   rm -rf "$BANDANIX_CONFIG"
-  echo "• Theme file removed."
+  echo "• Tema dosyası kaldırıldı."
 elif [ ${#CHOSEN[@]} -gt 0 ]; then
-  echo "• Theme file kept in $BANDANIX_CONFIG (use --purge to remove it)."
+  echo "• Tema dosyası $BANDANIX_CONFIG içinde bırakıldı (silmek için --purge kullan)."
 fi

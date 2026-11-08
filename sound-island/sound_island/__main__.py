@@ -11,13 +11,13 @@ import sys
 def main() -> int:
     parser = argparse.ArgumentParser(
         prog="sound-island",
-        description="A floating now-playing island for MPRIS players on Linux (part of Bandanix).")
+        description="Linux'ta MPRIS oynatıcıları için yüzen \"şimdi çalıyor\" adası (Bandanix'in parçası).")
     parser.add_argument("--player", default="spotify",
-                        help="MPRIS player name as shown by `playerctl -l` (default: spotify)")
+                        help="`playerctl -l` çıktısındaki oynatıcı adı (varsayılan: spotify)")
     args = parser.parse_args()
 
     if shutil.which("playerctl") is None:
-        print("playerctl not found. Install it with: sudo apt install playerctl",
+        print("playerctl bulunamadı. Kurmak için: sudo apt install playerctl",
               file=sys.stderr)
         return 1
 
@@ -31,7 +31,7 @@ def main() -> int:
 
     lock = QLockFile(QDir.tempPath() + f"/bandanix-sound-island-{args.player}.lock")
     if not lock.tryLock(100):
-        print("Sound Island is already running.", file=sys.stderr)
+        print("Sound Island zaten çalışıyor.", file=sys.stderr)
         return 0
 
     signal.signal(signal.SIGINT, signal.SIG_DFL)  # Ctrl+C in the terminal quits

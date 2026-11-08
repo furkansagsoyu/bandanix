@@ -10,18 +10,18 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$ROOT/scripts/lib.sh"
 
 banner
-choose_components "install" "$@"
+choose_components "kurmak istiyorsun" "$@"
 if [ ${#CHOSEN[@]} -eq 0 ]; then
-  echo "Nothing selected."
+  echo "Hiçbir şey seçilmedi."
   exit 0
 fi
 
 mkdir -p "$BANDANIX_CONFIG"
 if [ -f "$BANDANIX_CONFIG/theme.toml" ]; then
-  echo "• Keeping your theme file: $BANDANIX_CONFIG/theme.toml"
+  echo "• Tema dosyan korunuyor: $BANDANIX_CONFIG/theme.toml"
 else
   cp "$ROOT/theme.toml" "$BANDANIX_CONFIG/theme.toml"
-  echo "• Theme file installed: $BANDANIX_CONFIG/theme.toml"
+  echo "• Tema dosyası kuruldu: $BANDANIX_CONFIG/theme.toml"
 fi
 
 for c in "${CHOSEN[@]}"; do
@@ -31,5 +31,5 @@ for c in "${CHOSEN[@]}"; do
 done
 
 echo
-echo "${RED}${BOLD}Bandanix is ready.${RESET}"
-echo "Change colours and fonts in $BANDANIX_CONFIG/theme.toml"
+echo "${RED}${BOLD}Bandanix hazır.${RESET}"
+echo "Renkleri ve yazı tipini $BANDANIX_CONFIG/theme.toml dosyasından değiştirebilirsin."

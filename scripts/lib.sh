@@ -16,7 +16,7 @@ banner() {
 | |_) | / ___ \ | |\  || |_| | / ___ \ | |\  | | |  /  \
 |____/ /_/   \_\|_| \_||____/ /_/   \_\|_| \_||___|/_/\_\
 EOF
-  printf '%s%s\n\n' "$RESET" "${DIM}a desktop kit by Bandana${RESET}"
+  printf '%s%s\n\n' "$RESET" "${DIM}Bandana'nın masaüstü kiti${RESET}"
 }
 
 # Every folder with an executable install.sh is a component.
@@ -39,7 +39,7 @@ choose_components() {
   mapfile -t all < <(list_components)
   CHOSEN=()
   if [ ${#all[@]} -eq 0 ]; then
-    echo "No components found."; return 1
+    echo "Hiç parça bulunamadı."; return 1
   fi
 
   local picked=0
@@ -49,19 +49,19 @@ choose_components() {
       --*) ;;  # other flags (e.g. --purge) are handled by the caller
       *)
         if [ -x "$ROOT/$c/install.sh" ]; then CHOSEN+=("$c"); picked=1
-        else echo "Unknown component: $c"; return 1; fi ;;
+        else echo "Bilinmeyen parça: $c"; return 1; fi ;;
     esac
   done
   [ "$picked" -eq 1 ] && return 0
 
-  echo "${BOLD}Components:${RESET}"
+  echo "${BOLD}Parçalar:${RESET}"
   i=1
   for c in "${all[@]}"; do
     printf '  %s%d)%s %-14s %s\n' "$RED" "$i" "$RESET" "$c" "$(describe "$c")"
     i=$((i + 1))
   done
-  printf '  %sa)%s all\n\n' "$RED" "$RESET"
-  read -rp "What do you want to $verb? (e.g. 1 2, or a): " answer
+  printf '  %sa)%s hepsi\n\n' "$RED" "$RESET"
+  read -rp "Neyi $verb? (ör. 1 2, ya da a): " answer
   if [[ "$answer" =~ ^[aA] ]]; then
     CHOSEN=("${all[@]}")
     return 0
@@ -70,7 +70,7 @@ choose_components() {
     if [[ "$n" =~ ^[0-9]+$ ]] && [ "$n" -ge 1 ] && [ "$n" -le ${#all[@]} ]; then
       CHOSEN+=("${all[$((n - 1))]}")
     else
-      echo "Skipping invalid choice: $n"
+      echo "Geçersiz seçim atlandı: $n"
     fi
   done
 }
@@ -79,6 +79,6 @@ choose_components() {
 ask() {
   local reply
   [ -t 0 ] || return 0
-  read -rp "$1 [Y/n] " reply
-  [[ ! "$reply" =~ ^[nN] ]]
+  read -rp "$1 [E/h] " reply
+  [[ ! "$reply" =~ ^[hHnN] ]]
 }

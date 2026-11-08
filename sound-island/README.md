@@ -1,50 +1,50 @@
 # Sound Island 🏝️
 
-*Part of [Bandanix](../README.md).*
+*[Bandanix](../README.md) kitinin bir parçası.*
 
-A floating "now playing" island for Linux desktops, inspired by Apple's Dynamic Island.
-It sits as a slim pill at the top of your screen and grows into a mini player when you hover over it.
+Apple'ın Dynamic Island'ından esinlenen, Linux masaüstü için yüzen bir "şimdi çalıyor" adası.
+Ekranın üstünde ince bir hap olarak durur, üzerine gelince küçük bir oynatıcıya dönüşür.
 
-Works with **Spotify** and any other player that speaks [MPRIS](https://specifications.freedesktop.org/mpris-spec/latest/)
-(VLC, Firefox, Brave, Chromium, mpv, Rhythmbox…). No Spotify account, API key or Premium needed: everything is read locally.
+**Spotify** ve [MPRIS](https://specifications.freedesktop.org/mpris-spec/latest/) destekleyen her oynatıcıyla çalışır
+(VLC, Firefox, Brave, Chromium, mpv, Rhythmbox…). Spotify hesabı, API anahtarı ya da Premium gerekmez: her şey bilgisayarından okunur.
 
-## Features
+## Özellikler
 
-- **Pill mode:** spinning album cover, song title and artist, a thin progress line and animated bars
-- **Player mode (hover):** large cover, play/pause, previous/next, click-to-seek progress bar
-- **Synced lyrics:** the current lyric line, from the free [LRCLIB](https://lrclib.net) API
-- **Adaptive colour:** the accent colour is picked from the album cover (or the Bandanix accent)
-- **New song toast:** the island opens for a moment when the track changes
-- Hides itself when nothing is playing
-- Right-click → Quit
+- **Hap modu:** dönen albüm kapağı, şarkı adı ve sanatçı, ince bir ilerleme çizgisi ve hareketli çubuklar
+- **Oynatıcı modu (üzerine gelince):** büyük kapak, oynat/duraklat, önceki/sonraki, tıklayınca o saniyeye atlayan ilerleme çubuğu
+- **Senkron şarkı sözleri:** o an söylenen satır, ücretsiz [LRCLIB](https://lrclib.net) servisinden
+- **Uyumlu renk:** vurgu rengi albüm kapağından seçilir (ya da Bandanix'in vurgu rengi kullanılır)
+- **Yeni şarkı bildirimi:** şarkı değişince ada bir anlığına açılır
+- Çalan bir şey yokken kendini gizler
+- Sağ tık → Çıkış
 
-## Install
+## Kurulum
 
-From the Bandanix folder:
+Bandanix klasöründe:
 
 ```bash
 ./install.sh sound-island
 ```
 
-This adds **Sound Island** to your app menu, a `sound-island` command, and (if you want) autostart on login.
+Bu, uygulama menüsüne **Sound Island**'ı ve bir `sound-island` komutunu ekler, istersen girişte otomatik başlamasını da ayarlar.
 
-Use another player with `--player` (see `playerctl -l` for names):
+Başka bir oynatıcı için `--player` kullan (isimleri `playerctl -l` gösterir):
 
 ```bash
 sound-island --player vlc
 ```
 
-## Settings
+## Ayarlar
 
-In `~/.config/bandanix/theme.toml`:
+`~/.config/bandanix/theme.toml` dosyasında:
 
 ```toml
 [sound-island]
-follow_cover = true       # accent colour from the album cover
-hide_when_idle = true     # hide when nothing is playing
+follow_cover = true       # vurgu rengini albüm kapağından al
+hide_when_idle = true     # çalan bir şey yokken gizlen
 ```
 
-## Run from source (development)
+## Kaynak koddan çalıştırma (geliştirme)
 
 ```bash
 sudo apt install playerctl python3-venv libxcb-cursor0
@@ -56,10 +56,10 @@ python -m unittest discover tests
 python -m sound_island
 ```
 
-## Roadmap
+## Yol haritası
 
-- [ ] Real audio-reactive bars (PipeWire monitor / cava); the bars are simulated for now
-- [ ] More settings: position, size, pill/lyrics options
-- [ ] Cinnamon panel applet
+- [ ] Gerçek sese tepki veren çubuklar (PipeWire / cava); çubuklar şimdilik temsili
+- [ ] Daha fazla ayar: konum, boyut, hap ve söz seçenekleri
+- [ ] Cinnamon panel uygulamacığı
 
-Lyrics come from LRCLIB, a community database.
+Şarkı sözleri topluluk tarafından oluşturulan LRCLIB veritabanından gelir.

@@ -8,20 +8,20 @@
 |____/ /_/   \_\|_| \_||____/ /_/   \_\|_| \_||___|/_/\_\
 ```
 
-**A desktop kit for Linux Mint, by Bandana.**
-Small tools that look like one family. Install them all, or just the ones you like.
+**Linux Mint için Bandana'nın masaüstü kiti.**
+Birbirine yakışan küçük araçlar. İstersen hepsini kur, istersen sadece beğendiklerini.
 
 </div>
 
-## Components
+## Parçalar
 
-| Component | What it does |
+| Parça | Ne yapar |
 |---|---|
-| [**Sound Island**](sound-island/) | A floating "now playing" pill for Spotify and other players. Hover to open a mini player with controls and synced lyrics. |
+| [**Sound Island**](sound-island/) | Spotify ve diğer oynatıcılar için ekranın üstünde duran "şimdi çalıyor" hapı. Üzerine gelince kontrolleri ve senkron şarkı sözleriyle küçük bir oynatıcıya dönüşür. |
 
-More components are on the way.
+Yeni parçalar yolda.
 
-## Install
+## Kurulum
 
 ```bash
 git clone https://github.com/furkansagsoyu/bandanix.git
@@ -29,48 +29,48 @@ cd bandanix
 ./install.sh
 ```
 
-The installer shows a menu: pick numbers (`1 2`) or `a` for everything.
-You can also skip the menu:
+Kurulum bir menü açar: numara seç (`1 2`) ya da hepsi için `a` yaz.
+Menüyü atlamak da mümkün:
 
 ```bash
-./install.sh --all            # everything
-./install.sh sound-island     # just one component
+./install.sh --all            # hepsini kur
+./install.sh sound-island     # sadece bir parçayı kur
 ```
 
-Everything is installed for your user only (`~/.local`), each component in its own Python environment.
-Missing system packages are installed with `apt` (you'll be asked for your password).
+Her şey yalnızca senin kullanıcın için kurulur (`~/.local`), her parça kendi Python ortamında çalışır.
+Eksik sistem paketleri `apt` ile kurulur (şifren sorulur).
 
-## Shared theme
+## Ortak tema
 
-All components read one file: `~/.config/bandanix/theme.toml`
+Bütün parçalar tek bir dosyayı okur: `~/.config/bandanix/theme.toml`
 
 ```toml
 [colors]
-accent = "#C8102E"        # bandana red
+accent = "#C8102E"        # bandana kırmızısı
 
 [fonts]
-ui = ""                   # empty = system default
+ui = ""                   # boş = sistemin yazı tipi
 ```
 
-Change it once and every component follows. Reinstalling never overwrites your edits.
+Bir kere değiştir, bütün parçalar uysun. Yeniden kurulum yaptığın değişiklikleri asla silmez.
 
-## Uninstall
+## Kaldırma
 
 ```bash
-./uninstall.sh                  # menu
-./uninstall.sh --all            # remove everything, keep the theme file
-./uninstall.sh --all --purge    # remove everything, including the theme file
+./uninstall.sh                  # menü
+./uninstall.sh --all            # hepsini kaldır, tema dosyası kalsın
+./uninstall.sh --all --purge    # tema dosyası dahil her şeyi kaldır
 ```
 
-## Tested on
+## Test edildiği sistem
 
-Linux Mint 22 (Cinnamon, X11). Other Debian/Ubuntu-based desktops with X11 should work too.
+Linux Mint 22 (Cinnamon, X11). X11 kullanan diğer Debian/Ubuntu tabanlı masaüstlerinde de çalışması beklenir.
 
-## Notes
+## Notlar
 
-Built by Furkan Sağsoyu (Bandana) with help from an AI assistant (Claude).
-Not affiliated with Spotify, Apple or Linux Mint.
+Furkan Sağsoyu (Bandana) tarafından, bir yapay zekâ asistanının (Claude) yardımıyla geliştirildi.
+Spotify, Apple ya da Linux Mint ile bir bağlantısı yoktur.
 
-## License
+## Lisans
 
 MIT

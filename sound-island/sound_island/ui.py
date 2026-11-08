@@ -262,7 +262,7 @@ class Island(QWidget):
             self._text(p, text_r, label, self._font(13, QFont.Weight.DemiBold), FG)
             self._draw_thin_progress(p, text_r.left(), text_r.right(), ch - 6)
         else:
-            self._text(p, text_r, "Nothing playing", self._font(13), MUTED)
+            self._text(p, text_r, "Şu an çalan yok", self._font(13), MUTED)
 
     def _paint_player(self, p: QPainter, w: int) -> None:
         pad = 16
@@ -274,7 +274,7 @@ class Island(QWidget):
         self._draw_bars(p, bars, 3, 3)
 
         if not self.track:
-            self._text(p, QRectF(x, pad, right - x, 96), "Nothing playing",
+            self._text(p, QRectF(x, pad, right - x, 96), "Şu an çalan yok",
                        self._font(15, QFont.Weight.DemiBold), MUTED)
             return
 
@@ -444,5 +444,5 @@ class Island(QWidget):
 
     def contextMenuEvent(self, event) -> None:
         menu = QMenu(self)
-        menu.addAction("Quit", QApplication.quit)
+        menu.addAction("Çıkış", QApplication.quit)
         menu.exec(event.globalPos())

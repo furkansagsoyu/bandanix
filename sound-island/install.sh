@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# description: floating now-playing island for Spotify and other players
+# description: Spotify ve diğer oynatıcılar için yüzen "şimdi çalıyor" adası
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -15,8 +15,8 @@ PY=/usr/bin/python3   # system Python on purpose, so conda/pyenv don't interfere
 ask() {
   local reply
   [ -t 0 ] || return 0
-  read -rp "$1 [Y/n] " reply
-  [[ ! "$reply" =~ ^[nN] ]]
+  read -rp "$1 [E/h] " reply
+  [[ ! "$reply" =~ ^[hHnN] ]]
 }
 
 # 1) system packages
@@ -26,20 +26,20 @@ for pkg in playerctl python3-venv libxcb-cursor0; do
     || missing+=("$pkg")
 done
 if [ ${#missing[@]} -gt 0 ]; then
-  echo "• Installing system packages: ${missing[*]}"
+  echo "• Sistem paketleri kuruluyor: ${missing[*]}"
   sudo apt install "${missing[@]}"
 fi
 
 # 2) app files + private Python environment
-echo "• Copying files to $APP_DIR"
+echo "• Dosyalar kopyalanıyor: $APP_DIR"
 mkdir -p "$APP_DIR"
 rm -rf "$APP_DIR/sound_island"
 cp -r "$HERE/sound_island" "$HERE/requirements.txt" "$APP_DIR/"
 if [ ! -x "$APP_DIR/.venv/bin/python" ]; then
-  echo "• Creating Python environment"
+  echo "• Python ortamı oluşturuluyor"
   "$PY" -m venv "$APP_DIR/.venv"
 fi
-echo "• Installing Python dependencies (first time can take a minute)"
+echo "• Python bağımlılıkları kuruluyor (ilk seferde bir dakika sürebilir)"
 "$APP_DIR/.venv/bin/pip" install --quiet --disable-pip-version-check -r "$APP_DIR/requirements.txt"
 
 # 3) launcher command, icon, app menu entry
@@ -56,29 +56,29 @@ cat > "$DESKTOP" <<EOF
 [Desktop Entry]
 Type=Application
 Name=Sound Island
-Comment=Floating now-playing island (Bandanix)
+Comment=Yüzen "şimdi çalıyor" adası (Bandanix)
 Exec=$BIN
 Icon=$ID
 Terminal=false
 Categories=AudioVideo;Audio;Utility;
 StartupNotify=false
 EOF
-echo "• Added to the app menu: Sound Island"
+echo "• Uygulama menüsüne eklendi: Sound Island"
 
 # 4) optional autostart
-if ask "Start Sound Island automatically when you log in?"; then
+if ask "Sound Island oturum açınca otomatik başlasın mı?"; then
   mkdir -p "$(dirname "$AUTOSTART")"
   { cat "$DESKTOP"; echo "X-GNOME-Autostart-enabled=true"; } > "$AUTOSTART"
-  echo "• Autostart on"
+  echo "• Otomatik başlatma açık"
 else
   rm -f "$AUTOSTART"
-  echo "• Autostart off"
+  echo "• Otomatik başlatma kapalı"
 fi
 
 # 5) restart it with the new version
 pkill -f "python -m sound_island" 2>/dev/null || true
-if ask "Start Sound Island now?"; then
+if ask "Sound Island şimdi başlatılsın mı?"; then
   sleep 0.5
   setsid "$BIN" >/dev/null 2>&1 < /dev/null &
-  echo "• Running. Play something in Spotify; right-click the island to quit."
+  echo "• Çalışıyor. Spotify'da bir şey çal; kapatmak için adaya sağ tıkla."
 fi
