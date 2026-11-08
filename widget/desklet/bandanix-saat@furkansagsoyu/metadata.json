@@ -1,0 +1,8 @@
+{
+    "uuid": "bandanix-saat@furkansagsoyu",
+    "name": "Bandanix Saat",
+    "description": "Büyük saat, tarih, hava durumu ve sistem bilgisi (Bandanix)",
+    "max-instances": 1,
+    "prevent-decorations": true,
+    "version": "1.0"
+}

@@ -26,6 +26,7 @@ Birbirine yakışan küçük araçlar. İstersen hepsini kur, istersen sadece be
 | [**Duvar Kağıtları**](duvar-kagidi/) | Kodla çizilen dört stil (Gece, Bandana, Dalga, Logo); günün saatine göre değişen tonlar. |
 | [**İkonlar ve İmleç**](ikonlar/) | Bandana kırmızısı klasörler ve siyah gövdeli, kırmızı kenarlı fare imleci. |
 | [**Terminal**](terminal/) | İki satırlı prompt (git, Python ortamı, hata kodu), bandana kırmızısı renk şeması ve her yeni pencerede `bandanix-fetch`. |
+| [**Saat Widget'ı**](widget/) | Masaüstünün ortasında büyük ince saat, Türkçe tarih ve tek satırda hava durumu ile sistem bilgisi. Üzerine gelince 3 günlük tahmin. |
 
 <p align="center">
   <img src="docs/sound-island-hap.png" alt="Sound Island hap modu" width="329"><br><br>

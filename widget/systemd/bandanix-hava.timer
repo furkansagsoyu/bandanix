@@ -1,0 +1,10 @@
+[Unit]
+Description=Bandanix: hava durumu (30 dakikada bir)
+
+[Timer]
+OnStartupSec=1min
+OnUnitActiveSec=30min
+Persistent=false
+
+[Install]
+WantedBy=timers.target

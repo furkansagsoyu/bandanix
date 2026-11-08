@@ -1,0 +1,59 @@
+/* Bandanix Saat. The accent colour and the font line are filled in by install.sh */
+.bx-saat-kutu {
+    width: 1000px;
+    /*__FONT__*/
+}
+.bx-saat {
+    font-size: 150px;
+    font-weight: 300;
+    color: rgba(245, 245, 247, 0.92);
+    text-shadow: 0px 2px 10px rgba(0, 0, 0, 0.65);
+}
+.bx-tarih {
+    font-size: 24px;
+    color: rgba(245, 245, 247, 0.92);
+    text-shadow: 0px 1px 6px rgba(0, 0, 0, 0.65);
+}
+.bx-satir {
+    spacing: 10px;
+    margin-top: 12px;
+    padding: 5px 14px;
+    border-radius: 16px;
+}
+.bx-satir:hover {
+    background-color: rgba(18, 18, 20, 0.55);
+}
+.bx-bilgi {
+    font-size: 16px;
+    color: rgba(205, 205, 212, 0.92);
+    text-shadow: 0px 1px 5px rgba(0, 0, 0, 0.7);
+}
+.bx-ikon {
+    color: rgba(235, 235, 240, 0.95);
+}
+.bx-detay {
+    margin-top: 8px;
+    padding: 14px 20px;
+    spacing: 8px;
+    border-radius: 18px;
+    background-color: rgba(18, 18, 20, 0.88);
+    border: 1px solid rgba(__ACCENT_RGB__, 0.35);
+}
+.bx-detay-satir {
+    spacing: 12px;
+}
+.bx-gun {
+    font-size: 14px;
+    font-weight: bold;
+    color: rgba(245, 245, 247, 0.92);
+    min-width: 96px;
+}
+.bx-derece {
+    font-size: 14px;
+    color: rgba(245, 245, 247, 0.92);
+    min-width: 72px;
+}
+.bx-soluk {
+    font-size: 13px;
+    color: rgba(150, 150, 160, 0.95);
+}

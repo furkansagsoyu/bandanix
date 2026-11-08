@@ -39,3 +39,6 @@ islemci = 90              # işlemci 1 dakika boyunca bu yüzdenin üstündeyse 
 sicaklik = 90             # °C
 ram = 90                  # yüzde
 disk = 95                 # yüzde
+
+[widget]
+sehir = ""                # hava durumu şehri; değiştirmek için: bandanix-widget sehir <şehir adı>

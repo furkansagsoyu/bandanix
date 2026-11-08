@@ -1,0 +1,7 @@
+[Unit]
+Description=Bandanix: hava durumunu güncelle
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/bandanix-widget _zamanlayici
