@@ -10,7 +10,6 @@ BIN="$HOME/.local/bin/sound-island"
 DESKTOP="$DATA/applications/$ID.desktop"
 ICON="$DATA/icons/hicolor/scalable/apps/$ID.svg"
 AUTOSTART="${XDG_CONFIG_HOME:-$HOME/.config}/autostart/$ID.desktop"
-PY=/usr/bin/python3   # system Python on purpose, so conda/pyenv don't interfere
 
 ask() {
   local reply
@@ -19,9 +18,9 @@ ask() {
   [[ ! "$reply" =~ ^[hHnN] ]]
 }
 
-# 1) system packages
+# 1) system packages for Sound Island itself
 missing=()
-for pkg in playerctl cava python3-venv libxcb-cursor0; do
+for pkg in playerctl cava; do
   dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -q "install ok installed" \
     || missing+=("$pkg")
 done
@@ -30,24 +29,20 @@ if [ ${#missing[@]} -gt 0 ]; then
   sudo apt install "${missing[@]}"
 fi
 
-# 2) app files + private Python environment
+# 2) shared island environment (Qt) + app files
+source "$HERE/../ortak/ada/kur.sh"
+ada_kur
 echo "• Dosyalar kopyalanıyor: $APP_DIR"
 mkdir -p "$APP_DIR"
-rm -rf "$APP_DIR/sound_island"
-cp -r "$HERE/sound_island" "$HERE/requirements.txt" "$APP_DIR/"
-if [ ! -x "$APP_DIR/.venv/bin/python" ]; then
-  echo "• Python ortamı oluşturuluyor"
-  "$PY" -m venv "$APP_DIR/.venv"
-fi
-echo "• Python bağımlılıkları kuruluyor (ilk seferde bir dakika sürebilir)"
-"$APP_DIR/.venv/bin/pip" install --quiet --disable-pip-version-check -r "$APP_DIR/requirements.txt"
+rm -rf "$APP_DIR/sound_island" "$APP_DIR/.venv" "$APP_DIR/requirements.txt"   # old private env
+cp -r "$HERE/sound_island" "$APP_DIR/"
 
 # 3) launcher command, icon, app menu entry
 mkdir -p "$(dirname "$BIN")" "$(dirname "$DESKTOP")" "$(dirname "$ICON")"
 cat > "$BIN" <<EOF
 #!/usr/bin/env bash
-export PYTHONPATH="$APP_DIR"
-exec "$APP_DIR/.venv/bin/python" -m sound_island "\$@"
+export PYTHONPATH="$APP_DIR:$ADA_DIR/lib"
+exec "$ADA_PY" -m sound_island "\$@"
 EOF
 chmod +x "$BIN"
 cp "$HERE/data/$ID.svg" "$ICON"

@@ -68,10 +68,12 @@ sudo apt install playerctl cava python3-venv libxcb-cursor0
 cd sound-island
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r ../ortak/ada/requirements.txt
 python -m unittest discover tests
-python -m sound_island
+PYTHONPATH=../ortak/ada python -m sound_island
 ```
+
+Qt kurulumu diğer Bandanix adalarıyla (Sistem adası) ortaktır: `~/.local/share/bandanix/ada`. Hap çizimi ve adaların yan yana dizilmesi `ortak/ada` klasöründedir.
 
 ## Yol haritası
 

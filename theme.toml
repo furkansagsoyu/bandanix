@@ -33,3 +33,9 @@ alt = 20                  # pil bu yüzdenin altına inince bildirim gelir (5-50
 [not-kutusu]
 dosya = "~/Notlar/hizli-notlar.md"   # notların tutulduğu Markdown dosyası
 kisayol = "<Super>n"                 # kutuyu açan kısayol; değiştirince: ./install.sh not-kutusu
+
+[sistem-adasi]
+islemci = 90              # işlemci 1 dakika boyunca bu yüzdenin üstündeyse ada belirir
+sicaklik = 90             # °C
+ram = 90                  # yüzde
+disk = 95                 # yüzde

@@ -11,4 +11,6 @@ rm -f "$HOME/.local/bin/sound-island" \
       "$DATA/icons/hicolor/scalable/apps/$ID.svg" \
       "${XDG_CONFIG_HOME:-$HOME/.config}/autostart/$ID.desktop"
 rmdir "$DATA/bandanix" 2>/dev/null || true
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../ortak/ada/kur.sh"
+ada_temizle
 echo "• Sound Island kaldırıldı (playerctl gibi sistem paketleri yerinde bırakıldı)."

@@ -11,6 +11,9 @@ from PySide6.QtGui import (QColor, QCursor, QFont, QFontMetrics, QGuiApplication
 from PySide6.QtNetwork import QNetworkAccessManager, QNetworkRequest
 from PySide6.QtWidgets import QApplication, QMenu, QWidget
 
+from bandanix_ada import dizilim
+from bandanix_ada.cizim import BG, FG, MUTED, TOP_MARGIN, lerp, paint_shell
+
 from .audio import AudioBars
 from .config import Theme
 from .lyrics import LyricsFetcher
@@ -19,16 +22,8 @@ from .player import Player
 
 COLLAPSED = (320, 42)
 EXPANDED = (440, 172)
-TOP_MARGIN = 8
 BAR_COUNT = 5
-
-BG = QColor(12, 12, 14, 240)
-FG = QColor(245, 245, 247)
-MUTED = QColor(150, 150, 160)
-
-
-def lerp(a: float, b: float, t: float) -> float:
-    return a + (b - a) * t
+ISLAND_NAME = "sound-island"     # other islands line up next to this one
 
 
 def accent_from(image: QImage, fallback: QColor) -> QColor:
@@ -130,8 +125,20 @@ class Island(QWidget):
         h = round(lerp(COLLAPSED[1], EXPANDED[1], self.t))
         screen = self.screen() or QGuiApplication.primaryScreen()
         geo = screen.availableGeometry()
-        self.setGeometry(geo.x() + (geo.width() - w) // 2, geo.y() + TOP_MARGIN, w, h)
+        x, y = geo.x() + (geo.width() - w) // 2, geo.y() + TOP_MARGIN
+        self.setGeometry(x, y, w, h)
+        dizilim.publish(ISLAND_NAME, x, y, w, h, self.isVisible())
         self.update()
+
+    def showEvent(self, event) -> None:
+        super().showEvent(event)
+        g = self.geometry()
+        dizilim.publish(ISLAND_NAME, g.x(), g.y(), g.width(), g.height(), True)
+
+    def hideEvent(self, event) -> None:
+        super().hideEvent(event)
+        g = self.geometry()
+        dizilim.publish(ISLAND_NAME, g.x(), g.y(), g.width(), g.height(), False)
 
     # ---- player events ----------------------------------------------------
     def _on_track(self, track: Track | None) -> None:
@@ -167,6 +174,7 @@ class Island(QWidget):
         self.update()
 
     def shutdown(self) -> None:
+        dizilim.remove(ISLAND_NAME)
         if self.audio is not None:
             self.audio.stop()
 
@@ -233,14 +241,7 @@ class Island(QWidget):
                          | QPainter.RenderHint.TextAntialiasing)
         w, h, t = self.width(), self.height(), self.t
         radius = lerp(h / 2, 26, t)
-        shape = QPainterPath()
-        shape.addRoundedRect(QRectF(0.5, 0.5, w - 1, h - 1), radius, radius)
-        p.fillPath(shape, BG)
-        edge = QColor(self.accent)
-        edge.setAlpha(int(lerp(45, 95, t)))
-        p.setPen(QPen(edge, 1))
-        p.drawPath(shape)
-        p.setClipPath(shape)
+        paint_shell(p, w, h, radius, self.accent, lerp(45, 95, t))
 
         self.hit = {}
         pill_alpha = max(0.0, 1 - t * 2.2)
