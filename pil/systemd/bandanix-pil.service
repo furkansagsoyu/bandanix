@@ -1,0 +1,6 @@
+[Unit]
+Description=Bandanix: pil yüzdesini kontrol et
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/bandanix-pil kontrol

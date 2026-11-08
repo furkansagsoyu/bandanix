@@ -1,0 +1,60 @@
+#!/bin/bash
+# bandanix-pil-yaz: the ONLY thing that runs as root for the Bandanix battery helper.
+# It writes one number (50-100) to the laptop's charge-limit file and nothing else.
+#
+#   bandanix-pil-yaz 100            set the limit now (not kept after a reboot)
+#   bandanix-pil-yaz --kalici 85    set it now and keep it for every boot
+#   bandanix-pil-yaz --kayitli      re-apply the kept limit (used at boot and after sleep)
+#
+# Installed to /usr/local/sbin, owned by root; the user may run it without a password
+# through /etc/sudoers.d/bandanix-pil. Arguments are checked strictly below.
+set -euo pipefail
+export PATH=/usr/sbin:/usr/bin:/sbin:/bin
+
+CONF=/etc/bandanix-pil.conf
+
+limit_file() {
+  local f
+  for f in /sys/class/power_supply/BAT*/charge_control_end_threshold; do
+    [ -f "$f" ] && { printf '%s' "$f"; return 0; }
+  done
+  return 1
+}
+
+valid() { [[ $1 =~ ^([5-9][0-9]|100)$ ]]; }   # 50..100, no leading zeros or signs
+
+keep=0
+case "${1:-}" in
+  --kayitli)
+    [ "$#" -eq 1 ] || exit 2
+    value=$(sed -n 's/^SINIR=\([0-9]\{2,3\}\)$/\1/p' "$CONF" 2>/dev/null | head -n 1)
+    [ -n "$value" ] || exit 0          # nothing kept yet: leave the limit alone
+    ;;
+  --kalici)
+    [ "$#" -eq 2 ] || exit 2
+    value=$2; keep=1
+    ;;
+  *)
+    [ "$#" -eq 1 ] || exit 2
+    value=$1
+    ;;
+esac
+
+if ! valid "$value"; then
+  echo "Geçersiz değer: 50 ile 100 arasında bir tam sayı olmalı." >&2
+  exit 2
+fi
+if [ "$keep" -eq 0 ] && [ "${1:-}" = "--kayitli" ]; then
+  # at boot the battery driver may appear a moment late
+  for _ in 1 2 3 4 5 6 7 8 9 10; do limit_file >/dev/null && break; sleep 1; done
+fi
+if ! file=$(limit_file); then
+  echo "Şarj sınırı dosyası yok (msi-ec modülü yüklü mü?)." >&2
+  exit 3
+fi
+
+echo "$value" > "$file"
+if [ "$keep" -eq 1 ]; then
+  umask 022
+  printf 'SINIR=%s\n' "$value" > "$CONF"
+fi

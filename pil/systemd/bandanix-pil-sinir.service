@@ -1,0 +1,10 @@
+[Unit]
+Description=Bandanix: pil şarj sınırını açılışta ve uykudan uyanınca uygula
+After=multi-user.target suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/bandanix-pil-yaz --kayitli
+
+[Install]
+WantedBy=multi-user.target suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target

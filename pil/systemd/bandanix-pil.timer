@@ -1,0 +1,9 @@
+[Unit]
+Description=Bandanix: pil kontrolü (iki dakikada bir)
+
+[Timer]
+OnStartupSec=30s
+OnUnitActiveSec=2min
+
+[Install]
+WantedBy=timers.target
