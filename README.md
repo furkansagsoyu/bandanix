@@ -24,6 +24,7 @@ Birbirine yakışan küçük araçlar. İstersen hepsini kur, istersen sadece be
 | [**Pil Sağlığı**](pil/) | Şarjı %80'de durdurarak pilin ömrünü uzatır, pil azalınca uyarır; gerektiğinde tek komutla bir seferlik tam şarj. |
 | [**Sistem Adası**](sistem-adasi/) | Normalde görünmez; işlemci, sıcaklık, RAM ya da disk sınırı aşınca Sound Island'ın yanında beliren uyarı hapı. Üzerine gelince sorunun kaynağını gösterir. |
 | [**Sound Island**](sound-island/) | Spotify ve diğer oynatıcılar için ekranın üstünde duran "şimdi çalıyor" hapı. Üzerine gelince kontrolleri ve senkron şarkı sözleriyle küçük bir oynatıcıya dönüşür; ses ya da parlaklık değişince kısa bir süre göstergeye dönüşür. |
+| [**Bandanix Ayarlar**](ayarlar/) | Bütün parçaların ayarları tek pencerede: renk, duvar kağıdı, panel, adalar, pil, kısayollar; parça kurma ve kaldırma, yedekler. |
 | [**Cinnamon Teması**](cinnamon-tema/) | Mint-Y tabanlı koyu tema: pencereler, menüler, dosya yöneticisi ve panel bandana kırmızısı vurgularla. |
 | [**Duvar Kağıtları**](duvar-kagidi/) | Bandana kumaşı ve kırmızı gökyüzüyle bir seri: Kemer, Galata, Gün Batımı. |
 | [**İkonlar ve İmleç**](ikonlar/) | Bandana kırmızısı klasörler ve siyah gövdeli, kırmızı kenarlı fare imleci. |
@@ -69,6 +70,8 @@ ui = ""                   # boş = sistemin yazı tipi
 ```
 
 Bir kere değiştir, bütün parçalar uysun. Yeniden kurulum yaptığın değişiklikleri asla silmez.
+
+Dosyayı elle düzenlemek yerine menüdeki **Bandanix Ayarlar** uygulamasını (ya da terminalde `bandanix`) da kullanabilirsin.
 
 ## Yedekleme
 

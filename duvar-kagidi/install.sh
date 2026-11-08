@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # description: Bandanix duvar kağıtları: Kemer, Galata, Gün Batımı ve yenileri
+# kurulu: ~/.local/bin/bandanix-duvar
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

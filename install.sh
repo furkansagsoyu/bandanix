@@ -28,7 +28,8 @@ fi
 CORE="${XDG_DATA_HOME:-$HOME/.local/share}/bandanix/core"
 YEDEK="$HOME/.local/bin/bandanix-yedek"
 mkdir -p "$CORE" "$(dirname "$YEDEK")"
-cp "$ROOT/core/bandanix_yedek.py" "$CORE/"
+cp "$ROOT"/core/*.py "$CORE/"
+echo "$ROOT" > "$(dirname "$CORE")/kaynak"     # where Bandanix Ayarlar finds the installers
 cat > "$YEDEK" <<EOF
 #!/bin/sh
 exec /usr/bin/python3 "$CORE/bandanix_yedek.py" "\$@"

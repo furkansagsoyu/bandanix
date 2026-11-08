@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # description: Mint-Y tabanlı koyu Bandanix teması (pencereler, panel, menüler)
+# kurulu: ~/.themes/Bandanix/gtk-3.0
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

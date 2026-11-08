@@ -393,6 +393,23 @@ def main(argv: list[str]) -> int:
         return 0 if isinstance(read_section(SECTION).get("enlem"), float) else 1
     if cmd == "_desklet-kopyala" and len(argv) == 3:
         return cmd_install_desklet(*argv[1:])
+    if cmd == "_ara" and len(argv) >= 2:          # for Bandanix Ayarlar: matches as JSON
+        try:
+            found = search_city(" ".join(argv[1:]))
+        except (OSError, ValueError):
+            print("null")
+            return 1
+        print(json.dumps([{"ad": place_label(r), "sehir": r.get("name", ""),
+                           "enlem": r["latitude"], "boylam": r["longitude"]} for r in found],
+                         ensure_ascii=False))
+        return 0
+    if cmd == "_sec" and len(argv) == 4:          # for Bandanix Ayarlar: name lat lon
+        try:
+            lat, lon = float(argv[2]), float(argv[3])
+        except ValueError:
+            return 2
+        write_section({"sehir": argv[1], "enlem": lat, "boylam": lon})
+        return cmd_update(quiet=True)
     if cmd == "_desklet-ac":
         return cmd_enable_desklet()
     helped = cmd in ("-h", "--help", "yardim")

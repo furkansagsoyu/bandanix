@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # description: Spotify ve diğer oynatıcılar için yüzen "şimdi çalıyor" adası
+# kurulu: ~/.local/bin/sound-island
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # description: Pano geçmişi: Super+V ile son kopyaladıkların, arama, sabitleme ve otomatik yapıştırma
+# kurulu: ~/.local/bin/bandanix-pano
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

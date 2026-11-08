@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # description: Bandanix klasör ikonları ve kırmızı kenarlı imleç
+# kurulu: ~/.local/share/icons/Bandanix
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

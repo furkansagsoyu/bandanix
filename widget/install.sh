@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # description: Masaüstünde büyük saat, tarih, hava durumu ve sistem bilgisi (Cinnamon desklet)
+# kurulu: ~/.local/bin/bandanix-widget
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

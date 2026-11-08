@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # description: Giriş ekranı: Bandanix duvar kağıdının bulanık hâli, Bandanix teması, ikonları ve imleci
+# kurulu: ~/.local/bin/bandanix-giris
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

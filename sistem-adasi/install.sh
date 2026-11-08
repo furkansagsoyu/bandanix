@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # description: Sistem adası: işlemci, sıcaklık, RAM ya da disk sınırı aşınca beliren uyarı hapı
+# kurulu: ~/.local/bin/bandanix-sistem
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

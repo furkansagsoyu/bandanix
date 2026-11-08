@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # description: Hızlı not kutusu: Super+N ile aç, yaz, Enter; notlar ~/Notlar içinde
+# kurulu: ~/.local/bin/bandanix-not
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

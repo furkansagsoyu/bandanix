@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # description: Pil sağlığı: şarjı %80'de durdurur, pil azalınca uyarır, bandanix-pil komutu
+# kurulu: ~/.local/bin/bandanix-pil
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

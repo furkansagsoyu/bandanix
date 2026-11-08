@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # description: Bandanix prompt, terminal renk şeması ve açılışta bandanix-fetch
+# kurulu: ~/.local/bin/bandanix-fetch
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # description: Yüzen panel adaları: ortada menü ve pencereler, sağda tepsi
+# kurulu: ~/.local/share/bandanix/panel-duzeni/aktif
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
