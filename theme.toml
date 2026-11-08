@@ -1,0 +1,14 @@
+# Bandanix shared theme
+# Every Bandanix component reads this file, so they all look like one family.
+# Installed to: ~/.config/bandanix/theme.toml  (your edits there are kept on reinstall)
+# After editing, restart the component (e.g. right-click Sound Island → Quit, then open it again).
+
+[colors]
+accent = "#C8102E"        # bandana red; any "#RRGGBB" colour
+
+[fonts]
+ui = ""                   # font family name, empty = system default (e.g. "Ubuntu", "Inter")
+
+[sound-island]
+follow_cover = true       # take the accent colour from the album cover (false = always use accent)
+hide_when_idle = true     # hide the island when nothing is playing
