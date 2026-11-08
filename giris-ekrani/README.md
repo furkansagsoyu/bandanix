@@ -4,7 +4,7 @@
 
 Açılışta şifreni yazdığın ekranı (Linux Mint'in Slick Greeter'ı) masaüstüne uydurur:
 
-- **Arka plan:** o an kullandığın duvar kağıdının hafif bulanık ve biraz koyulaştırılmış hâli (Bandanix duvar kağıdıysa onun gece tonu). Şifre kutusu öne çıkar.
+- **Arka plan:** o an kullandığın duvar kağıdının hafif bulanık ve biraz koyulaştırılmış hâli. Şifre kutusu öne çıkar.
 - **Görünüş:** Bandanix teması, ikonları ve imleci; 24 saatlik saat; arka plandaki nokta ızgarası kapalı. Bu parçalardan kurulu olmayan varsa Mint'in ayarı olduğu gibi kalır.
 
 ## Komutlar
@@ -15,7 +15,7 @@ bandanix-giris guncelle     # arka planı şu anki duvar kağıdından yeniden �
 bandanix-giris dene         # giriş ekranını oturumu kapatmadan bir pencerede göster
 ```
 
-Duvar kağıdını değiştirdiğinde ya da tema rengini yeniden ürettiğinde `bandanix-giris guncelle` çalıştır; giriş ekranı da uyar.
+Duvar kağıdını değiştirdiğinde (ör. `bandanix-duvar galata`) ya da temayı yeniden kurduğunda `bandanix-giris guncelle` çalıştır; giriş ekranı da uyar.
 
 ## Nasıl çalışır
 

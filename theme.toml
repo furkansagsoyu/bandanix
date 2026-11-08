@@ -20,7 +20,7 @@ prompt = true             # iki satırlı Bandanix prompt'u
 fetch_on_open = true      # terminal penceresi açılınca bandanix-fetch göster
 
 [duvar-kagidi]
-stil = "gece"             # gece, bandana, dalga ya da logo (değiştirmek için: bandanix-duvar <stil>)
+stil = "kemer"            # kemer, galata ya da gunbatimi (liste: bandanix-duvar)
 
 [panel]
 duzen = "orta"            # "orta" = Windows 11 gibi ortada tek ada + tepsi, "uc-ada" = menü · pencereler · tepsi

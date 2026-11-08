@@ -1,91 +1,100 @@
-#!/usr/bin/python3
-"""bandanix-duvar: picks the Bandanix wallpaper for the chosen style and the time of day.
+#!/usr/bin/env python3
+"""bandanix-duvar: choose a Bandanix wallpaper.
 
-  bandanix-duvar gece|bandana|dalga|logo   choose a style (saved in theme.toml) and apply it
-  bandanix-duvar uygula                    apply the saved style now
-  bandanix-duvar guncelle                  run by the hourly timer; touches nothing if the
-                                           current wallpaper isn't a Bandanix one
-  bandanix-duvar ac | kapat                turn the time-of-day change on / off
-  bandanix-duvar durum                     what is set right now
+  bandanix-duvar             list the wallpapers (the current one is marked)
+  bandanix-duvar galata      use that wallpaper (the choice is kept in theme.toml)
+  bandanix-duvar uygula      apply the wallpaper saved in theme.toml
+
+The pictures live in ~/.local/share/backgrounds/bandanix with a liste.txt naming them,
+so adding a wallpaper is one file and one line.
 """
-
 from __future__ import annotations
 
-import datetime as dt
+import json
 import os
 import re
 import subprocess
 import sys
 from pathlib import Path
 
-STYLES = ("gece", "bandana", "dalga", "logo")
-TIMER = "bandanix-duvar.timer"
 HOME = Path.home()
 WALLS = Path(os.environ.get("XDG_DATA_HOME") or HOME / ".local/share") / "backgrounds" / "bandanix"
 THEME = Path(os.environ.get("XDG_CONFIG_HOME") or HOME / ".config") / "bandanix" / "theme.toml"
 URI_KEY = "/org/cinnamon/desktop/background/picture-uri"
-OPT_KEY = "/org/cinnamon/desktop/background/picture-options"
+OPTIONS_KEY = "/org/cinnamon/desktop/background/picture-options"
+SECTION = "[duvar-kagidi]"
+STYLE_RE = re.compile(r'^\s*stil\s*=\s*"([a-z0-9-]+)"')
+
+USAGE = """Kullanım:
+  bandanix-duvar             duvar kağıtlarını listele
+  bandanix-duvar galata      o duvar kağıdını kullan
+  bandanix-duvar uygula      theme.toml'daki seçimi uygula"""
 
 
 def say(msg: str) -> None:
     print(f"• {msg}")
 
 
-def time_of_day(hour: int) -> str:
-    if 6 <= hour < 11:
-        return "sabah"
-    if 11 <= hour < 17:
-        return "ogle"
-    if 17 <= hour < 21:
-        return "aksam"
-    return "gece"
+# ---- the list -----------------------------------------------------------------------------
+def wallpapers(folder: Path = WALLS) -> list[tuple[str, str, Path]]:
+    """(id, display name, file) in the order of liste.txt; only pictures that exist."""
+    out = []
+    try:
+        lines = (folder / "liste.txt").read_text(encoding="utf-8").splitlines()
+    except OSError:
+        lines = []
+    for line in lines:
+        m = re.match(r"^\s*([a-z0-9-]+)\s*=\s*(.+?)\s*$", line)
+        if not m:
+            continue
+        for ext in (".jpg", ".png", ".webp"):
+            path = folder / f"{m.group(1)}{ext}"
+            if path.is_file():
+                out.append((m.group(1), m.group(2), path))
+                break
+    return out
 
 
-# ---- theme.toml (read and minimal in-place edit, keeping the user's other lines) ----
-SECTION = "[duvar-kagidi]"
-STYLE_RE = re.compile(r'^\s*stil\s*=\s*"([a-z]+)"')
-
-
+# ---- theme.toml (read and minimal in-place edit, keeping the user's other lines) ----------
 def read_style() -> str:
     section = ""
     try:
         lines = THEME.read_text(encoding="utf-8").splitlines()
     except OSError:
-        return "gece"
+        return ""
     for line in lines:
         if line.strip().startswith("["):
             section = line.strip()
         elif section == SECTION:
             m = STYLE_RE.match(line)
-            if m and m.group(1) in STYLES:
+            if m:
                 return m.group(1)
-    return "gece"
+    return ""
 
 
 def write_style(style: str) -> None:
     text = THEME.read_text(encoding="utf-8") if THEME.is_file() else ""
-    lines = text.splitlines()
     out, section, done = [], "", False
-    for line in lines:
+    for line in text.splitlines():
         if line.strip().startswith("["):
-            if section == SECTION and not done:      # section had no stil line
+            if section == SECTION and not done:
                 out.append(f'stil = "{style}"')
                 done = True
             section = line.strip()
         elif section == SECTION and STYLE_RE.match(line):
-            line = re.sub(r'"[a-z]+"', f'"{style}"', line, count=1)
+            line = re.sub(r'"[a-z0-9-]+"', f'"{style}"', line, count=1)
             done = True
         out.append(line)
     if section == SECTION and not done:
         out.append(f'stil = "{style}"')
         done = True
     if not done:
-        out += ["", SECTION, f'stil = "{style}"            # gece, bandana, dalga ya da logo']
+        out += ["", SECTION, f'stil = "{style}"']
     THEME.parent.mkdir(parents=True, exist_ok=True)
-    THEME.write_text("\n".join(out).rstrip("\n") + "\n", encoding="utf-8")
+    THEME.write_text("\n".join(out).strip("\n") + "\n", encoding="utf-8")
 
 
-# ---- applying ---------------------------------------------------------------------
+# ---- applying -----------------------------------------------------------------------------
 def dconf_read(key: str) -> str:
     try:
         return subprocess.run(["dconf", "read", key], capture_output=True, text=True).stdout.strip()
@@ -97,67 +106,77 @@ def dconf_write(key: str, value: str) -> None:
     subprocess.run(["dconf", "write", key, value], check=True)
 
 
-def current_is_ours() -> bool:
-    return dconf_read(URI_KEY).strip("'").startswith(f"file://{WALLS}/bandanix-")
+def current() -> str:
+    """Id of the Bandanix wallpaper on the desktop right now ('' if it is something else)."""
+    uri = dconf_read(URI_KEY).strip("'")
+    prefix = f"file://{WALLS}/"
+    if not uri.startswith(prefix):
+        return ""
+    return Path(uri[len(prefix):]).stem
 
 
-def wanted_file(style: str, now: dt.datetime | None = None) -> Path:
-    when = time_of_day((now or dt.datetime.now()).hour)
-    return WALLS / f"bandanix-{style}-{when}.png"
+def chosen() -> tuple[str, str, Path] | None:
+    walls = wallpapers()
+    style = read_style()
+    return next((w for w in walls if w[0] == style), walls[0] if walls else None)
 
 
-def apply(style: str) -> Path:
-    path = wanted_file(style)
-    if not path.is_file():
-        sys.exit(f"Duvar kağıdı bulunamadı: {path} (yeniden üretmek için: ./install.sh duvar-kagidi)")
-    uri = f"'file://{path}'"
-    if dconf_read(URI_KEY) != uri:
-        dconf_write(URI_KEY, uri)
-    if dconf_read(OPT_KEY) != "'zoom'":
-        dconf_write(OPT_KEY, "'zoom'")
-    return path
+def apply(wall: tuple[str, str, Path]) -> None:
+    dconf_write(URI_KEY, f"'file://{wall[2]}'")
+    dconf_write(OPTIONS_KEY, "'zoom'")
 
 
-def timer(*args: str) -> int:
-    try:
-        return subprocess.run(["systemctl", "--user", *args, TIMER],
-                              capture_output=True, text=True).returncode
-    except OSError:
+def cmd_list() -> int:
+    walls = wallpapers()
+    if not walls:
+        say("Duvar kağıdı bulunamadı. Bandanix klasöründe: ./install.sh duvar-kagidi")
         return 1
-
-
-def main(argv: list[str]) -> int:
-    cmd = argv[1] if len(argv) > 1 else "durum"
-    if cmd in STYLES:
-        write_style(cmd)
-        path = apply(cmd)
-        say(f"Stil: {cmd} → {path.name}")
-    elif cmd == "uygula":                             # apply the saved style now
-        path = apply(read_style())
-        say(f"Duvar kağıdı: {path.name}")
-    elif cmd == "guncelle":
-        if current_is_ours():                        # user picked something else: leave it
-            apply(read_style())
-    elif cmd == "ac":
-        if timer("enable", "--now") == 0:
-            apply(read_style())
-            say("Günün saatine göre değişim açık.")
-        else:
-            say("Zamanlayıcı açılamadı (systemd kullanıcı oturumu yok mu?).")
-    elif cmd == "kapat":
-        timer("disable", "--now")
-        say("Günün saatine göre değişim kapalı; şu anki duvar kağıdı sabit kalacak.")
-    elif cmd == "durum":
-        active = timer("is-active", "--quiet") == 0
-        say(f"Stil: {read_style()} · zamana göre değişim: {'açık' if active else 'kapalı'}")
-        say(f"Şu anki: {dconf_read(URI_KEY).strip(chr(39)) or '(yok)'}")
-        if not current_is_ours():
-            say("Şu an Bandanix dışı bir duvar kağıdı seçili; zamanlayıcı ona dokunmaz.")
-    else:
-        print(__doc__.strip())
-        return 0 if cmd in ("-h", "--yardim", "yardim") else 1
+    now = current()
+    for wid, name, _ in walls:
+        mark = "●" if wid == now else " "
+        print(f" {mark} {wid:<14}{name}")
+    print()
+    print("Değiştirmek için: bandanix-duvar <ad>   (ör. bandanix-duvar " + walls[0][0] + ")")
     return 0
 
 
+def cmd_use(wid: str) -> int:
+    walls = wallpapers()
+    wall = next((w for w in walls if w[0] == wid), None)
+    if wall is None:
+        say(f"\"{wid}\" diye bir duvar kağıdı yok. Seçenekler: {', '.join(w[0] for w in walls)}")
+        return 2
+    write_style(wid)
+    apply(wall)
+    say(f"Duvar kağıdı: {wall[1]}")
+    say("Giriş ekranını da buna uydurmak için: bandanix-giris guncelle")
+    return 0
+
+
+def main(argv: list[str]) -> int:
+    if not argv:
+        return cmd_list()
+    cmd = argv[0]
+    if len(argv) > 1:
+        print(USAGE, file=sys.stderr)
+        return 2
+    if cmd == "uygula":
+        wall = chosen()
+        if wall is None:
+            say("Duvar kağıdı bulunamadı.")
+            return 1
+        apply(wall)
+        say(f"Duvar kağıdı: {wall[1]}")
+        return 0
+    if cmd == "_json":                      # for the Bandanix settings app
+        print(json.dumps([{"id": w[0], "ad": w[1], "dosya": str(w[2])} for w in wallpapers()],
+                         ensure_ascii=False))
+        return 0
+    if cmd in ("-h", "--help", "yardim"):
+        print(USAGE)
+        return 0
+    return cmd_use(cmd)
+
+
 if __name__ == "__main__":
-    sys.exit(main(sys.argv))
+    sys.exit(main(sys.argv[1:]))

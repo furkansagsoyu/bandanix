@@ -2,35 +2,34 @@
 
 *[Bandanix](../README.md) kitinin bir parçası.*
 
-İnternetten indirilmiş resim yok: dört stil de kodla, senin ekran çözünürlüğünde çiziliyor.
+Bandana kumaşı, kırmızı gökyüzü ve BANDANIX işareti etrafında bir seri. Resimler ChatGPT ile üretildi, 1920×1080.
 
 <p align="center">
-  <img src="../docs/duvar-kagitlari.png" alt="Gece, Bandana, Dalga ve Logo" width="100%">
+  <img src="../docs/duvar-kagitlari.jpg" alt="Kemer, Galata ve Gün Batımı" width="100%">
 </p>
 
-| Stil | Görünüm |
+| Ad | Komut |
 |---|---|
-| **Gece** (varsayılan) | Koyu zeminde ton-sur-ton paisley deseni; pencerelerin arkasında neredeyse sadece doku |
-| **Bandana** | Gerçek bir bandana düzeni (bordür, noktalı kenar, paisleyler), soluk ve mat tonlarda |
-| **Dalga** | Desensiz; koyu zeminde akışkan kırmızı ışık çizgileri |
-| **Logo** | Ortada bandana işareti ve BANDANIX yazısı |
-
-## Günün saatine göre
-
-Her stilin dört tonu var: **sabah** (06–11), **öğle** (11–17), **akşam** (17–21) ve **gece** (21–06). Saat başında ve oturum açılışında çalışan küçük bir zamanlayıcı doğru tonu seçer; arada hiçbir şey çalışmaz.
-
-Cinnamon'dan kendin başka bir duvar kağıdı seçersen zamanlayıcı ona dokunmaz.
+| **Kemer** (varsayılan) | `bandanix-duvar kemer` |
+| **Galata** | `bandanix-duvar galata` |
+| **Gün Batımı** | `bandanix-duvar gunbatimi` |
 
 ## Komutlar
 
 ```bash
-bandanix-duvar bandana     # stil seç: gece, bandana, dalga ya da logo
-bandanix-duvar durum       # şu an ne seçili
-bandanix-duvar kapat       # zamana göre değişimi durdur
-bandanix-duvar ac          # tekrar aç
+bandanix-duvar             # duvar kağıtlarını listele (kullanılan işaretli)
+bandanix-duvar galata      # o duvar kağıdını kullan
 ```
 
-Seçtiğin stil `~/.config/bandanix/theme.toml` dosyasındaki `[duvar-kagidi]` bölümüne kaydedilir.
+Seçim `~/.config/bandanix/theme.toml` dosyasındaki `[duvar-kagidi]` bölümüne kaydedilir. Giriş ekranını da yeni duvar kağıdına uydurmak için `bandanix-giris guncelle`.
+
+Arka planda hiçbir şey çalışmaz: duvar kağıdı sadece sen değiştirince değişir.
+
+## Yeni duvar kağıdı eklemek
+
+1. Resmi `duvar-kagidi/resimler/` klasörüne `ad.jpg` olarak koy (küçük harf, Türkçe karakter ve boşluk olmadan; ör. `kapadokya.jpg`).
+2. `resimler/liste.txt` dosyasına bir satır ekle: `kapadokya = Kapadokya`
+3. `./install.sh duvar-kagidi`
 
 ## Kurulum ve kaldırma
 
@@ -39,6 +38,4 @@ Seçtiğin stil `~/.config/bandanix/theme.toml` dosyasındaki `[duvar-kagidi]` b
 ./uninstall.sh duvar-kagidi
 ```
 
-Kurulum ekran çözünürlüğünü algılar (birden fazla monitörde en büyüğünü) ve 16 resmi (4 stil × 4 zaman) birkaç saniyede üretir. Vurgu rengini değiştirdiysen ya da ekranın değiştiyse aynı komutla yeniden üretebilirsin.
-
-Uygularken mevcut duvar kağıdın `bandanix-yedek` ile saklanır; kaldırınca zamanlayıcı silinir ve eski duvar kağıdın geri gelir.
+Uygularken mevcut duvar kağıdın `bandanix-yedek` ile saklanır; kaldırınca eski duvar kağıdın geri gelir. Bandanix'in eski, kodla çizilen duvar kağıtları ve onların saatlik zamanlayıcısı kurulum sırasında kendiliğinden temizlenir.

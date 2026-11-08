@@ -1,0 +1,5 @@
+# Bandanix duvar kağıtları: dosya adı (uzantısız) = görünen ad
+# Yeni bir resim eklemek için: resmi bu klasöre <ad>.jpg olarak koy ve buraya bir satır ekle.
+kemer = Kemer
+galata = Galata
+gunbatimi = Gün Batımı

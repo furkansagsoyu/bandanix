@@ -22,10 +22,6 @@ class Conf(unittest.TestCase):
         self.assertEqual(new, "[Greeter]\nbackground=/a.png\n")
         self.assertEqual(g.read_keys(g.set_keys(new, {"background": None})), {})
 
-    def test_wallpaper_name(self):
-        self.assertTrue(g.WALL_RE.match("bandanix-logo-ogle.png"))
-        self.assertFalse(g.WALL_RE.match("benim-resmim.png"))
-
 
 if __name__ == "__main__":
     unittest.main()

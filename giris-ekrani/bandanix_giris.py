@@ -40,7 +40,6 @@ PARTS = [
 FIXED = {"background": str(Path("/usr/share/backgrounds/bandanix/giris.png")),
          "draw-user-backgrounds": "false", "draw-grid": "false", "clock-format": "%H:%M"}
 OUR_KEYS = list(FIXED) + [key for *_, key in PARTS]
-WALL_RE = re.compile(r"^(bandanix-[a-z]+)-(sabah|ogle|aksam|gece)\.png$")
 
 USAGE = """Kullanım:
   bandanix-giris              giriş ekranının şu anki ayarları
@@ -58,19 +57,14 @@ def sudo(*cmd: str) -> None:
 
 # ---- the background ---------------------------------------------------------------------
 def current_wallpaper() -> Path | None:
-    """The desktop's wallpaper; for a Bandanix one, its night tone."""
+    """The picture on the desktop right now."""
     try:
         uri = subprocess.run(["dconf", "read", "/org/cinnamon/desktop/background/picture-uri"],
                              capture_output=True, text=True).stdout.strip().strip("'")
     except OSError:
         uri = ""
     path = Path(unquote(urlparse(uri).path)) if uri.startswith("file://") else None
-    if path is None or not path.is_file():
-        return None
-    m = WALL_RE.match(path.name)
-    if m and (path.parent / f"{m.group(1)}-gece.png").is_file():
-        return path.parent / f"{m.group(1)}-gece.png"
-    return path
+    return path if path is not None and path.is_file() else None
 
 
 def screen_size() -> tuple[int, int]:
