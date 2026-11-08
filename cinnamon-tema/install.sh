@@ -29,6 +29,12 @@ fi
 /usr/bin/python3 "$HERE/build_theme.py" --kaynak "$SOURCE" --hedef "$THEME_DIR" \
   --gtk4-css "$THEME_DIR/bandanix-gtk4.css"
 
+# panel islands installed? keep them in the freshly built theme
+if [ -f "${XDG_DATA_HOME:-$HOME/.local/share}/bandanix/panel-duzeni/aktif" ]; then
+  /usr/bin/python3 "$HERE/../panel-duzeni/panel.py" css "$THEME_DIR/cinnamon/cinnamon.css"
+  echo "• Panel adaları yeni temaya da eklendi."
+fi
+
 # 2) apply it, after remembering every setting we are about to change
 if ask "Bandanix teması şimdi uygulansın mı?"; then
   "$YEDEK" isaretle cinnamon-tema \

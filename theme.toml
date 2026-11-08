@@ -20,3 +20,8 @@ fetch_on_open = true      # terminal penceresi açılınca bandanix-fetch göste
 
 [duvar-kagidi]
 stil = "gece"             # gece, bandana, dalga ya da logo (değiştirmek için: bandanix-duvar <stil>)
+
+[panel]
+duzen = "orta"            # "orta" = Windows 11 gibi ortada tek ada + tepsi, "uc-ada" = menü · pencereler · tepsi
+yukseklik = 64            # panel yüksekliği (40-64); ada bundan 12 piksel kısa
+ikon_boyutu = 48          # panel adalarındaki uygulama ikonları (16-48); sonra: ./install.sh panel-duzeni
