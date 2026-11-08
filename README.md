@@ -17,6 +17,7 @@ Birbirine yakışan küçük araçlar. İstersen hepsini kur, istersen sadece be
 
 | Parça | Ne yapar |
 |---|---|
+| [**Giriş Ekranı**](giris-ekrani/) | Şifre yazdığın giriş ekranında duvar kağıdının bulanık hâli, Bandanix teması, ikonları ve imleci. |
 | [**Hızlı Not**](not-kutusu/) | Super+N ile açılan küçük not kutusu: yaz, Enter'a bas, kaybolsun. Notlar tek bir Markdown dosyasında, yapılacak işler işaretlenebilir. |
 | [**Panel Düzeni**](panel-duzeni/) | Paneli yüzen adalara çevirir: Windows 11 gibi ortada menü ve pencereler, sağda tepsi (ya da üç ada). |
 | [**Pano Geçmişi**](pano/) | Super+V ile son kopyaladıkların: ara, seç, otomatik yapıştır. Sık kullandıklarını sabitle; şifre yöneticilerinden kopyalananlar saklanmaz. |
