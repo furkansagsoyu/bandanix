@@ -3,3 +3,4 @@
 kemer = Kemer
 galata = Galata
 gunbatimi = Gün Batımı
+ipek = İpek

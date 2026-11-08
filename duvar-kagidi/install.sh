@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# description: Bandanix duvar kağıtları: Kemer, Galata, Gün Batımı ve yenileri
+# description: Bandanix duvar kağıtları: Kemer, Galata, Gün Batımı, İpek
 # kurulu: ~/.local/bin/bandanix-duvar
 set -euo pipefail
 

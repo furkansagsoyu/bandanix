@@ -26,7 +26,7 @@ Birbirine yakışan küçük araçlar. İstersen hepsini kur, istersen sadece be
 | [**Sound Island**](sound-island/) | Spotify ve diğer oynatıcılar için ekranın üstünde duran "şimdi çalıyor" hapı. Üzerine gelince kontrolleri ve senkron şarkı sözleriyle küçük bir oynatıcıya dönüşür; ses ya da parlaklık değişince kısa bir süre göstergeye dönüşür. |
 | [**Bandanix Ayarlar**](ayarlar/) | Bütün parçaların ayarları tek pencerede: renk, duvar kağıdı, panel, adalar, pil, kısayollar; parça kurma ve kaldırma, yedekler. |
 | [**Cinnamon Teması**](cinnamon-tema/) | Mint-Y tabanlı koyu tema: pencereler, menüler, dosya yöneticisi ve panel bandana kırmızısı vurgularla. |
-| [**Duvar Kağıtları**](duvar-kagidi/) | Bandana kumaşı ve kırmızı gökyüzüyle bir seri: Kemer, Galata, Gün Batımı. |
+| [**Duvar Kağıtları**](duvar-kagidi/) | Bandana kumaşı ve kırmızı gökyüzüyle bir seri: Kemer, Galata, Gün Batımı, İpek. |
 | [**İkonlar ve İmleç**](ikonlar/) | Bandana kırmızısı klasörler ve siyah gövdeli, kırmızı kenarlı fare imleci. |
 | [**Terminal**](terminal/) | İki satırlı prompt (git, Python ortamı, hata kodu), bandana kırmızısı renk şeması ve her yeni pencerede `bandanix-fetch`. |
 | [**Saat Widget'ı**](widget/) | Masaüstünün ortasında büyük ince saat, Türkçe tarih ve tek satırda hava durumu ile sistem bilgisi. Üzerine gelince 3 günlük tahmin. |

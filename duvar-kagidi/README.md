@@ -5,7 +5,7 @@
 Bandana kumaşı, kırmızı gökyüzü ve BANDANIX işareti etrafında bir seri. Resimler ChatGPT ile üretildi, 1920×1080.
 
 <p align="center">
-  <img src="../docs/duvar-kagitlari.jpg" alt="Kemer, Galata ve Gün Batımı" width="100%">
+  <img src="../docs/duvar-kagitlari.jpg" alt="Kemer, Galata, Gün Batımı ve İpek" width="100%">
 </p>
 
 | Ad | Komut |
@@ -13,6 +13,7 @@ Bandana kumaşı, kırmızı gökyüzü ve BANDANIX işareti etrafında bir seri
 | **Kemer** (varsayılan) | `bandanix-duvar kemer` |
 | **Galata** | `bandanix-duvar galata` |
 | **Gün Batımı** | `bandanix-duvar gunbatimi` |
+| **İpek** | `bandanix-duvar ipek` |
 
 ## Komutlar
 
