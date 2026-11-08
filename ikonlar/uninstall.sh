@@ -8,6 +8,6 @@ YEDEK="$HOME/.local/bin/bandanix-yedek"
 if [ -x "$YEDEK" ]; then
   "$YEDEK" geri-al ikonlar
 fi
-rm -rf "$ICONS/Bandanix" "$ICONS/Bandanix-Imlec"
+rm -rf "$ICONS/Bandanix" "$ICONS/Bandanix-Imlec" "$HOME/.icons/Bandanix-Imlec"
 rmdir "$HOME/.icons/default" "$HOME/.icons" 2>/dev/null || true
 echo "• Bandanix ikonları ve imleci kaldırıldı."

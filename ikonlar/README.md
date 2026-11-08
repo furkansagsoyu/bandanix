@@ -18,7 +18,7 @@ Mint'in **Mint-Y-Red** ikon teması kopyalanıp kırmızıları bandana kırmız
 
 ## İmleç
 
-**Bibata-Modern-Classic** temel alınır: siyah gövde kalır, beyaz kenar bandana kırmızısına döner. `~/.local/share/icons/Bandanix-Imlec` olarak kurulur.
+**Bibata-Modern-Classic** temel alınır: siyah gövde kalır, beyaz kenar bandana kırmızısına döner. `~/.icons/Bandanix-Imlec` olarak kurulur (imleç kütüphanesinin her sistemde baktığı klasör).
 
 - Kenar yumuşatması korunur; ara tonlar siyahla kırmızı arasında kademeli geçer.
 - Bekleme animasyonu gibi hareketli imleçler de boyanır.

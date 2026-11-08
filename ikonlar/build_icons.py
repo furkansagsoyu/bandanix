@@ -185,7 +185,10 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Bandanix ikon ve imleç temalarını üretir.")
     parser.add_argument("--ikon-kaynak", default="/usr/share/icons/Mint-Y-Red")
     parser.add_argument("--imlec-kaynak", default="/usr/share/icons/Bibata-Modern-Classic")
-    parser.add_argument("--hedef-klasor", default=str(home / ".local/share/icons"))
+    parser.add_argument("--hedef-klasor", default=str(home / ".local/share/icons"),
+                        help="ikon teması buraya kurulur")
+    parser.add_argument("--imlec-klasor", default=str(home / ".icons"),
+                        help="imleç buraya kurulur (X11 imleç kütüphanesinin her sistemde baktığı yer)")
     parser.add_argument("--accent", default=None, help="#RRGGBB (varsayılan: theme.toml)")
     args = parser.parse_args()
 
@@ -197,8 +200,10 @@ def main() -> int:
     print(f"• İkonlar üretildi: {root / ICON_NAME}")
     print(f"  Kaynak kırmızı {icons['source_accent']} → {accent}, {icons['png']} resim boyandı")
 
-    cursor = build_cursor(Path(args.imlec_kaynak), root / CURSOR_DIR, accent)
-    print(f"• İmleç üretildi: {root / CURSOR_DIR}")
+    cursor_root = Path(args.imlec_klasor)
+    cursor_root.mkdir(parents=True, exist_ok=True)
+    cursor = build_cursor(Path(args.imlec_kaynak), cursor_root / CURSOR_DIR, accent)
+    print(f"• İmleç üretildi: {cursor_root / CURSOR_DIR}")
     print(f"  {cursor['files']} imleç dosyasında {cursor['images']} boyut boyandı")
     return 0
 
