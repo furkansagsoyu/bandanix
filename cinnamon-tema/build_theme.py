@@ -9,7 +9,6 @@ only; if Pillow is available the PNG assets (checkboxes, radios...) are recolour
 from __future__ import annotations
 
 import argparse
-import colorsys
 import os
 import re
 import shutil
@@ -17,17 +16,15 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-try:
-    import tomllib
-except ModuleNotFoundError:  # pragma: no cover
-    tomllib = None
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "core"))
+from bandanix_renk import (DEFAULT_ACCENT, from_hls, hex_to_rgb, hls,  # noqa: E402
+                           is_accent, is_neutral, read_accent, rgb_to_hex, shift_accent)
 
 try:
     from PIL import Image
 except ImportError:  # Pillow is optional
     Image = None
 
-DEFAULT_ACCENT = "#C8102E"
 TARGET_WINDOW_BG = 0.096          # lightness of #17171A, the Bandanix window background
 DARK_LIMIT = 0.55                 # greys darker than this are moved to the Bandanix scale
 COOL_HUE = 240 / 360              # Bandanix greys lean very slightly blue
@@ -39,44 +36,11 @@ HEX_RE = re.compile(r"#(?:[0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b")  # 8
 RGB_RE = re.compile(r"rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*(,\s*[\d.]+\s*)?\)")
 
 
-# ---- colour helpers ---------------------------------------------------------------
-def hex_to_rgb(value: str) -> tuple[int, int, int]:
-    v = value.lstrip("#")[:6]
-    if len(v) == 3:
-        v = "".join(c * 2 for c in v)
-    return int(v[0:2], 16), int(v[2:4], 16), int(v[4:6], 16)
-
-
-def rgb_to_hex(rgb: tuple[int, int, int]) -> str:
-    return "#{:02x}{:02x}{:02x}".format(*rgb)
-
-
-def hls(rgb: tuple[int, int, int]) -> tuple[float, float, float]:
-    return colorsys.rgb_to_hls(*(c / 255 for c in rgb))
-
-
-def from_hls(h: float, l: float, s: float) -> tuple[int, int, int]:
-    r, g, b = colorsys.hls_to_rgb(h, max(0.0, min(1.0, l)), max(0.0, min(1.0, s)))
-    return round(r * 255), round(g * 255), round(b * 255)
-
-
-def is_accent(rgb: tuple[int, int, int]) -> bool:
-    h, l, s = hls(rgb)
-    # narrow red band: keeps orange warnings (#f27835, ~21°) out
-    return s >= 0.35 and 0.12 <= l <= 0.88 and (h <= 0.035 or h >= 0.95)
-
-
-def is_neutral(rgb: tuple[int, int, int]) -> bool:
-    _, _, s = hls(rgb)
-    return s < 0.15
-
-
 # ---- the colour mapping -------------------------------------------------------------
 class Recolour:
     def __init__(self, source_accent, source_bg, target_accent):
-        self.src_accent = hls(source_accent)
+        self.src_rgb, self.dst_rgb = source_accent, target_accent
         self.src_bg_l = hls(source_bg)[1]
-        self.dst_accent = hls(target_accent)
         self.cache: dict[tuple[int, int, int], tuple[int, int, int]] = {}
 
     def dark_lightness(self, l: float) -> float:
@@ -92,9 +56,7 @@ class Recolour:
         h, l, s = hls(rgb)
         out = rgb
         if is_accent(rgb):
-            sh, sl, ss = self.src_accent
-            dh, dl, ds = self.dst_accent
-            out = from_hls(dh, dl + (l - sl), ds)   # keep hover/pressed steps, Bandanix saturation
+            out = shift_accent(rgb, self.src_rgb, self.dst_rgb)  # keeps hover/pressed steps
         elif is_neutral(rgb) and l < DARK_LIMIT:
             new_l = self.dark_lightness(l)
             out = from_hls(COOL_HUE, new_l, COOL_SAT if new_l < 0.35 else s)
@@ -193,18 +155,6 @@ PANEL_OVERRIDE = """
   background-color: rgba(18, 18, 20, 0.92);
 }
 """
-
-
-def read_accent() -> str:
-    path = Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config") / "bandanix" / "theme.toml"
-    if tomllib and path.is_file():
-        try:
-            accent = tomllib.loads(path.read_text(encoding="utf-8")).get("colors", {}).get("accent")
-            if isinstance(accent, str) and re.fullmatch(r"#[0-9a-fA-F]{6}", accent):
-                return accent
-        except (OSError, ValueError):
-            pass
-    return DEFAULT_ACCENT
 
 
 def gtk4_css(accent: str) -> str:
