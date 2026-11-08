@@ -139,3 +139,49 @@ def parse_cava_frame(line: str, count: int) -> list[float] | None:
 def fmt_time(seconds: float) -> str:
     s = max(0, int(seconds))
     return f"{s // 60}:{s % 60:02d}"
+
+
+# ---- volume / brightness indicator ------------------------------------------------------
+_PACTL_EVENT = re.compile(r"^Event '(\w+)' on (sink|server) #")
+_PERCENT = re.compile(r"(\d+)%")
+_BRIGHTNESS = re.compile(r"'Brightness':\s*<(-?\d+)>")
+
+
+def is_volume_event(line: str) -> bool:
+    """`pactl subscribe` lines worth re-reading the volume for (output volume or default output)."""
+    m = _PACTL_EVENT.match(line.strip())
+    return bool(m) and m.group(1) == "change"
+
+
+def parse_volume(text: str) -> tuple[int, bool] | None:
+    """Output of `pactl get-sink-volume` + `get-sink-mute` -> (percent, muted)."""
+    volume_lines = [l for l in text.splitlines() if l.lstrip().startswith("Volume:")]
+    if not volume_lines:
+        return None
+    percents = [int(p) for p in _PERCENT.findall(volume_lines[0])]
+    if not percents:
+        return None
+    muted = any(l.strip().lower() == "mute: yes" for l in text.splitlines())
+    return max(percents), muted
+
+
+def is_screen_changed(line: str) -> bool:
+    """Cinnamon's power daemon sends an empty `Screen.Changed` signal when brightness moves."""
+    return "Power.Screen.Changed" in line
+
+
+def backlight_percent(value: str, maximum: str) -> int | None:
+    try:
+        v, m = int(value.strip()), int(maximum.strip())
+    except ValueError:
+        return None
+    return round(v * 100 / m) if m > 0 and 0 <= v <= m else None
+
+
+def parse_brightness(line: str) -> int | None:
+    """A `gdbus monitor` PropertiesChanged line from the Cinnamon power daemon."""
+    m = _BRIGHTNESS.search(line)
+    if not m:
+        return None
+    value = int(m.group(1))
+    return value if 0 <= value <= 100 else None

@@ -60,7 +60,27 @@ StartupNotify=false
 EOF
 echo "• Uygulama menüsüne eklendi: Sound Island"
 
-# 4) optional autostart
+# 4) volume / brightness indicator replaces Cinnamon's own on-screen display
+YEDEK="$HOME/.local/bin/bandanix-yedek"
+OSD_KEY=/org/cinnamon/show-media-keys-osd
+INDICATOR=$(PYTHONPATH="$HERE" /usr/bin/python3 -c "from sound_island.config import load_theme; print(load_theme().gosterge)")
+if gsettings writable org.cinnamon show-media-keys-osd >/dev/null 2>&1 && [ -x "$YEDEK" ]; then
+  if [ "$INDICATOR" = "True" ]; then
+    "$YEDEK" isaretle sound-island "dconf:$OSD_KEY"
+    # a true/false switch on current Cinnamon, a size choice ("disabled", "small"...) on old ones
+    if gsettings range org.cinnamon show-media-keys-osd 2>/dev/null | grep -q "^type b"; then
+      dconf write "$OSD_KEY" "false"
+    else
+      dconf write "$OSD_KEY" "'disabled'"
+    fi
+    echo "• Ses ve parlaklık göstergesi adada; Cinnamon'ın kendi göstergesi kapatıldı."
+  else
+    "$YEDEK" geri-al sound-island >/dev/null
+    echo "• Ada göstergesi kapalı (theme.toml: gosterge = false); Cinnamon'ın göstergesi açık."
+  fi
+fi
+
+# 5) optional autostart
 if ask "Sound Island oturum açınca otomatik başlasın mı?"; then
   mkdir -p "$(dirname "$AUTOSTART")"
   { cat "$DESKTOP"; echo "X-GNOME-Autostart-enabled=true"; } > "$AUTOSTART"
@@ -70,7 +90,7 @@ else
   echo "• Otomatik başlatma kapalı"
 fi
 
-# 5) restart it with the new version
+# 6) restart it with the new version
 pkill -f "python -m sound_island" 2>/dev/null || true
 if ask "Sound Island şimdi başlatılsın mı?"; then
   sleep 0.5

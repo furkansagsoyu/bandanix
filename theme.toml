@@ -13,6 +13,7 @@ ui = ""                   # yazı tipi adı, boş = sistemin yazı tipi (ör. "U
 follow_cover = true       # vurgu rengini albüm kapağından al (false = hep accent rengini kullan)
 hide_when_idle = true     # çalan bir şey yokken adayı gizle
 bars = "auto"             # "auto" = cava ile gerçek ses çubukları, "simulated" = temsili çubuklar
+gosterge = true           # ses ve parlaklık göstergesi adada (false = Cinnamon'ın kendi göstergesi)
 
 [terminal]
 prompt = true             # iki satırlı Bandanix prompt'u

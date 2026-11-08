@@ -21,6 +21,7 @@ Ekranın üstünde ince bir hap olarak durur, üzerine gelince küçük bir oyna
 - **Senkron şarkı sözleri:** o an söylenen satır, ücretsiz [LRCLIB](https://lrclib.net) servisinden
 - **Uyumlu renk:** vurgu rengi albüm kapağından seçilir (ya da Bandanix'in vurgu rengi kullanılır)
 - **Yeni şarkı bildirimi:** şarkı değişince ada bir anlığına açılır
+- **Ses ve parlaklık göstergesi:** ses ya da ekran parlaklığı değişince ada 1,5 saniyeliğine çubuklu bir göstergeye dönüşür (ada gizliyse sadece bunun için belirir). Cinnamon'ın kendi göstergesi kapatılır, kaldırınca geri gelir
 - Çalan bir şey yokken kendini gizler
 - Sağ tık → Çıkış
 
@@ -49,7 +50,10 @@ sound-island --player vlc
 follow_cover = true       # vurgu rengini albüm kapağından al
 hide_when_idle = true     # çalan bir şey yokken gizlen
 bars = "auto"             # "auto" = cava ile gerçek ses, "simulated" = temsili çubuklar
+gosterge = true           # ses ve parlaklık göstergesi (false = Cinnamon'ın kendi göstergesi)
 ```
+
+`gosterge` ayarını değiştirdikten sonra `./install.sh sound-island` komutunu çalıştır.
 
 Not: cava bilgisayarın çaldığı **bütün** sesi dinler, sadece Spotify'ı değil. Aynı anda bir video açıksa çubuklar onun sesine de tepki verir.
 

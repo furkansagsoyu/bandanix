@@ -49,6 +49,12 @@ def main() -> int:
         island.show()
     player.start()
     app.aboutToQuit.connect(player.stop)
+    if theme.gosterge:
+        from .gosterge import Levels
+        levels = Levels(app)
+        levels.changed.connect(island.show_level)
+        levels.start()
+        app.aboutToQuit.connect(levels.stop)
     app.aboutToQuit.connect(island.shutdown)
     code = app.exec()
     lock.unlock()

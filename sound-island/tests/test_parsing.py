@@ -94,3 +94,39 @@ class FormatTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class LevelParsing(unittest.TestCase):
+    def test_volume_events(self):
+        from sound_island.parsing import is_volume_event
+        self.assertTrue(is_volume_event("Event 'change' on sink #48"))
+        self.assertTrue(is_volume_event("Event 'change' on server #4294967295"))
+        self.assertFalse(is_volume_event("Event 'change' on sink-input #112"))
+        self.assertFalse(is_volume_event("Event 'new' on sink #48"))
+        self.assertFalse(is_volume_event("Event 'change' on source #2"))
+
+    def test_volume(self):
+        from sound_island.parsing import parse_volume
+        text = ("Volume: front-left: 26214 /  40% / -23.88 dB,   front-right: 27525 /  42% / -22.6 dB\n"
+                "        balance 0.05\nMute: no\n")
+        self.assertEqual(parse_volume(text), (42, False))
+        self.assertEqual(parse_volume("Volume: mono: 78643 / 120% / 4.75 dB\nMute: yes\n"), (120, True))
+        self.assertIsNone(parse_volume("Failed to get sink volume"))
+
+    def test_brightness(self):
+        from sound_island.parsing import parse_brightness
+        line = ("/org/cinnamon/SettingsDaemon/Power: org.freedesktop.DBus.Properties.PropertiesChanged "
+                "('org.cinnamon.SettingsDaemon.Power.Screen', {'Brightness': <75>}, @as [])")
+        self.assertEqual(parse_brightness(line), 75)
+        self.assertIsNone(parse_brightness("something else"))
+
+
+class Backlight(unittest.TestCase):
+    def test_screen_changed_and_percent(self):
+        from sound_island.parsing import backlight_percent, is_screen_changed
+        self.assertTrue(is_screen_changed(
+            "/org/cinnamon/SettingsDaemon/Power: org.cinnamon.SettingsDaemon.Power.Screen.Changed ()"))
+        self.assertFalse(is_screen_changed("The name org.cinnamon.SettingsDaemon.Power is owned by :1.37"))
+        self.assertEqual(backlight_percent("48000\n", "96000\n"), 50)
+        self.assertIsNone(backlight_percent("x", "100"))
+        self.assertIsNone(backlight_percent("5", "0"))

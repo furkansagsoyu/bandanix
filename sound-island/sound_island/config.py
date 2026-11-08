@@ -28,6 +28,7 @@ class Theme:
     follow_cover: bool = True
     hide_when_idle: bool = True
     bars: str = "auto"          # "auto" = real audio via cava if installed, "simulated"
+    gosterge: bool = True       # volume / brightness indicator inside the island
 
 
 BAR_MODES = ("auto", "simulated")
@@ -52,10 +53,12 @@ def load_theme(path: Path | None = None) -> Theme:
     follow = own.get("follow_cover")
     hide = own.get("hide_when_idle")
     bars = own.get("bars")
+    indicator = own.get("gosterge")
     return Theme(
         bars=bars if bars in BAR_MODES else defaults.bars,
         accent=accent if isinstance(accent, str) and _HEX.match(accent) else defaults.accent,
         font=font.strip() if isinstance(font, str) else defaults.font,
         follow_cover=follow if isinstance(follow, bool) else defaults.follow_cover,
         hide_when_idle=hide if isinstance(hide, bool) else defaults.hide_when_idle,
+        gosterge=indicator if isinstance(indicator, bool) else defaults.gosterge,
     )

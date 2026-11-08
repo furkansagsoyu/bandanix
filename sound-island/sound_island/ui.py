@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import random
 
 from PySide6.QtCore import (QEasingCurve, QPointF, QRectF, Qt, QTimer, QUrl,
@@ -23,6 +24,7 @@ from .player import Player
 COLLAPSED = (320, 42)
 EXPANDED = (440, 172)
 BAR_COUNT = 5
+OSD_MS = 1500                    # how long the volume / brightness indicator stays
 ISLAND_NAME = "sound-island"     # other islands line up next to this one
 
 
@@ -88,6 +90,8 @@ class Island(QWidget):
 
         self.leave_timer = self._single_shot(450, self._maybe_collapse)
         self.toast_timer = self._single_shot(2600, self._maybe_collapse)
+        self.osd: tuple[str, int, bool] | None = None    # (kind, percent, muted)
+        self.osd_timer = self._single_shot(OSD_MS, self._end_osd)
 
         self.frame = QTimer(self)
         self.frame.setInterval(33)
@@ -173,6 +177,24 @@ class Island(QWidget):
                 self.audio.stop()
         self.update()
 
+    # ---- volume / brightness indicator ------------------------------------------------
+    def show_level(self, kind: str, value: int, muted: bool) -> None:
+        if self.hover:
+            return                         # the user is using the player, don't cover it
+        self.osd = (kind, value, muted)
+        self.toast_timer.stop()
+        self._animate_to(0.0)
+        if not self.isVisible():
+            self.show()
+        self.osd_timer.start()
+        self.update()
+
+    def _end_osd(self) -> None:
+        self.osd = None
+        if self.track is None and self.theme.hide_when_idle and not self.hover:
+            self.hide()
+        self.update()
+
     def shutdown(self) -> None:
         dizilim.remove(ISLAND_NAME)
         if self.audio is not None:
@@ -248,7 +270,10 @@ class Island(QWidget):
         full_alpha = max(0.0, (t - 0.45) / 0.55)
         if pill_alpha > 0:
             p.setOpacity(pill_alpha)
-            self._paint_pill(p, w)
+            if self.osd is not None:
+                self._paint_osd(p, w)
+            else:
+                self._paint_pill(p, w)
         if full_alpha > 0:
             p.setOpacity(full_alpha)
             self._paint_player(p, w)
@@ -282,6 +307,65 @@ class Island(QWidget):
             self._draw_thin_progress(p, text_r.left(), text_r.right(), ch - 6)
         else:
             self._text(p, text_r, "Şu an çalan yok", self._font(13), MUTED)
+
+    def _paint_osd(self, p: QPainter, w: int) -> None:
+        kind, value, muted = self.osd
+        ch = COLLAPSED[1]
+        icon = QRectF(14, (ch - 22) / 2, 22, 22)
+        self._level_icon(p, kind, muted, icon)
+        text = "Sessiz" if muted else f"%{value}"
+        font = self._font(13, QFont.Weight.DemiBold)
+        text_w = 56
+        bar = QRectF(icon.right() + 12, ch / 2 - 3, w - icon.right() - 12 - text_w - 16, 6)
+        p.setPen(Qt.PenStyle.NoPen)
+        p.setBrush(QColor(255, 255, 255, 40))
+        p.drawRoundedRect(bar, 3, 3)
+        fill = QColor(self.accent)
+        if muted:
+            fill.setAlpha(70)
+        frac = max(0.0, min(1.0, value / 100))
+        if frac > 0:
+            p.setBrush(fill)
+            p.drawRoundedRect(QRectF(bar.left(), bar.top(), max(6.0, bar.width() * frac), bar.height()), 3, 3)
+        self._text(p, QRectF(w - 16 - text_w, 0, text_w, ch), text, font, MUTED if muted else FG,
+                   Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+
+    def _level_icon(self, p: QPainter, kind: str, muted: bool, rect: QRectF) -> None:
+        p.save()
+        c = rect.center()
+        cx, cy, s = c.x(), c.y(), rect.width() / 2
+        if kind == "parlaklik":
+            p.setPen(QPen(FG, 1.6, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap))
+            for k in range(8):
+                a = k * math.pi / 4
+                p.drawLine(QPointF(cx + math.cos(a) * s * 0.62, cy + math.sin(a) * s * 0.62),
+                           QPointF(cx + math.cos(a) * s * 0.92, cy + math.sin(a) * s * 0.92))
+            p.setPen(Qt.PenStyle.NoPen)
+            p.setBrush(FG)
+            p.drawEllipse(c, s * 0.38, s * 0.38)
+        else:
+            body = QPainterPath(QPointF(cx - s * 0.85, cy - s * 0.3))
+            body.lineTo(cx - s * 0.45, cy - s * 0.3)
+            body.lineTo(cx, cy - s * 0.75)
+            body.lineTo(cx, cy + s * 0.75)
+            body.lineTo(cx - s * 0.45, cy + s * 0.3)
+            body.lineTo(cx - s * 0.85, cy + s * 0.3)
+            body.closeSubpath()
+            p.setPen(Qt.PenStyle.NoPen)
+            p.setBrush(MUTED if muted else FG)
+            p.drawPath(body)
+            p.setBrush(Qt.BrushStyle.NoBrush)
+            if muted:
+                p.setPen(QPen(MUTED, 1.6, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap))
+                p.drawLine(QPointF(cx + s * 0.3, cy - s * 0.35), QPointF(cx + s * 0.95, cy + s * 0.35))
+                p.drawLine(QPointF(cx + s * 0.3, cy + s * 0.35), QPointF(cx + s * 0.95, cy - s * 0.35))
+            else:
+                p.setPen(QPen(FG, 1.6, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap))
+                waves = 1 if self.osd[1] < 34 else 2 if self.osd[1] < 67 else 3
+                for i in range(waves):
+                    r = s * (0.35 + 0.28 * i)
+                    p.drawArc(QRectF(cx - r + s * 0.1, cy - r, 2 * r, 2 * r), -45 * 16, 90 * 16)
+        p.restore()
 
     def _paint_player(self, p: QPainter, w: int) -> None:
         pad = 16

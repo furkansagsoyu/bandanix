@@ -5,6 +5,8 @@ ID="bandanix-sound-island"
 DATA="${XDG_DATA_HOME:-$HOME/.local/share}"
 
 pkill -f "python -m sound_island" 2>/dev/null || true
+# Cinnamon's own volume / brightness display comes back
+[ -x "$HOME/.local/bin/bandanix-yedek" ] && "$HOME/.local/bin/bandanix-yedek" geri-al sound-island || true
 rm -rf "$DATA/bandanix/sound-island"
 rm -f "$HOME/.local/bin/sound-island" \
       "$DATA/applications/$ID.desktop" \
