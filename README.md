@@ -17,6 +17,7 @@ Birbirine yakışan küçük araçlar. İstersen hepsini kur, istersen sadece be
 
 | Parça | Ne yapar |
 |---|---|
+| [**Hızlı Not**](not-kutusu/) | Super+N ile açılan küçük not kutusu: yaz, Enter'a bas, kaybolsun. Notlar tek bir Markdown dosyasında, yapılacak işler işaretlenebilir. |
 | [**Panel Düzeni**](panel-duzeni/) | Paneli yüzen adalara çevirir: Windows 11 gibi ortada menü ve pencereler, sağda tepsi (ya da üç ada). |
 | [**Pil Sağlığı**](pil/) | Şarjı %80'de durdurarak pilin ömrünü uzatır, pil azalınca uyarır; gerektiğinde tek komutla bir seferlik tam şarj. |
 | [**Sound Island**](sound-island/) | Spotify ve diğer oynatıcılar için ekranın üstünde duran "şimdi çalıyor" hapı. Üzerine gelince kontrolleri ve senkron şarkı sözleriyle küçük bir oynatıcıya dönüşür. |

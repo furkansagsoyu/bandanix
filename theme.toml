@@ -29,3 +29,7 @@ ikon_boyutu = 32          # panel adalarındaki uygulama ikonları (16-48); sonr
 [pil]
 ust = 80                  # şarj bu yüzdede durur (50-100); değiştirmek için: bandanix-pil sinir 85
 alt = 20                  # pil bu yüzdenin altına inince bildirim gelir (5-50)
+
+[not-kutusu]
+dosya = "~/Notlar/hizli-notlar.md"   # notların tutulduğu Markdown dosyası
+kisayol = "<Super>n"                 # kutuyu açan kısayol; değiştirince: ./install.sh not-kutusu
