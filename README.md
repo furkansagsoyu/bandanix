@@ -19,6 +19,7 @@ Birbirine yakışan küçük araçlar. İstersen hepsini kur, istersen sadece be
 |---|---|
 | [**Hızlı Not**](not-kutusu/) | Super+N ile açılan küçük not kutusu: yaz, Enter'a bas, kaybolsun. Notlar tek bir Markdown dosyasında, yapılacak işler işaretlenebilir. |
 | [**Panel Düzeni**](panel-duzeni/) | Paneli yüzen adalara çevirir: Windows 11 gibi ortada menü ve pencereler, sağda tepsi (ya da üç ada). |
+| [**Pano Geçmişi**](pano/) | Super+V ile son kopyaladıkların: ara, seç, otomatik yapıştır. Sık kullandıklarını sabitle; şifre yöneticilerinden kopyalananlar saklanmaz. |
 | [**Pil Sağlığı**](pil/) | Şarjı %80'de durdurarak pilin ömrünü uzatır, pil azalınca uyarır; gerektiğinde tek komutla bir seferlik tam şarj. |
 | [**Sistem Adası**](sistem-adasi/) | Normalde görünmez; işlemci, sıcaklık, RAM ya da disk sınırı aşınca Sound Island'ın yanında beliren uyarı hapı. Üzerine gelince sorunun kaynağını gösterir. |
 | [**Sound Island**](sound-island/) | Spotify ve diğer oynatıcılar için ekranın üstünde duran "şimdi çalıyor" hapı. Üzerine gelince kontrolleri ve senkron şarkı sözleriyle küçük bir oynatıcıya dönüşür. |

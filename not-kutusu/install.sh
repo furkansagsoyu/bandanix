@@ -7,8 +7,6 @@ DATA="${XDG_DATA_HOME:-$HOME/.local/share}"
 APP="$DATA/bandanix/not-kutusu"
 BIN="$HOME/.local/bin/bandanix-not"
 YEDEK="$HOME/.local/bin/bandanix-yedek"
-KEYS=/org/cinnamon/desktop/keybindings
-CUSTOM="$KEYS/custom-keybindings/bandanix-not"
 
 if ! /usr/bin/python3 -c "import gi; gi.require_version('Gtk', '3.0'); from gi.repository import Gtk" 2>/dev/null; then
   echo "• GTK bağlantısı eksik, kuruluyor: python3-gi gir1.2-gtk-3.0"
@@ -29,10 +27,12 @@ EOF
 chmod +x "$BIN"
 
 # 2) the keyboard shortcut (old values remembered so uninstall puts them back)
-"$YEDEK" isaretle not-kutusu \
-  "dconf:$KEYS/custom-list" \
-  "dconf:$CUSTOM/name" "dconf:$CUSTOM/command" "dconf:$CUSTOM/binding"
-"$BIN" _kisayol "$HOME" || true
+KISAYOL="$HERE/../core/bandanix_kisayol.py"
+mapfile -t MARKS < <(/usr/bin/python3 "$KISAYOL" isaretler bandanix-not)
+"$YEDEK" isaretle not-kutusu "${MARKS[@]}"
+if ! /usr/bin/python3 "$KISAYOL" kur bandanix-not "Bandanix hızlı not" "$BIN" "$("$BIN" _kisayol-ayari)" "<Primary><Alt>n"; then
+  echo "  theme.toml içindeki [not-kutusu] kisayol değerini değiştirip yeniden kur."
+fi
 
 echo "• Notlar şuraya kaydedilir: $("$BIN" _dosya-yolu)"
 echo "• Terminalden: bandanix-not \"metin\"  ·  bandanix-not liste  ·  bandanix-not dosya"

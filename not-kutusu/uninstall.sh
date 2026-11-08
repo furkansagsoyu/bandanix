@@ -9,6 +9,7 @@ YEDEK="$HOME/.local/bin/bandanix-yedek"
 if [ -x "$YEDEK" ]; then
   "$YEDEK" geri-al not-kutusu
 fi
+/usr/bin/python3 "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../core/bandanix_kisayol.py" onar || true
 
 # 2) the command and its files; the notes themselves stay
 rm -rf "$DATA/bandanix/not-kutusu"

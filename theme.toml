@@ -42,3 +42,6 @@ disk = 95                 # yüzde
 
 [widget]
 sehir = ""                # hava durumu şehri; değiştirmek için: bandanix-widget sehir <şehir adı>
+
+[pano]
+kisayol = "<Super>v"      # pano geçmişini açan kısayol; değiştirince: ./install.sh pano
