@@ -60,6 +60,25 @@ ui = ""                   # boş = sistemin yazı tipi
 
 Bir kere değiştir, bütün parçalar uysun. Yeniden kurulum yaptığın değişiklikleri asla silmez.
 
+## Yedekleme
+
+Bandanix masaüstüne dokunmadan önce her kurulumda ayarlarının bir anlık görüntüsünü alır. İlk yedek **"orijinal"** olarak işaretlenir ve hiçbir zaman otomatik silinmez; Bandanix öncesi masaüstüne dönüş yolu hep açık kalır.
+
+```bash
+bandanix-yedek liste                  # bütün yedekler
+bandanix-yedek al "yeni panel"        # elle yedek al
+bandanix-yedek fark orijinal          # o yedekten bu yana neler değişmiş
+bandanix-yedek geri-yukle orijinal    # masaüstünü o ana döndür
+bandanix-yedek disa-aktar 3           # tek bir .tar.gz dosyası yap
+bandanix-yedek ice-aktar dosya.tar.gz # başka bilgisayardan gelen yedeği ekle
+```
+
+- Yedekler Cinnamon ve masaüstü ayarlarını (panel, uygulamacıklar, kısayollar, tema, yazı tipleri, duvar kağıdı, Nemo, terminal profilleri), `.bashrc`'yi ve uygulamacık ayarlarını içerir. Genelde 1 MB'ın altındadır.
+- Her geri yüklemeden önce mevcut hâlin de yedeklenir, yani geri yüklemenin de geri dönüşü vardır.
+- Bir parçayı kaldırınca sadece o parçanın değiştirdiği ayarlar eski hâline döner; senin başka ayarlarına dokunulmaz.
+- İçe aktarmada dosya yollarındaki kullanıcı adı yeni bilgisayara göre düzeltilir.
+- Saklama: orijinal ve elle alınanlar kalıcı, otomatik yedeklerin son 5'i, geri yükleme öncesi yedeklerin son 3'ü tutulur.
+
 ## Kaldırma
 
 ```bash
@@ -67,6 +86,8 @@ Bir kere değiştir, bütün parçalar uysun. Yeniden kurulum yaptığın deği�
 ./uninstall.sh --all            # hepsini kaldır, tema dosyası kalsın
 ./uninstall.sh --all --purge    # tema dosyası dahil her şeyi kaldır
 ```
+
+Kaldırma işlemi masaüstü yedeklerini ve `bandanix-yedek` komutunu **silmez**, böylece Bandanix'i kaldırdıktan sonra da orijinal masaüstüne dönebilirsin.
 
 ## Test edildiği sistem
 

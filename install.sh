@@ -24,6 +24,22 @@ else
   echo "• Tema dosyası kuruldu: $BANDANIX_CONFIG/theme.toml"
 fi
 
+# Core tools (always installed/updated, not shown in the menu)
+CORE="${XDG_DATA_HOME:-$HOME/.local/share}/bandanix/core"
+YEDEK="$HOME/.local/bin/bandanix-yedek"
+mkdir -p "$CORE" "$(dirname "$YEDEK")"
+cp "$ROOT/core/bandanix_yedek.py" "$CORE/"
+cat > "$YEDEK" <<EOF
+#!/bin/sh
+exec /usr/bin/python3 "$CORE/bandanix_yedek.py" "\$@"
+EOF
+chmod +x "$YEDEK"
+
+# Snapshot of the desktop before anything changes (the very first one is "orijinal")
+if ! "$YEDEK" otomatik "${CHOSEN[*]} kurulumu öncesi"; then
+  echo "• Uyarı: yedek alınamadı, kurulum yine de devam ediyor."
+fi
+
 for c in "${CHOSEN[@]}"; do
   echo
   echo "${RED}${BOLD}==> $c${RESET}"
@@ -33,3 +49,4 @@ done
 echo
 echo "${RED}${BOLD}Bandanix hazır.${RESET}"
 echo "Renkleri ve yazı tipini $BANDANIX_CONFIG/theme.toml dosyasından değiştirebilirsin."
+echo "Masaüstü yedeklerin için: bandanix-yedek liste"
