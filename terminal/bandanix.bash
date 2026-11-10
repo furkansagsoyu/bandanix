@@ -61,6 +61,8 @@ if (( BX_PROMPT )); then
     [[ " ${PROMPT_COMMAND[*]} " == *" __bx_ps1 "* ]] \
       || PROMPT_COMMAND=(__bx_ps1 "${PROMPT_COMMAND[@]}")
   elif [[ ${PROMPT_COMMAND:-} != *__bx_ps1* ]]; then
+    # PROMPT_COMMAND is a string here (the array case is above)
+    # shellcheck disable=SC2128,SC2178
     PROMPT_COMMAND="__bx_ps1${PROMPT_COMMAND:+; $PROMPT_COMMAND}"
   fi
 fi

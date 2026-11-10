@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck over every shell script in the repo.
+# Runs ShellCheck on every shell script in the repo.
 #   scripts/denetle.sh                 errors only; exits 1 if there is one
 #   scripts/denetle.sh warning         warnings too
 #   scripts/denetle.sh warning --rapor report only (GitHub annotations), never fails
@@ -26,8 +26,10 @@ done < <(git ls-files 2>/dev/null || find . -type f -not -path './.git/*' | sed 
 
 echo "${#files[@]} betik denetleniyor (seviye: $level)"
 if [ "$report" -eq 1 ]; then
-  # file:line:col: warning: message [SCxxxx]  ->  GitHub annotation
-  shellcheck -x -S "$level" -f gcc "${files[@]}" | sed -E 's/^([^:]+):([0-9]+):([0-9]+): (warning|note|error): (.*)$/::warning file=\1,line=\2,col=\3::\5/'
+  # file:line:col: level: message [SCxxxx]  ->  GitHub annotation of the same level
+  shellcheck -x -S "$level" -f gcc "${files[@]}" \
+    | sed -E -e 's/^([^:]+):([0-9]+):([0-9]+): error: (.*)$/::error file=\1,line=\2,col=\3::\4/' \
+             -e 's/^([^:]+):([0-9]+):([0-9]+): (warning|note|info|style): (.*)$/::warning file=\1,line=\2,col=\3::\5/'
   exit 0
 fi
 shellcheck -x -S "$level" "${files[@]}"

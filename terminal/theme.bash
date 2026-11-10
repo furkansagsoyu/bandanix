@@ -1,4 +1,5 @@
-# shellcheck shell=bash
+# shellcheck shell=bash disable=SC2034
+# (the BX_* values set here are read by bandanix.bash and bandanix-fetch)
 # Bandanix: reads the few theme.toml keys that bash needs (sourced, not run).
 # Sets BX_ACCENT, BX_R/BX_G/BX_B (accent as RGB), BX_PROMPT and BX_FETCH (1 = on).
 

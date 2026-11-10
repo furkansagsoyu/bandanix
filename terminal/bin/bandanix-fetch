@@ -7,6 +7,7 @@
 SELF_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
 for f in "$SELF_DIR/../theme.bash" \
          "${XDG_DATA_HOME:-$HOME/.local/share}/bandanix/terminal/theme.bash"; do
+  # shellcheck source=/dev/null
   if [[ -r $f ]]; then . "$f"; break; fi
 done
 if declare -F __bx_read_theme >/dev/null; then

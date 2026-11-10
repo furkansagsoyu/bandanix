@@ -6,6 +6,9 @@ BOLD=$'\e[1m'
 DIM=$'\e[2m'
 RESET=$'\e[0m'
 
+# used by install.sh and uninstall.sh, which source this file
+
+# shellcheck disable=SC2034
 BANDANIX_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/bandanix"
 
 banner() {
