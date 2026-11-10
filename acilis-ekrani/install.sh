@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # description: Açılış ekranı: siyah zeminde BANDANIX ve kırmızı ilerleme çizgisi, Bandanix GRUB menüsü
 # kurulu: /usr/share/plymouth/themes/bandanix/bandanix.plymouth
+# yetki: sudo
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

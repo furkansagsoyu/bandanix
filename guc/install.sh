@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # description: Güç modları (Serin, Eco, Dengeli, Turbo), fan modu ve Cooler Boost; bandanix-guc komutu
 # kurulu: ~/.local/bin/bandanix-guc
+# yetki: sudo
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

@@ -31,6 +31,47 @@ describe() {
   sed -n 's/^# description: //p' "$ROOT/$1/install.sh" | head -n 1
 }
 
+# Components that change system files say "# yetki: sudo" in their install.sh header.
+needs_sudo() {
+  head -n 6 "$ROOT/$1/install.sh" | grep -q '^# yetki: sudo'
+}
+
+# Can this user run sudo at all? (root, or a member of the sudo/admin/wheel group)
+can_sudo() {
+  [ "$(id -u)" -eq 0 ] && return 0
+  id -nG | tr ' ' '\n' | grep -qxE 'sudo|admin|wheel'
+}
+
+# run_components install|uninstall -> runs each chosen component; one failing does not stop
+# the others. Fills FAILED with the ones that did not finish.
+run_components() {
+  local action="$1" c
+  FAILED=()
+  for c in "${CHOSEN[@]}"; do
+    echo
+    echo "${RED}${BOLD}==> $c${RESET}"
+    if ! "$ROOT/$c/$action.sh"; then
+      FAILED+=("$c")
+      echo "${RED}• $c tamamlanamadı; diğer parçalarla devam ediliyor.${RESET}"
+    fi
+  done
+}
+
+# skip_sudo_components "kurulamaz" -> drops components that need sudo when this user can't use it
+skip_sudo_components() {
+  local c kept=() skipped=()
+  can_sudo && return 0
+  for c in "${CHOSEN[@]}"; do
+    if needs_sudo "$c"; then skipped+=("$c"); else kept+=("$c"); fi
+  done
+  if [ ${#skipped[@]} -gt 0 ]; then
+    echo "• Bu kullanıcı sudo kullanamadığı için şu parçalar $1: ${skipped[*]}"
+    echo "  (Sistem dosyalarına dokunuyorlar; yönetici hesabından kurulabilirler.)"
+    echo
+  fi
+  CHOSEN=("${kept[@]}")
+}
+
 # choose_components VERB [args...] -> fills the CHOSEN array
 # args: nothing (interactive menu), --all, or component names.
 choose_components() {

@@ -17,6 +17,7 @@ if [ "${XDG_SESSION_TYPE:-}" = "wayland" ]; then
   echo
 fi
 choose_components "kurmak istiyorsun" "$@"
+skip_sudo_components "kurulmayacak"
 if [ ${#CHOSEN[@]} -eq 0 ]; then
   echo "Hiçbir şey seçilmedi."
   exit 0
@@ -47,13 +48,15 @@ if ! "$YEDEK" otomatik "${CHOSEN[*]} kurulumu öncesi"; then
   echo "• Uyarı: yedek alınamadı, kurulum yine de devam ediyor."
 fi
 
-for c in "${CHOSEN[@]}"; do
-  echo
-  echo "${RED}${BOLD}==> $c${RESET}"
-  "$ROOT/$c/install.sh"
-done
+run_components install
 
 echo
+if [ ${#FAILED[@]} -gt 0 ]; then
+  echo "${RED}${BOLD}Kurulamayan parçalar: ${FAILED[*]}${RESET}"
+  echo "Hatanın nedeni yukarıda, parçanın kendi başlığının altında yazıyor."
+  echo "Düzelttikten sonra yalnızca onları kurmak için: ./install.sh ${FAILED[*]}"
+  echo
+fi
 echo "${RED}${BOLD}Bandanix hazır.${RESET}"
 echo "Renkleri ve yazı tipini $BANDANIX_CONFIG/theme.toml dosyasından değiştirebilirsin."
 echo "Masaüstü yedeklerin için: bandanix-yedek liste"
@@ -63,3 +66,4 @@ if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
   echo "Yeni bir terminal aç (terminal paketi kuruluysa) ya da oturumu kapatıp aç."
   echo "Bu terminalde hemen kullanmak için: export PATH=\"\$HOME/.local/bin:\$PATH\""
 fi
+[ ${#FAILED[@]} -eq 0 ]

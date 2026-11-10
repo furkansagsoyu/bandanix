@@ -18,10 +18,12 @@ done
 banner
 choose_components "kaldırmak istiyorsun" "$@"
 
-for c in "${CHOSEN[@]}"; do
-  echo "${RED}${BOLD}==> $c kaldırılıyor${RESET}"
-  "$ROOT/$c/uninstall.sh"
-done
+skip_sudo_components "kaldırılmayacak"
+run_components uninstall
+if [ ${#FAILED[@]} -gt 0 ]; then
+  echo
+  echo "${RED}${BOLD}Kaldırılamayan parçalar: ${FAILED[*]}${RESET}"
+fi
 
 if [ "$PURGE" -eq 1 ]; then
   rm -rf "$BANDANIX_CONFIG"
