@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # Shared helpers for the Bandanix install/uninstall scripts (sourced, not run).
 
 RED=$'\e[38;2;200;16;46m'
@@ -50,7 +51,14 @@ run_components() {
   for c in "${CHOSEN[@]}"; do
     echo
     echo "${RED}${BOLD}==> $c${RESET}"
-    if ! "$ROOT/$c/$action.sh"; then
+    if "$ROOT/$c/$action.sh"; then
+      # remember what was installed, so "bandanix guncelle" knows when the part changes
+      if [ "$action" = install ]; then
+        /usr/bin/python3 "$ROOT/core/bandanix_guncelle.py" kaydet "$c" || true
+      else
+        /usr/bin/python3 "$ROOT/core/bandanix_guncelle.py" sil "$c" || true
+      fi
+    else
       FAILED+=("$c")
       echo "${RED}• $c tamamlanamadı; diğer parçalarla devam ediliyor.${RESET}"
     fi

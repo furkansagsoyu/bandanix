@@ -218,6 +218,136 @@ button.suggested-action:hover label {{
   color: inherit;
 }}
 /* <<< bandanix <<< */
+""" + lock_screen_css(accent)
+
+
+def lock_screen_css(accent: str) -> str:
+    """Cinnamon's lock screen (cinnamon-screensaver) styles itself from the GTK theme when the theme
+    mentions ".csstage"; these rules are written for Bandanix from the screensaver's class names.
+    The clock's font and format come from gsettings (kilit_ekrani.py), not from CSS."""
+    return f"""
+/* >>> bandanix lock screen >>> */
+.csstage {{ }}
+.csstage GtkViewport {{ background-color: transparent; background-image: none; }}
+
+.csstage .clock,
+.csstage .unlockbox {{
+  color: #F4F4F6;
+  text-shadow: 0 1px 12px alpha(black, 0.55);
+}}
+.csstage .unlockbox {{ font-size: 18px; }}
+
+.csstage .framedimage {{
+  border: 3px solid {accent};
+  border-radius: 10px;
+  background-color: alpha(#17171A, 0.6);
+  background-clip: border-box;
+  box-shadow: 0 2px 12px alpha(black, 0.5);
+}}
+
+.csstage .passwordentry {{
+  font-size: 15px;
+  color: #F4F4F6;
+  background-image: none;
+  background-color: alpha(#121215, 0.72);
+  border: 1px solid alpha(white, 0.09);
+  border-image: none;
+  border-radius: 12px;
+  box-shadow: none;
+  padding: 8px 14px;
+}}
+.csstage .passwordentry:hover {{ border-color: alpha(white, 0.18); background-color: alpha(#1C1C20, 0.78); }}
+.csstage .passwordentry:focus,
+.csstage .passwordentry:hover:focus,
+.csstage .passwordentry:active,
+.csstage .passwordentry:active:focus {{
+  border-color: {accent};
+  box-shadow: 0 0 0 3px alpha({accent}, 0.28);
+}}
+.csstage .passwordentry progress {{
+  margin: 2px;
+  padding: 0;
+  border-radius: 0;
+  border-width: 0 0 2px;
+  border-style: solid;
+  border-color: {accent};
+  background-color: transparent;
+  background-image: none;
+}}
+.csstage .passwordentry image.left {{ padding-right: 12px; }}
+.csstage .passwordentry:backdrop {{ font-family: monospace; font-size: 14px; color: {accent}; }}
+
+.csstage .auth-message {{ font-size: 15px; color: #FF6B7D; text-shadow: 0 1px 6px alpha(black, 0.6); }}
+.csstage .caps-message {{ font-size: 15px; color: #FFB86B; text-shadow: 0 1px 6px alpha(black, 0.6); }}
+
+.csstage .transparentbutton,
+.csstage .osk-button {{
+  -gtk-icon-style: requested;
+  color: alpha(white, 0.75);
+  background-image: none;
+  background-color: alpha(#121215, 0.62);
+  border: 1px solid alpha(white, 0.09);
+  border-image: none;
+  border-radius: 20px;
+  -gtk-outline-radius: 20px;
+  outline-color: transparent;
+  box-shadow: none;
+  padding: 4px;
+}}
+.csstage .osk-button {{ border-radius: 8px; -gtk-outline-radius: 8px; }}
+.csstage .transparentbutton image,
+.csstage .osk-button image {{ color: alpha(white, 0.75); }}
+.csstage .transparentbutton:disabled image,
+.csstage .osk-button:disabled image {{ color: alpha(white, 0.25); }}
+.csstage .transparentbutton:hover,
+.csstage .osk-button:hover {{ background-color: alpha(#26262B, 0.85); border-color: alpha(white, 0.18); }}
+.csstage .transparentbutton:focus,
+.csstage .transparentbutton:hover:focus,
+.csstage .transparentbutton:active,
+.csstage .transparentbutton:active:focus,
+.csstage .osk-button:focus,
+.csstage .osk-button:hover:focus,
+.csstage .osk-button:active,
+.csstage .osk-button:active:focus {{ border-color: {accent}; }}
+.csstage .osk-popover {{ background-color: #17171A; border: 1px solid alpha(white, 0.09); }}
+
+.csstage .toppanel {{
+  color: #F4F4F6;
+  background-color: transparent;
+  background-image: linear-gradient(to bottom, alpha(black, 0.35), alpha(black, 0));
+  border-style: solid;
+  border-color: alpha(white, 0.08);
+}}
+.csstage .audiopanel,
+.csstage .infopanel {{
+  background-color: alpha(#121215, 0.55);
+  border: 1px solid alpha(white, 0.08);
+}}
+.csstage .audiopanel {{ border-width: 0 1px 1px 0; border-radius: 0 0 12px 0; }}
+.csstage .infopanel {{ border-width: 0 0 1px 1px; border-radius: 0 0 0 12px; }}
+.csstage .notificationwidget,
+.csstage .powerwidget {{
+  font-size: 12px;
+  font-weight: bold;
+  color: #F4F4F6;
+  background-color: transparent;
+  background-image: none;
+  text-shadow: 0 1px 6px alpha(black, 0.6);
+  padding: 6px;
+}}
+
+.csstage .trackname {{ font-size: 14px; background: none; text-shadow: 0 1px 6px alpha(black, 0.6); }}
+.csstage .albumartist {{ font-size: 11px; color: alpha(white, 0.72); background: none; text-shadow: 0 1px 6px alpha(black, 0.6); }}
+.csstage .volumeslider {{
+  min-height: 24px;
+  min-width: 100px;
+  padding: 3px 0;
+  color: {accent};
+  background-color: alpha(white, 0.1);
+}}
+.csstage .volumeslider:disabled {{ background-color: alpha(white, 0.35); }}
+.csstage scale.volumeslider slider {{ min-height: 24px; min-width: 4px; margin: -9px; }}
+/* <<< bandanix lock screen <<< */
 """
 
 

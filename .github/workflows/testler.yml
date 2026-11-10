@@ -1,0 +1,28 @@
+# Every push and pull request: all unit tests and a shellcheck pass over the install scripts.
+# Errors make the run red; shellcheck warnings show up as notes on the commit without failing it.
+name: Testler
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  testler:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Gerekenler
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq python3-pil shellcheck
+
+      - name: Birim testleri
+        run: scripts/testler.sh
+
+      - name: Shellcheck (hatalar)
+        run: scripts/denetle.sh error
+
+      - name: Shellcheck (uyarılar, yalnızca rapor)
+        if: always()
+        run: scripts/denetle.sh warning --rapor

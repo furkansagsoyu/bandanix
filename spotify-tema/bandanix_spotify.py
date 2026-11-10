@@ -238,6 +238,11 @@ def main(argv: list[str]) -> int:
         return cmd_restore()
     if len(argv) == 1 and cmd == "_oturum":
         return cmd_login()
+    if len(argv) == 1 and cmd == "_json":              # for Bandanix Ayarlar
+        info, state, sp = detect(), load_state(), spicetify()
+        theme = "yok" if not state else ("kalkmis" if state.get("surum") != info["surum"] else "acik")
+        print(json.dumps({"tur": info["tur"], "spicetify": bool(sp), "tema": theme}))
+        return 0
     if len(argv) == 1 and cmd == "_tur":
         print(detect()["tur"])
         return 0

@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # Bandanix: reads the few theme.toml keys that bash needs (sourced, not run).
 # Sets BX_ACCENT, BX_R/BX_G/BX_B (accent as RGB), BX_PROMPT and BX_FETCH (1 = on).
 

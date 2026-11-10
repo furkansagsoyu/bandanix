@@ -11,6 +11,9 @@
 **Linux Mint için Bandana'nın masaüstü kiti.**
 Birbirine yakışan küçük araçlar. İstersen hepsini kur, istersen sadece beğendiklerini.
 
+
+[![Testler](https://github.com/furkansagsoyu/bandanix/actions/workflows/testler.yml/badge.svg)](https://github.com/furkansagsoyu/bandanix/actions/workflows/testler.yml)
+
 </div>
 
 <p align="center">
@@ -86,10 +89,12 @@ Kurduktan sonra her şeyi menüdeki **Bandanix Ayarlar** uygulamasından (ya da 
 ### Güncelleme
 
 ```bash
-cd ~/bandanix
-git pull
-./install.sh            # değişen parçaları yeniden kur
+bandanix guncelle
 ```
+
+GitHub'dan yenilikleri çeker ve yalnızca kurulu olup dosyaları değişmiş parçaları yeniden kurar. Bandanix Ayarlar açılırken bir kez GitHub'a bakar; güncelleme varsa üstte bir şerit ve **Güncelle** düğmesi çıkar. Bandanix klasöründe commit edilmemiş değişikliklerin varsa çekme atlanır, yalnızca değişen parçalar kurulur. Yeni bir parçayı kurmak içinse yine `./install.sh <parça>`.
+
+Değişiklik yapıyorsan testler: `scripts/testler.sh` (birim testleri) ve `scripts/denetle.sh` (shellcheck). GitHub her `git push`'ta ikisini de çalıştırır.
 
 ## Ortak tema
 

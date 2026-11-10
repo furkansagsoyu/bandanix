@@ -2,6 +2,8 @@
 and a status line at the bottom for longer jobs."""
 from __future__ import annotations
 
+import json
+
 import gi
 
 gi.require_version("Gtk", "3.0")
@@ -167,6 +169,18 @@ class Window:
                                                  Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
         outer = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+
+        # update banner: shown only when GitHub has news or a part waits for reinstalling
+        self.update_bar = Gtk.InfoBar()
+        self.update_bar.set_message_type(Gtk.MessageType.INFO)
+        self.update_bar.set_show_close_button(True)
+        self.update_bar.add_button("Güncelle", Gtk.ResponseType.ACCEPT)
+        self.update_text = label("", wrap=True)
+        self.update_bar.get_content_area().add(self.update_text)
+        self.update_bar.connect("response", self.on_update_response)
+        self.update_bar.set_no_show_all(True)
+        outer.pack_start(self.update_bar, False, False, 0)
+
         body = Gtk.Box()
         self.stack = Gtk.Stack()
         self.stack.set_transition_type(Gtk.StackTransitionType.CROSSFADE)
@@ -204,6 +218,38 @@ class Window:
         self.progress.hide()
         self.details.hide()
         self.refresh_all()
+        GLib.idle_add(lambda: self.check_updates(fetch=True) and False)
+
+    # ---- updates -------------------------------------------------------------------------
+    def check_updates(self, fetch: bool) -> None:
+        """Ask the shared helper (in the background: git fetch may take a second)."""
+        script = next((p for p in (ortam.CORE / "bandanix_guncelle.py",
+                                   (ortam.source() or ortam.HOME) / "core" / "bandanix_guncelle.py")
+                       if p.is_file()), None)
+        if script is None:
+            return
+        args = ["/usr/bin/python3", str(script), "durum", "--json"] + (["--fetch"] if fetch else [])
+        isler.background(args, self.on_update_state)
+
+    def on_update_state(self, ok: bool, out: str) -> None:
+        try:
+            st = json.loads(out) if ok else {}
+        except ValueError:
+            st = {}
+        text = update_message(st)
+        self.update_text.set_text(text)
+        self.update_text.show()
+        self.update_bar.set_visible(bool(text))
+
+    def on_update_response(self, bar, response) -> None:
+        bar.hide()
+        if response != Gtk.ResponseType.ACCEPT:
+            return
+        command = f"{ortam.BIN / 'bandanix'} guncelle"
+        if isler.terminal(command, on_exit=lambda: (self.refresh_all(), self.check_updates(fetch=False))):
+            self.say("Güncelleme terminal penceresinde sürüyor; bitince bu pencere kendini yeniler.", 10)
+        else:
+            self.say("Terminal açılamadı. Komutu kendin çalıştır: " + command, 20)
 
     # ---- status line ---------------------------------------------------------------------
     def say(self, text: str, seconds: int = 5) -> None:
@@ -275,6 +321,21 @@ class Window:
             return []
         return [(ortam.NAMES.get(c, c), ["bash", str(src / c / "install.sh")])
                 for c in components if ortam.installed(c) and (src / c / "install.sh").is_file()]
+
+
+def update_message(st: dict) -> str:
+    """The banner text for a `bandanix_guncelle durum --json` answer ('' = nothing to say)."""
+    parts = []
+    behind = st.get("geride") or 0
+    if behind and not st.get("kirli"):
+        parts.append(f"GitHub'da {behind} yeni değişiklik var.")
+    changed = [ortam.NAMES.get(c, c) for c in st.get("degisen", [])]
+    if changed:
+        parts.append(("Güncellenmeyi bekleyen parçalar: " if len(changed) > 1 else "Güncellenmeyi bekleyen parça: ")
+                     + ", ".join(changed) + ".")
+    elif st.get("core"):
+        parts.append("Ortak araçlar güncellenmeyi bekliyor.")
+    return " ".join(parts)
 
 
 def run() -> int:

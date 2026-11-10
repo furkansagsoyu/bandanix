@@ -194,7 +194,8 @@ def main(argv: list[str]) -> int:
         return 0
     if cmd == "_durum" and len(argv) == 1:              # for install.sh
         print(json.dumps({"eklenti": str(EXT), "tema": str(THEME_DIR),
-                          "eklenti_yuklu": loaded_in_brave(EXT), "tema_yuklu": loaded_in_brave(THEME_DIR)}))
+                          "eklenti_yuklu": loaded_in_brave(EXT), "tema_yuklu": loaded_in_brave(THEME_DIR),
+                          "arka_plan": read_settings().get("kaynak", "")}, ensure_ascii=False))
         return 0
     if cmd == "_arka-plan" and len(argv) == 2:         # called by bandanix-duvar after a change
         source = Path(argv[1])

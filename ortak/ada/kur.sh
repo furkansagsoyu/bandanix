@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # Sourced by island installers (Sound Island, Sistem adası).
 # One Python environment with Qt for every island: ~/.local/share/bandanix/ada
 ADA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/bandanix/ada"

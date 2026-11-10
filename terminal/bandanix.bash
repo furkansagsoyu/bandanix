@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # Bandanix terminal: two-line prompt + bandanix-fetch when a terminal opens.
 # Sourced from ~/.bashrc (the installer adds one marked line there).
 

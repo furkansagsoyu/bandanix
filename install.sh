@@ -37,6 +37,7 @@ YEDEK="$HOME/.local/bin/bandanix-yedek"
 mkdir -p "$CORE" "$(dirname "$YEDEK")"
 cp "$ROOT"/core/*.py "$CORE/"
 echo "$ROOT" > "$(dirname "$CORE")/kaynak"     # where Bandanix Ayarlar finds the installers
+/usr/bin/python3 "$ROOT/core/bandanix_guncelle.py" kaydet core || true
 cat > "$YEDEK" <<EOF
 #!/bin/sh
 exec /usr/bin/python3 "$CORE/bandanix_yedek.py" "\$@"

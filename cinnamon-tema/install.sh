@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# description: Mint-Y tabanlı koyu Bandanix teması (pencereler, panel, menüler)
+# description: Mint-Y tabanlı koyu Bandanix teması (pencereler, panel, menüler, kilit ekranı)
 # kurulu: ~/.themes/Bandanix/gtk-3.0
 set -euo pipefail
 
@@ -44,6 +44,9 @@ if ask "Bandanix teması şimdi uygulansın mı?"; then
     dconf:/org/gnome/desktop/interface/gtk-theme \
     dconf:/org/gnome/desktop/interface/color-scheme \
     "dosya:~/.config/gtk-4.0/gtk.css"
+  # lock screen: clock font and format, fixed position, media controls (colours are in the theme)
+  mapfile -t lock_keys < <(/usr/bin/python3 "$HERE/kilit_ekrani.py" anahtarlar)
+  "$YEDEK" isaretle cinnamon-tema "${lock_keys[@]}"
 
   mkdir -p "$(dirname "$GTK4_CSS")"
   cp "$THEME_DIR/bandanix-gtk4.css" "$GTK4_CSS"
@@ -51,6 +54,7 @@ if ask "Bandanix teması şimdi uygulansın mı?"; then
   dconf write /org/cinnamon/theme/name "'Bandanix'"
   dconf write /org/gnome/desktop/interface/gtk-theme "'Bandanix'"
   dconf write /org/gnome/desktop/interface/color-scheme "'prefer-dark'"
+  /usr/bin/python3 "$HERE/kilit_ekrani.py" uygula
   echo "• Tema uygulandı. Açık olan bazı uygulamalar yeni görünümü yeniden açılınca alır."
 else
   echo "• Tema kuruldu ama uygulanmadı. İstediğinde: Sistem Ayarları → Temalar → Bandanix"

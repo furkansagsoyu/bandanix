@@ -2,7 +2,7 @@
 
 *[Bandanix](../README.md) kitinin bir parçası.*
 
-Bütün Bandanix ayarları tek pencerede. Menüde **Bandanix Ayarlar**, terminalde `bandanix`.
+Bütün Bandanix ayarları tek pencerede. Menüde **Bandanix Ayarlar**, terminalde `bandanix`. Güncelleme varsa pencerenin üstünde bir şerit çıkar; terminalden: `bandanix guncelle`.
 
 ![Bandanix Ayarlar](../docs/ayarlar.png)
 
@@ -16,6 +16,7 @@ Bütün Bandanix ayarları tek pencerede. Menüde **Bandanix Ayarlar**, terminal
 | **Pil** | Şarj sınırı kaydırıcısı, düşük pil uyarısı, pilin durumu ve sağlığı. |
 | **Performans** | Güç modu (Serin, Eco, Dengeli, Turbo), fan modu, Cooler Boost. |
 | **Kısayollar** | Not kutusu ve pano kısayolları; yeni tuşa basarak değiştirilir, dolu tuşlar için uyarır. |
+| **Uygulamalar** | VS Code, Brave, Spotify ve açılış ekranının durumu; Brave'in arka planını güncelleme, Spotify temasını yeniden uygulama, açılış ekranını deneme. |
 | **Parçalar** | Hangi parça kurulu; tek tıkla kur ya da kaldır (şifre ya da onay gerekebileceği için terminal penceresinde çalışır). |
 | **Yedekler** | Masaüstü yedekleri; yedek al ya da geri yükle. |
 

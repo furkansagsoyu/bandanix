@@ -2,7 +2,7 @@
 
 *[Bandanix](../README.md) kitinin bir parçası.*
 
-Pencereleri, menüleri, dosya yöneticisini ve Cinnamon panelini Bandanix renklerine çeviren koyu tema.
+Pencereleri, menüleri, dosya yöneticisini, Cinnamon panelini ve kilit ekranını Bandanix renklerine çeviren koyu tema.
 
 ## Nasıl çalışır
 
@@ -11,7 +11,7 @@ Tema sıfırdan çizilmiyor: kurulum, Mint'in kendi **Mint-Y-Dark-Red** temasın
 - Sistem dosyalarına dokunulmaz, şifre gerekmez
 - Mint uygulamalarıyla birebir uyumlu kalır
 - Derleme aracı gerekmez; üretim birkaç saniye sürer
-- Kırmızılar bandana kırmızısına, koyu griler Bandanix tonlarına geçer; yeşil, mavi gibi diğer renklere dokunulmaz
+- Kırmızılar bandana kırmızısına, koyu griler Bandanix tonlarına geçer. Mint-Y'nin yeşil boyadığı vurgulu düğmeler ("Uygula", "Kur", "Kaydet") vurgu rengini alır; başka renklere dokunulmaz.
 
 ## Kapsam
 
@@ -19,7 +19,26 @@ GTK3 ve GTK2 uygulamaları, Cinnamon (panel, menü, bildirimler, Alt+Tab, göste
 
 Pencere kenarlıkları değiştirilmez: Mint-Y'nin bütün renk varyantları ortak "Mint-Y" kenarlığını kullanır, Bandanix de onu kullanmaya devam eder. Başlık çubuğunu kendisi çizen uygulamalarda (çoğu GTK3 uygulaması) başlık ve düğmeler Bandanix renklerini alır.
 
-VS Code, Spotify, Discord gibi Electron uygulamaları kendi görünümlerini kullanır ve temadan etkilenmez.
+## Kilit ekranı
+
+![Kilit ekranı (çizim)](../docs/kilit-ekrani.jpg)
+
+*Temanın renkleriyle çizilmiş bir önizleme; Galata duvar kağıdındaki BANDANIX yazısı gerçek ekranda da kullanıcı resminin arkasında kalır.*
+
+Super+L ile kilitlediğinde:
+
+- Saat büyük ve ince yazıyla, altında "Salı, 10 Kasım". Yazı tipi `theme.toml` içindeki `fonts.ui`; boşsa Ubuntu.
+- Saat yerinde durur, Cinnamon'daki gibi ekranda gezinmez. Cinnamon'un sabit yeri sol ortadır, ortaya alınamaz.
+- Şifre kutusu koyu ve yuvarlak köşeli; yazarken kenarı vurgu renginde yanar. Kullanıcı resmi ve albüm kapağı vurgu rengi çerçeveli.
+- Çalan şarkı sol üstte; kilit ekranından durdurup geçebilirsin.
+
+Arka plan masaüstü duvar kağıdının kendisidir. Mevcut Cinnamon kilit ekranında bulanıklaştırma ya da ayrı bir resim mümkün değil. Linux Mint 23'te gelecek yeni kilit ekranında bu bölüm yeniden ele alınacak.
+
+Tema kaldırılınca kilit ekranı ayarları da eski hâline döner.
+
+## Diğer uygulamalar
+
+VS Code, Spotify, Discord gibi Electron uygulamaları kendi görünümlerini kullanır ve bu temadan etkilenmez. VS Code, Brave ve Spotify için ayrı Bandanix parçaları var.
 
 ## Renkler
 

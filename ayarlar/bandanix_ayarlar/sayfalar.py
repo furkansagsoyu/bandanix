@@ -643,4 +643,102 @@ class Yedekler(Page):
             self.win.say("Geri yükleme terminal penceresinde; neyin değişeceğini gösterip onay isteyecek.", 10)
 
 
-PAGES = [Gorunum, Duvar, Panel, SoundIsland, Sistem, Pil, Performans, Kisayollar, Parcalar, Yedekler]
+
+
+# ---- Uygulamalar: the app themes (VS Code, Brave, Spotify) and the boot screen -----------------
+class Uygulamalar(Page):
+    id, title = "uygulamalar", "Uygulamalar"
+    heading = "Uygulamalar"
+    description = ("Bandanix renklerini alan uygulamalar ve açılış ekranı. Şifre ya da onay isteyebilen işler "
+                   "bir terminal penceresinde çalışır; bitince bu sayfa kendini yeniler.")
+    APPS = [("vscode-tema", "VS Code"), ("yeni-sekme", "Brave"), ("spotify-tema", "Spotify"),
+            ("acilis-ekrani", "Açılış ekranı")]
+
+    def build(self, box):
+        self.holder = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=18)
+        box.pack_start(self.holder, False, False, 0)
+
+    def load(self):
+        for child in self.holder.get_children():
+            self.holder.remove(child)
+        for cid, name in self.APPS:
+            if ortam.installed(cid):
+                rows = getattr(self, "rows_" + cid.replace("-", "_"))()
+            else:
+                rows = [row(ortam.NAMES.get(cid, name), "Kurulu değil",
+                            button("Kur", lambda c=cid: self.win.install(c), "suggested-action"))]
+            self.holder.pack_start(group(name, rows), False, False, 0)
+        self.holder.show_all()
+
+    # ---- helpers -------------------------------------------------------------------------
+    @staticmethod
+    def json_of(argv: list[str]) -> dict:
+        ok, out = isler.quick(argv, timeout=10)
+        try:
+            return json.loads(out) if ok else {}
+        except ValueError:
+            return {}
+
+    @staticmethod
+    def buttons(*items) -> Gtk.Box:
+        box = Gtk.Box(spacing=8)
+        for text, handler in items:
+            box.pack_start(button(text, handler), False, False, 0)
+        return box
+
+    def in_terminal(self, command: str) -> None:
+        if isler.terminal(command, on_exit=self.refresh):
+            self.win.say("Terminal penceresinde sürüyor; bitince bu sayfa kendini yeniler.", 10)
+        else:
+            self.win.say("Terminal açılamadı. Komutu kendin çalıştır: " + command, 20)
+
+    def in_background(self, argv: list[str]) -> None:
+        def done(ok, out):
+            last = out.strip().splitlines()[-1].lstrip("• ") if out.strip() else ""
+            self.win.say(last or ("Tamam." if ok else "Olmadı; parçayı yeniden kur."), 10)
+            self.refresh()
+        isler.background(argv, done)
+
+    # ---- the four apps -------------------------------------------------------------------
+    def rows_vscode_tema(self):
+        try:
+            editors = (ortam.DATA / "bandanix" / "vscode-tema" / "kurulu").read_text().split()
+        except OSError:
+            editors = []
+        names = {"code": "VS Code", "codium": "VSCodium", "code-insiders": "VS Code Insiders"}
+        where = ", ".join(names.get(e, e) for e in editors) or "bilinmiyor"
+        return [row("Bandanix Dark", f"Kurulu: {where}. Seçmek için VS Code'da Ctrl+K, ardından Ctrl+T.",
+                    self.buttons(("Yeniden kur", lambda: self.win.install("vscode-tema"))))]
+
+    def rows_yeni_sekme(self):
+        s = self.json_of([str(BIN / "bandanix-sekme"), "_durum"])
+        words = {True: "Brave'de yüklü", False: "Brave'de yüklü değil", None: "Brave hiç açılmamış"}
+        page = words.get(s.get("eklenti_yuklu"), "bilinmiyor")
+        theme = words.get(s.get("tema_yuklu"), "bilinmiyor")
+        bg = s.get("arka_plan") or "-"
+        return [
+            row("Yeni sekme", f"{page} · arka plan: {bg}",
+                self.buttons(("Arka planı güncelle", lambda: self.in_background([str(BIN / "bandanix-sekme"), "guncelle"])))),
+            row("Tema", theme,
+                self.buttons(("Eklentiler sayfasını aç", lambda: self.in_background([str(BIN / "bandanix-sekme"), "ac"])))),
+        ]
+
+    def rows_spotify_tema(self):
+        s = self.json_of([str(BIN / "bandanix-spotify"), "_json"])
+        kinds = {"deb": "deb paketi", "flatpak": "Flatpak", "snap": "Snap (desteklenmiyor)", "yok": "bulunamadı"}
+        theme = {"acik": "Bandanix teması açık", "kalkmis": "Spotify güncellenmiş, tema kalkmış olabilir",
+                 "yok": "tema uygulanmadı"}.get(s.get("tema", ""), "bilinmiyor")
+        return [row("Spotify teması", f"{theme} · Spotify: {kinds.get(s.get('tur', ''), 'bilinmiyor')}",
+                    self.buttons(("Temayı yeniden uygula", lambda: self.in_terminal(f"{BIN / 'bandanix-spotify'} uygula")),
+                                 ("Kendi görünümüne dön", lambda: self.in_background([str(BIN / "bandanix-spotify"), "geri"]))))]
+
+    def rows_acilis_ekrani(self):
+        ok, out = isler.quick([str(BIN / "bandanix-acilis")], timeout=10)
+        lines = [re.sub(r"\s{2,}", ": ", l.strip(), count=1) for l in out.splitlines()[:3] if l.strip()] if ok else []
+        acilis = str(BIN / "bandanix-acilis")
+        return [row("Açılış ve GRUB", " · ".join(lines) or "durum okunamadı",
+                    self.buttons(("Dene", lambda: self.in_terminal(f"{acilis} dene")),
+                                 ("Kapanışı dene", lambda: self.in_terminal(f"{acilis} dene kapanis"))))]
+
+
+PAGES = [Gorunum, Duvar, Panel, SoundIsland, Sistem, Pil, Performans, Uygulamalar, Kisayollar, Parcalar, Yedekler]
