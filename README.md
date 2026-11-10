@@ -28,6 +28,7 @@ Birbirine yakışan küçük araçlar. İstersen hepsini kur, istersen sadece be
 | [**Duvar Kağıtları**](duvar-kagidi/) | Bandana kumaşı ve kırmızı gökyüzüyle bir seri: Kemer, Galata, Gün Batımı, İpek. |
 | [**Panel Düzeni**](panel-duzeni/) | Paneli yüzen adalara çevirir: Windows 11 gibi ortada menü ve pencereler, sağda tepsi (ya da üç ada). |
 | [**Giriş Ekranı**](giris-ekrani/) | Şifre yazdığın giriş ekranında duvar kağıdının bulanık hâli, Bandanix teması, ikonları ve imleci. |
+| [**Açılış Ekranı**](acilis-ekrani/) | Açılışta ve kapanışta siyah zeminde BANDANIX ve ince kırmızı bir çizgi; GRUB menüsü de aynı görünümde. |
 | [**Terminal**](terminal/) | İki satırlı prompt (git, Python ortamı, hata kodu), bandana kırmızısı renk şeması ve her yeni pencerede `bandanix-fetch`. |
 | [**VS Code Teması**](vscode-tema/) | Bandanix Dark: nötr koyu arayüz, bandana kırmızısı vurgular ve sıcak tonlu kod renkleri. |
 

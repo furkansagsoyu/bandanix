@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=Bandanix
+Description=Siyah zeminde BANDANIX ve ince kırmızı ilerleme çizgisi
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/bandanix
+ScriptFile=/usr/share/plymouth/themes/bandanix/bandanix.script

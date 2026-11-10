@@ -1,0 +1,196 @@
+// Bandanix boot splash: BANDANIX in the middle, a thin red progress line under it,
+// "Kapanıyor" / "Yeniden başlatılıyor" when shutting down, and a password box for an encrypted disk.
+// Pictures are drawn for a 1080p screen at 2x and scaled here to the real screen.
+
+Window.SetBackgroundTopColor(0, 0, 0);
+Window.SetBackgroundBottomColor(0, 0, 0);
+
+screen.w = Window.GetWidth();
+screen.h = Window.GetHeight();
+screen.x = Window.GetX();
+screen.y = Window.GetY();
+u = screen.h / 1080;
+if (u < 0.6) u = 0.6;
+if (u > 2) u = 2;
+
+fun px(n) {
+  return Math.Int(n * u + 0.5);
+}
+
+fun scaled(name) {
+  local.img = Image(name);
+  return local.img.Scale(Math.Int(local.img.GetWidth() * u / 2 + 0.5), Math.Int(local.img.GetHeight() * u / 2 + 0.5));
+}
+
+fun center_x(img) {
+  return screen.x + Math.Int((screen.w - img.GetWidth()) / 2);
+}
+
+// ---- wordmark -----------------------------------------------------------------------------
+mark_img = scaled("wordmark.png");
+mark = Sprite(mark_img);
+mark_y = screen.y + Math.Int(screen.h * 0.45 - mark_img.GetHeight() / 2);
+mark.SetPosition(center_x(mark_img), mark_y, 10);
+
+// ---- progress line ------------------------------------------------------------------------
+bar.w = px(260);
+bar.h = Math.Max(2, px(3));
+bar.x = screen.x + Math.Int((screen.w - bar.w) / 2);
+bar.y = mark_y + mark_img.GetHeight() + px(36);
+track = Sprite(Image("iz.png").Scale(bar.w, bar.h));
+track.SetPosition(bar.x, bar.y, 10);
+fill_img = Image("cizgi.png");
+fill = Sprite(fill_img.Scale(bar.w, bar.h));
+fill.SetPosition(bar.x, bar.y, 11);
+
+mode = Plymouth.GetMode();
+ending = 0;
+if (mode == "shutdown" || mode == "reboot") ending = 1;
+label = Sprite();
+if (ending) {
+  if (mode == "reboot") label_img = scaled("yeniden.png");
+  else label_img = scaled("kapaniyor.png");
+  label.SetImage(label_img);
+  label.SetPosition(center_x(label_img), bar.y + bar.h + px(22), 10);
+}
+else {
+  fill.SetOpacity(0);
+}
+
+target = 0;      // progress reported by Plymouth (0..1)
+shown = 0;       // what the line shows, eases towards target
+still = 0;       // frames since the progress last moved
+tick = 0;
+last_w = -1;
+dialog = 0;
+
+fun on_progress(duration, progress) {
+  if (progress > target + 0.002) {
+    target = progress;
+    still = 0;
+  }
+}
+
+fun on_refresh() {
+  tick = tick + 1;
+  still = still + 1;
+  if (dialog == 0) {
+    if (ending) {
+      fill.SetOpacity(0.55 + 0.45 * Math.Cos(tick * 0.05));
+    }
+    else {
+      shown = shown + (target - shown) * 0.06;
+      local.w = Math.Int(bar.w * shown);
+      if (local.w < 1) {
+        fill.SetOpacity(0);
+      }
+      else {
+        if (local.w != last_w) {
+          fill.SetImage(fill_img.Scale(local.w, bar.h));
+          last_w = local.w;
+        }
+        // nothing reported for a while: breathe slowly so the screen never looks frozen
+        if (still > 40) fill.SetOpacity(0.6 + 0.4 * Math.Cos((still - 40) * 0.06));
+        else fill.SetOpacity(1);
+      }
+    }
+  }
+}
+
+// ---- password / question box --------------------------------------------------------------
+box_img = scaled("kutu.png");
+box = Sprite(box_img);
+box_y = bar.y + px(40);
+box.SetPosition(center_x(box_img), box_y, 20);
+box.SetOpacity(0);
+prompt = Sprite();
+prompt.SetOpacity(0);
+answer = Sprite();
+answer.SetOpacity(0);
+dot_img = scaled("nokta.png");
+dot_step = dot_img.GetWidth() + px(8);
+max_dots = Math.Int((box_img.GetWidth() - px(40)) / dot_step);
+dots_made = 0;
+
+fun hide_dots(from) {
+  local.i = from;
+  while (local.i < dots_made) {
+    dots[local.i].SetOpacity(0);
+    local.i = local.i + 1;
+  }
+}
+
+fun show_dialog(text) {
+  dialog = 1;
+  track.SetOpacity(0);
+  fill.SetOpacity(0);
+  label.SetOpacity(0);
+  box.SetOpacity(1);
+  local.t = text;
+  if (local.t == "") local.t = "Disk şifresi";
+  local.img = Image.Text(local.t, 0.63, 0.63, 0.67, 1, "Sans " + px(13));
+  prompt.SetImage(local.img);
+  prompt.SetPosition(center_x(local.img), box_y - local.img.GetHeight() - px(12), 20);
+  prompt.SetOpacity(1);
+}
+
+fun on_password(text, bullets) {
+  show_dialog(text);
+  answer.SetOpacity(0);
+  local.n = Math.Min(bullets, max_dots);
+  local.start = screen.x + Math.Int((screen.w - (local.n * dot_step - px(8))) / 2);
+  local.top = box_y + Math.Int((box_img.GetHeight() - dot_img.GetHeight()) / 2);
+  local.i = 0;
+  while (local.i < local.n) {
+    if (local.i >= dots_made) {
+      global.dots[local.i] = Sprite(dot_img);
+      dots_made = dots_made + 1;
+    }
+    dots[local.i].SetPosition(local.start + local.i * dot_step, local.top, 21);
+    dots[local.i].SetOpacity(1);
+    local.i = local.i + 1;
+  }
+  hide_dots(local.n);
+}
+
+fun on_question(text, entry) {
+  show_dialog(text);
+  hide_dots(0);
+  local.img = Image.Text(entry, 0.95, 0.95, 0.96, 1, "Sans " + px(14));
+  answer.SetImage(local.img);
+  answer.SetPosition(center_x(local.img), box_y + Math.Int((box_img.GetHeight() - local.img.GetHeight()) / 2), 21);
+  answer.SetOpacity(1);
+}
+
+fun on_normal() {
+  dialog = 0;
+  box.SetOpacity(0);
+  prompt.SetOpacity(0);
+  answer.SetOpacity(0);
+  hide_dots(0);
+  track.SetOpacity(1);
+  label.SetOpacity(1);
+}
+
+// ---- system messages (disk check and the like), small and grey at the bottom ---------------
+message = Sprite();
+
+fun on_message(text) {
+  local.img = Image.Text(text, 0.45, 0.45, 0.5, 1, "Sans " + px(11));
+  message.SetImage(local.img);
+  message.SetPosition(center_x(local.img), screen.y + screen.h - local.img.GetHeight() - px(40), 10);
+  message.SetOpacity(1);
+}
+
+fun on_hide_message(text) {
+  message.SetOpacity(0);
+}
+
+Plymouth.SetRefreshFunction(on_refresh);
+Plymouth.SetBootProgressFunction(on_progress);
+Plymouth.SetDisplayPasswordFunction(on_password);
+Plymouth.SetDisplayQuestionFunction(on_question);
+Plymouth.SetDisplayNormalFunction(on_normal);
+Plymouth.SetDisplayMessageFunction(on_message);
+Plymouth.SetHideMessageFunction(on_hide_message);
+Plymouth.SetMessageFunction(on_message);

@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+# bandanix-acilis: boot screen state; "dene" shows the boot screen in a window for a few seconds.
+set -euo pipefail
+
+THEME=/usr/share/plymouth/themes/bandanix/bandanix.plymouth
+
+usage() {
+  cat <<'TXT'
+Kullanım:
+  bandanix-acilis              açılış ekranı ve GRUB teması kurulu mu, menü gizli mi
+  bandanix-acilis dene         açılış ekranını 15 saniyeliğine bir pencerede göster
+  bandanix-acilis dene kapanis kapanış ekranını göster
+TXT
+}
+
+grub_value() {   # last value wins, like grub-mkconfig (main file, then grub.d in order)
+  local key=$1 f line val=""
+  for f in /etc/default/grub /etc/default/grub.d/*.cfg; do
+    [[ -r $f ]] || continue
+    while IFS= read -r line; do
+      [[ $line =~ ^[[:space:]]*$key=(.*)$ ]] && val=${BASH_REMATCH[1]}
+    done < "$f"
+  done
+  val=${val//\"/}
+  echo "${val//\'/}"
+}
+
+status() {
+  local cur grub style timeout
+  cur=$(update-alternatives --query default.plymouth 2>/dev/null | awk '/^Value:/{print $2}' || true)
+  if [[ $cur == "$THEME" ]]; then
+    echo "Açılış ekranı  Bandanix"
+  elif [[ -n $cur ]]; then
+    echo "Açılış ekranı  $(basename "$(dirname "$cur")") (Bandanix değil)"
+  else
+    echo "Açılış ekranı  bilinmiyor"
+  fi
+  if grep -qs "themes/bandanix/theme.txt" /boot/grub/grub.cfg; then grub="Bandanix"
+  elif [[ -r /boot/grub/grub.cfg ]]; then grub="Bandanix değil"
+  else grub="okunamadı"
+  fi
+  echo "GRUB teması    $grub"
+  style=$(grub_value GRUB_TIMEOUT_STYLE)
+  timeout=$(grub_value GRUB_TIMEOUT)
+  if [[ $style == hidden || ${timeout:-5} == 0 ]]; then
+    echo "GRUB menüsü    gizli (görmek için açılışta Shift'e basılı tut ya da Esc'ye bir kez bas)"
+  else
+    echo "GRUB menüsü    her açılışta ${timeout:-5} saniye görünür"
+  fi
+  if ! grep -qw splash /proc/cmdline; then
+    echo
+    echo "Not: Çekirdek satırında \"splash\" yok, bu yüzden açılışta yazılar görünür, açılış ekranı görünmez."
+  fi
+}
+
+preview() {
+  local mode=boot
+  [[ ${1:-} == kapanis ]] && mode=shutdown
+  if ! ls /usr/lib/*/plymouth/renderers/x11.so >/dev/null 2>&1; then
+    echo "Önizleme için plymouth-x11 paketi gerekiyor:"
+    echo "  sudo apt install plymouth-x11"
+    exit 1
+  fi
+  if [[ ! -f $THEME ]]; then
+    echo "Bandanix açılış ekranı kurulu değil: ./install.sh acilis-ekrani"
+    exit 1
+  fi
+  if pgrep -x plymouthd >/dev/null; then
+    echo "Plymouth zaten çalışıyor; birkaç saniye sonra yeniden dene."
+    exit 1
+  fi
+  echo "• 15 saniyelik önizleme açılıyor (şifren sorulabilir)."
+  sudo -v
+  trap 'sudo plymouth --quit 2>/dev/null || true' EXIT
+  sudo env DISPLAY="${DISPLAY:-:0}" XAUTHORITY="${XAUTHORITY:-$HOME/.Xauthority}" plymouthd --mode="$mode"
+  sudo plymouth --show-splash
+  sleep 5
+  sudo plymouth display-message --text="Bandanix önizlemesi: sistem mesajları burada görünür"
+  sleep 4
+  if [[ $mode == boot ]]; then
+    echo "• Şifre kutusu: pencereye bir şeyler yazıp Enter'a bas (6 saniye bekler)."
+    sudo timeout 6 plymouth ask-for-password --prompt="Disk şifresi (önizleme)" >/dev/null 2>&1 || true
+  fi
+  sleep 2
+}
+
+case "${1:-}" in
+  "") status ;;
+  dene) preview "${2:-}" ;;
+  -h|--help|yardim) usage ;;
+  *) usage >&2; exit 2 ;;
+esac
