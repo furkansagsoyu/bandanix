@@ -71,10 +71,18 @@ class RulesTest(unittest.TestCase):
         s = r.update(10, None, 50, (84, 100), [Disk(89)])
         self.assertEqual(s["sorunlar"], [])
 
-    def test_temperature_needs_two_readings(self):
+    def test_temperature_is_averaged_over_half_a_minute(self):
         r = Rules()
-        self.assertEqual(r.update(0, None, 95, None, [])["sorunlar"], [])
-        self.assertEqual(r.update(5, None, 96, None, [])["sorunlar"][0]["yazi"], "96°C")
+        # a short turbo spike: 95 for 10 s between cool readings -> no warning
+        for second, temp in enumerate([50, 50, 95, 95, 50, 50, 50, 50]):
+            self.assertEqual(r.update(second * 5, None, temp, None, [])["sorunlar"], [], second)
+        # really hot for half a minute -> warning with the average
+        r = Rules()
+        state = {}
+        for second in range(0, 35, 5):
+            state = r.update(second, None, 96, None, [])
+        self.assertEqual(state["sorunlar"][0]["yazi"], "96°C")
+        self.assertEqual(state["olcum"]["sicaklik_ort"], 96.0)
 
     def test_limits_from_theme(self):
         self.assertEqual(limits_from({"ram": 80, "disk": 200, "sicaklik": True})["ram"], 80)

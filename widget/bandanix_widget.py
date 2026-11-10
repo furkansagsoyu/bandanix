@@ -21,6 +21,9 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "core"))
+import bandanix_tema  # noqa: E402  (shared theme.toml writer)
+
 HOME = Path.home()
 THEME = Path(os.environ.get("XDG_CONFIG_HOME") or HOME / ".config") / "bandanix" / "theme.toml"
 CACHE = Path(os.environ.get("XDG_CACHE_HOME") or HOME / ".cache") / "bandanix" / "hava.json"
@@ -33,7 +36,8 @@ AGENT = "Bandanix-widget/1.0 (+https://github.com/furkansagsoyu/bandanix)"
 USAGE = """Kullanım:
   bandanix-widget                 şehir ve son hava durumu
   bandanix-widget sehir Ankara    şehri değiştir
-  bandanix-widget guncelle        hava durumunu hemen yenile"""
+  bandanix-widget guncelle        hava durumunu hemen yenile
+  bandanix-widget ortala          saati ekranın ortasındaki varsayılan yerine al"""
 
 DAYS = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"]
 
@@ -98,49 +102,8 @@ def read_section(name: str) -> dict:
     return out
 
 
-def toml_value(value) -> str:
-    if isinstance(value, str):
-        return '"' + value.replace("\\", "").replace('"', "") + '"'
-    return f"{value:.4f}" if isinstance(value, float) else str(value)
-
-
 def write_section(values: dict) -> None:
-    """Set keys in [widget], keeping every other line (and comments) as they are."""
-    try:
-        lines = THEME.read_text(encoding="utf-8").splitlines()
-    except OSError:
-        lines = []
-    todo = dict(values)
-    out, current = [], ""
-
-    def flush():
-        for k, v in todo.items():
-            out.append(f"{k} = {toml_value(v)}")
-        todo.clear()
-
-    for line in lines:
-        s = line.strip()
-        if s.startswith("["):
-            if current == SECTION:
-                while out and not out[-1].strip():
-                    out.pop()
-                flush()
-                out.append("")
-            current = s
-        elif current == SECTION:
-            m = re.match(r"^\s*([a-z_]+)\s*=", line)
-            if m and m.group(1) in todo:
-                value = todo.pop(m.group(1))
-                comment = re.search(r'\s+#[^"]*$', line)
-                line = f"{m.group(1)} = {toml_value(value)}" + (comment.group(0) if comment else "")
-        out.append(line)
-    if current == SECTION:
-        flush()
-    if todo:
-        out += ["", SECTION]
-        flush()
-    THEME.parent.mkdir(parents=True, exist_ok=True)
-    THEME.write_text("\n".join(out).strip("\n") + "\n", encoding="utf-8")
+    bandanix_tema.set_values("widget", values, THEME)
 
 
 # ---- network ----------------------------------------------------------------------------
@@ -351,6 +314,29 @@ def dconf(*args: str) -> str:
     return subprocess.run(["dconf", *args], capture_output=True, text=True).stdout.strip()
 
 
+THEME_PADDING = 15      # Cinnamon themes pad desklets; without this the clock sits right of centre
+
+
+def default_position() -> tuple[int, int]:
+    """Centred, low enough that Sound Island's open player does not cover the clock."""
+    sx, sy, sw, sh = screen_box()
+    return sx + max(0, (sw - DESKLET_WIDTH) // 2 - THEME_PADDING), sy + round(sh * 0.255)
+
+
+def cmd_center() -> int:
+    key = "/org/cinnamon/enabled-desklets"
+    items = parse_list(dconf("read", key))
+    x, y = default_position()
+    moved = [f"{UUID}:{i.split(':')[1]}:{x}:{y}" if i.split(":")[0] == UUID else i for i in items]
+    if moved == items and not any(i.split(":")[0] == UUID for i in items):
+        print("• Saat masaüstünde değil. Eklemek için: ./install.sh widget")
+        return 1
+    dconf("write", key, gv_list([i for i in items if i.split(":")[0] != UUID]))
+    dconf("write", key, gv_list(moved))
+    print("• Saat ekranın ortasına alındı.")
+    return 0
+
+
 def cmd_enable_desklet() -> int:
     """Add the desklet (centred, a fifth from the top) or re-add it so Cinnamon reloads it."""
     key = "/org/cinnamon/enabled-desklets"
@@ -367,9 +353,7 @@ def cmd_enable_desklet() -> int:
         while next_id in used:
             next_id += 1
         dconf("write", "/org/cinnamon/next-desklet-id", str(next_id + 1))
-        sx, sy, sw, sh = screen_box()
-        x = sx + max(0, (sw - DESKLET_WIDTH) // 2)
-        y = sy + round(sh * 0.2)
+        x, y = default_position()
         entry = f"{UUID}:{next_id}:{x}:{y}"
     dconf("write", key, gv_list(others + [entry]))
     return 0
@@ -385,6 +369,8 @@ def main(argv: list[str]) -> int:
                 return 2
             argv = argv + [input("Hava durumu için şehrin: ")]
         return cmd_city(" ".join(argv[1:]))
+    if cmd == "ortala" and len(argv) == 1:
+        return cmd_center()
     if cmd == "guncelle" and len(argv) == 1:
         return cmd_update()
     if cmd == "_zamanlayici":

@@ -17,6 +17,9 @@ import subprocess
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "core"))
+import bandanix_tema  # noqa: E402  (shared theme.toml writer)
+
 HOME = Path.home()
 WALLS = Path(os.environ.get("XDG_DATA_HOME") or HOME / ".local/share") / "backgrounds" / "bandanix"
 THEME = Path(os.environ.get("XDG_CONFIG_HOME") or HOME / ".config") / "bandanix" / "theme.toml"
@@ -73,25 +76,7 @@ def read_style() -> str:
 
 
 def write_style(style: str) -> None:
-    text = THEME.read_text(encoding="utf-8") if THEME.is_file() else ""
-    out, section, done = [], "", False
-    for line in text.splitlines():
-        if line.strip().startswith("["):
-            if section == SECTION and not done:
-                out.append(f'stil = "{style}"')
-                done = True
-            section = line.strip()
-        elif section == SECTION and STYLE_RE.match(line):
-            line = re.sub(r'"[a-z0-9-]+"', f'"{style}"', line, count=1)
-            done = True
-        out.append(line)
-    if section == SECTION and not done:
-        out.append(f'stil = "{style}"')
-        done = True
-    if not done:
-        out += ["", SECTION, f'stil = "{style}"']
-    THEME.parent.mkdir(parents=True, exist_ok=True)
-    THEME.write_text("\n".join(out).strip("\n") + "\n", encoding="utf-8")
+    bandanix_tema.set_values("duvar-kagidi", {"stil": style}, THEME)
 
 
 # ---- applying -----------------------------------------------------------------------------

@@ -10,6 +10,12 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$ROOT/scripts/lib.sh"
 
 banner
+if [ "${XDG_SESSION_TYPE:-}" = "wayland" ]; then
+  echo "⚠ Şu an Cinnamon'ın deneysel Wayland oturumundasın. Bandanix X11 için yazıldı;"
+  echo "  adalar ekranın köşesine kayabilir, kısayollar ve otomatik yapıştırma çalışmayabilir."
+  echo "  Oturumu kapat, giriş ekranında oturum seçiminden \"Cinnamon\" (Wayland olmayan) seç."
+  echo
+fi
 choose_components "kurmak istiyorsun" "$@"
 if [ ${#CHOSEN[@]} -eq 0 ]; then
   echo "Hiçbir şey seçilmedi."

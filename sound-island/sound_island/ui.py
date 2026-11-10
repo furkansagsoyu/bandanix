@@ -90,6 +90,12 @@ class Island(QWidget):
 
         self.leave_timer = self._single_shot(450, self._maybe_collapse)
         self.toast_timer = self._single_shot(2600, self._maybe_collapse)
+        self.recenters = 0
+        screen = QGuiApplication.primaryScreen()
+        if screen is not None:
+            screen.availableGeometryChanged.connect(lambda *_: self._recenter())
+        for ms in (3000, 10000):
+            QTimer.singleShot(ms, self._recenter)
         self.osd: tuple[str, int, bool] | None = None    # (kind, percent, muted)
         self.osd_timer = self._single_shot(OSD_MS, self._end_osd)
 
@@ -130,14 +136,29 @@ class Island(QWidget):
         screen = self.screen() or QGuiApplication.primaryScreen()
         geo = screen.availableGeometry()
         x, y = geo.x() + (geo.width() - w) // 2, geo.y() + TOP_MARGIN
+        self.wanted = (x, y)
         self.setGeometry(x, y, w, h)
         dizilim.publish(ISLAND_NAME, x, y, w, h, self.isVisible())
         self.update()
+
+    def _recenter(self) -> None:
+        self.recenters = 0
+        self._apply_t(self.t)
+
+    def moveEvent(self, event) -> None:
+        # At login the window manager can start after the island and park it in a
+        # corner; put it back (a few times at most, in case something insists).
+        super().moveEvent(event)
+        wanted = getattr(self, "wanted", None)
+        if wanted and (self.x(), self.y()) != wanted and getattr(self, "recenters", 0) < 5:
+            self.recenters = getattr(self, "recenters", 0) + 1
+            QTimer.singleShot(0, lambda: self._apply_t(self.t))
 
     def showEvent(self, event) -> None:
         super().showEvent(event)
         g = self.geometry()
         dizilim.publish(ISLAND_NAME, g.x(), g.y(), g.width(), g.height(), True)
+        QTimer.singleShot(300, self._recenter)
 
     def hideEvent(self, event) -> None:
         super().hideEvent(event)

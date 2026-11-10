@@ -43,6 +43,7 @@ mkdir -p "$(dirname "$BIN")" "$(dirname "$DESKTOP")" "$(dirname "$ICON")"
 cat > "$BIN" <<EOF
 #!/usr/bin/env bash
 export PYTHONPATH="$APP_DIR:$ADA_DIR/lib"
+export QT_QPA_PLATFORM=xcb      # the island places itself on screen; Wayland does not allow that
 exec "$ADA_PY" -m sound_island "\$@"
 EOF
 chmod +x "$BIN"
@@ -84,7 +85,7 @@ fi
 # 5) optional autostart
 if ask "Sound Island oturum açınca otomatik başlasın mı?"; then
   mkdir -p "$(dirname "$AUTOSTART")"
-  { cat "$DESKTOP"; echo "X-GNOME-Autostart-enabled=true"; } > "$AUTOSTART"
+  { cat "$DESKTOP"; echo "X-GNOME-Autostart-enabled=true"; echo "X-GNOME-Autostart-Delay=4"; } > "$AUTOSTART"
   echo "• Otomatik başlatma açık"
 else
   rm -f "$AUTOSTART"

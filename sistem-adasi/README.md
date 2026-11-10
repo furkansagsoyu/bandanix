@@ -9,7 +9,7 @@ Bilgisayarın iyiyken **görünmez**. İşlemci uzun süre çok yüklenince, sı
 | Ölçüm | Sınır |
 |---|---|
 | İşlemci | 1 dakika boyunca ortalama %90'ın üstünde |
-| Sıcaklık | 90°C'nin üstünde (en sıcak işlemci sensörü, art arda iki ölçüm) |
+| Sıcaklık | 30 saniyelik ortalaması 90°C'nin üstünde (en sıcak işlemci sensörü). İşlemcinin birkaç saniyelik turbo sıçramaları uyarı vermez. |
 | RAM | %90'ın üstünde dolu |
 | Disk | %95'ten dolu (kök bölüm; ev klasörü ayrı diskteyse o da) |
 

@@ -24,6 +24,7 @@ EOF
 cat > "$APP/ada-baslat" <<EOF
 #!/bin/sh
 export PYTHONPATH="$APP:$ADA_DIR/lib"
+export QT_QPA_PLATFORM=xcb      # the island places itself on screen; Wayland does not allow that
 exec "$ADA_PY" -m bandanix_sistem _ada
 EOF
 chmod +x "$BIN" "$APP/ada-baslat"

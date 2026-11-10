@@ -18,6 +18,7 @@ Bilgi satırının üzerine gelince küçük bir kutu açılır: 3 günlük tahm
 bandanix-widget                 # şehir ve son hava durumu
 bandanix-widget sehir Ankara    # şehri değiştir (aynı adda birden fazla yer varsa sorar)
 bandanix-widget guncelle        # hava durumunu hemen yenile
+bandanix-widget ortala          # saati ekranın ortasındaki varsayılan yerine al
 ```
 
 ## Nasıl çalışır

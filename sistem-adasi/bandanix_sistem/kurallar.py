@@ -7,7 +7,7 @@ DEFAULTS = {"islemci": 90, "sicaklik": 90, "ram": 90, "disk": 95}
 RANGES = {"islemci": (50, 100), "sicaklik": (60, 105), "ram": (50, 99), "disk": (50, 99)}
 CLEAR_GAP = 5               # a problem ends only this many points below its limit
 CPU_WINDOW = 60             # seconds the CPU must stay high
-TEMP_SAMPLES = 2            # consecutive hot readings before the island shows
+TEMP_WINDOW = 30            # seconds the temperature is averaged over (turbo spikes are short)
 PRIORITY = ("sicaklik", "ram", "islemci", "disk")
 LABELS = {"sicaklik": "Sıcaklık", "ram": "RAM", "islemci": "İşlemci", "disk": "Disk"}
 
@@ -32,7 +32,7 @@ class Rules:
         self.limits = dict(limits or DEFAULTS)
         self.active: set[str] = set()
         self.cpu: deque = deque()          # (time, busy, total)
-        self.hot = 0
+        self.temps: deque = deque()        # (time, °C)
 
     # ---- CPU average over the last minute ----------------------------------------------
     def _cpu(self, now: float, times: tuple[int, int] | None) -> tuple[float | None, float | None]:
@@ -52,14 +52,26 @@ class Rules:
             return None, instant                          # not a full minute yet
         return (times[0] - start[1]) / (times[1] - start[2]) * 100, instant
 
+    # ---- temperature averaged over the last half minute -----------------------------------
+    def _temp(self, now: float, temp: float | None) -> float | None:
+        if temp is None:
+            self.temps.clear()
+            return None
+        self.temps.append((now, temp))
+        while self.temps and self.temps[0][0] < now - TEMP_WINDOW:
+            self.temps.popleft()
+        if now - self.temps[0][0] < TEMP_WINDOW - 6:
+            return None                                   # not half a minute of readings yet
+        return sum(t for _, t in self.temps) / len(self.temps)
+
     # ---- one step ----------------------------------------------------------------------
     def update(self, now: float, cpu_times, temp, mem, disks) -> dict:
         cpu_avg, cpu_now = self._cpu(now, cpu_times)
         ram = mem[0] / mem[1] * 100 if mem and mem[1] else None
         disk = max((d.percent for d in disks), default=None)
-        self.hot = self.hot + 1 if temp is not None and temp > self.limits["sicaklik"] else 0
+        temp_avg = self._temp(now, temp)
 
-        values = {"islemci": cpu_avg, "sicaklik": temp, "ram": ram, "disk": disk}
+        values = {"islemci": cpu_avg, "sicaklik": temp_avg, "ram": ram, "disk": disk}
         for kind, value in values.items():
             limit = self.limits[kind]
             if value is None:
@@ -67,7 +79,7 @@ class Rules:
             elif kind in self.active:
                 if value < limit - CLEAR_GAP:
                     self.active.discard(kind)
-            elif value > limit and (kind != "sicaklik" or self.hot >= TEMP_SAMPLES):
+            elif value > limit:
                 self.active.add(kind)
 
         problems = [{"tur": k, "deger": round(values[k], 1), "yazi": text_for(k, values[k])}
@@ -78,6 +90,7 @@ class Rules:
                 "islemci": None if cpu_avg is None else round(cpu_avg, 1),
                 "islemci_anlik": None if cpu_now is None else round(cpu_now, 1),
                 "sicaklik": temp,
+                "sicaklik_ort": None if temp_avg is None else round(temp_avg, 1),
                 "ram": None if ram is None else round(ram, 1),
                 "ram_kullanilan": mem[0] if mem else None,
                 "ram_toplam": mem[1] if mem else None,

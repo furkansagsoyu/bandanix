@@ -21,6 +21,9 @@ import subprocess
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "core"))
+import bandanix_tema  # noqa: E402  (shared theme.toml writer)
+
 HOME = Path.home()
 SYSFS = Path(os.environ.get("BANDANIX_PIL_SYSFS", "/sys/class/power_supply"))
 CONF = Path(os.environ.get("BANDANIX_PIL_CONF", "/etc/bandanix-pil.conf"))
@@ -98,26 +101,7 @@ def setting(key: str) -> int:
 
 
 def write_setting(key: str, value: int) -> None:
-    lines = read(THEME).splitlines()
-    pattern = re.compile(rf"^\s*{key}\s*=")
-    out, section, done = [], "", False
-    for line in lines:
-        if line.strip().startswith("["):
-            if section == SECTION and not done:
-                out.append(f"{key} = {value}")
-                done = True
-            section = line.strip()
-        elif section == SECTION and pattern.match(line):
-            line = re.sub(r"=\s*\d+", f"= {value}", line, count=1)
-            done = True
-        out.append(line)
-    if section == SECTION and not done:
-        out.append(f"{key} = {value}")
-        done = True
-    if not done:
-        out += ["", SECTION, f"{key} = {value}"]
-    THEME.parent.mkdir(parents=True, exist_ok=True)
-    THEME.write_text("\n".join(out).strip("\n") + "\n", encoding="utf-8")
+    bandanix_tema.set_values("pil", {key: value}, THEME)
 
 
 # ---- state ----------------------------------------------------------------------------

@@ -111,72 +111,12 @@ def get(section: str, key: str, default, data: dict | None = None):
     return value
 
 
-def toml_value(value) -> str:
-    if isinstance(value, bool):
-        return "true" if value else "false"
-    if isinstance(value, (int, float)):
-        return str(value)
-    return '"' + str(value).replace("\\", "").replace('"', "") + '"'
-
-
-def trailing_comment(line: str) -> str:
-    """The '   # ...' part after a value (a '#' inside a quoted value does not count)."""
-    value = line.split("=", 1)[1] if "=" in line else ""
-    stripped = value.lstrip()
-    start = len(value) - len(stripped)
-    if stripped.startswith('"'):
-        end = stripped.find('"', 1)
-        start += end + 1 if end > 0 else len(stripped)
-    else:
-        token = re.match(r"[^\s#]*", stripped)
-        start += token.end()
-    hash_at = value.find("#", start)
-    if hash_at < 0:
-        return ""
-    gap = value[start:hash_at]
-    return (gap if gap.strip() == "" else "  ") + value[hash_at:].rstrip()
-
-
 def set_values(section: str, values: dict, path: Path | None = None) -> None:
-    """Set keys in [section], keeping every other line and the comments after values."""
-    path = path or THEME
-    try:
-        lines = path.read_text(encoding="utf-8").splitlines()
-    except OSError:
-        lines = []
-    header = f"[{section}]"
-    todo = dict(values)
-    out, current = [], ""
-
-    def flush():
-        for k, v in todo.items():
-            out.append(f"{k} = {toml_value(v)}")
-        todo.clear()
-
-    for line in lines:
-        s = line.strip()
-        if s.startswith("["):
-            if current == header:
-                trailing = []
-                while out and not out[-1].strip():
-                    trailing.append(out.pop())
-                flush()
-                out.extend(trailing or [""])
-            current = s
-        elif current == header:
-            m = re.match(r"^\s*([A-Za-z0-9_-]+)\s*=", line)
-            if m and m.group(1) in todo:
-                line = f"{m.group(1)} = {toml_value(todo.pop(m.group(1)))}" + trailing_comment(line)
-        out.append(line)
-    if current == header:
-        flush()
-    if todo:
-        if out and out[-1].strip():
-            out.append("")
-        out.append(header)
-        flush()
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("\n".join(out).strip("\n") + "\n", encoding="utf-8")
+    """Set keys in [section] of theme.toml (shared writer in core/bandanix_tema.py)."""
+    tema = core_module("bandanix_tema")
+    if tema is None:
+        raise OSError("bandanix_tema bulunamadı; Bandanix klasöründe ./install.sh çalıştır")
+    tema.set_values(section, values, path or THEME)
 
 
 def valid_hex(value: str) -> bool:
@@ -190,7 +130,8 @@ SHORTCUTS = {"not-kutusu": ("bandanix-not", "Hızlı not", "<Super>n"),
 
 def core_module(name: str):
     """Import a helper from the installed core (or the Bandanix folder)."""
-    for folder in (CORE, (source() or Path("/nonexistent")) / "core"):
+    for folder in (Path(__file__).resolve().parents[2] / "core", CORE,
+                   (source() or Path("/nonexistent")) / "core"):
         if (folder / f"{name}.py").is_file():
             if str(folder) not in sys.path:
                 sys.path.insert(0, str(folder))
