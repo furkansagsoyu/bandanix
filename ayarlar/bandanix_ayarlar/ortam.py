@@ -21,7 +21,7 @@ NAMES = {
     "pano": "Pano Geçmişi", "pil": "Pil Sağlığı", "sistem-adasi": "Sistem Adası",
     "sound-island": "Sound Island", "terminal": "Terminal", "widget": "Saat Widget'ı",
     "ayarlar": "Bandanix Ayarlar", "guc": "Güç Modları", "vscode-tema": "VS Code Teması",
-    "acilis-ekrani": "Açılış Ekranı", "yeni-sekme": "Yeni Sekme",
+    "acilis-ekrani": "Açılış Ekranı", "yeni-sekme": "Brave: Yeni Sekme ve Tema",
 }
 # used when the Bandanix folder can't be found (install.sh files hold the same "# kurulu:" lines)
 MARKERS = {

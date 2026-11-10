@@ -47,15 +47,31 @@ class SekmeTest(unittest.TestCase):
         self.assertEqual((s["accent"], s["font"], s["kaynak"]), ("#1E90FF", "Inter", "deneme duvar"))
         self.assertTrue(s["arkaPlan"].startswith("arka-plan.jpg?v="))
 
+        theme = self.home / ".local/share/bandanix/yeni-sekme/tema"
+        self.assertTrue((theme / "manifest.json").is_file())
+        self.assertIn(str(self.ext), r.stdout)
+        self.assertIn(str(theme), r.stdout)
+        self.assertIn("İkinci klasör", r.stdout)
+
         sekme = str(self.home / ".local/bin/bandanix-sekme")
         self.assertIn("Brave hiç açılmamış", self.run_cmd(sekme).stdout)
         prefs = self.home / ".config/BraveSoftware/Brave-Browser/Default/Secure Preferences"
         prefs.parent.mkdir(parents=True)
-        prefs.write_text(json.dumps({"extensions": {"settings": {"abc": {"path": str(self.ext)}}}}))
-        self.assertIn("yüklü", self.run_cmd(sekme).stdout.splitlines()[0])
-        self.assertNotIn("değil", self.run_cmd(sekme).stdout.splitlines()[0])
 
-        # a reinstall when Brave already has it: no instructions, settings kept
+        # the page is loaded (as on Furkan's Brave), the theme not yet: only the theme's step is shown
+        prefs.write_text(json.dumps({"extensions": {"settings": {"abc": {"path": str(self.ext)}}}}))
+        lines = self.run_cmd(sekme).stdout.splitlines()
+        self.assertEqual(lines[0].split(None, 2)[2], "Brave'de yüklü")
+        self.assertIn("yüklü değil", lines[1])
+        r = self.run_cmd(str(HERE / "install.sh"))
+        self.assertIn(str(theme), r.stdout)
+        self.assertNotIn(f"Yeni sekme  {self.ext}", r.stdout)
+        self.assertNotIn("İkinci klasör", r.stdout)
+        self.assertNotIn("Değişiklikleri koru", r.stdout)
+
+        # both loaded: no instructions at all
+        prefs.write_text(json.dumps({"extensions": {"settings": {"abc": {"path": str(self.ext)},
+                                                                  "def": {"path": str(theme)}}}}))
         r = self.run_cmd(str(HERE / "install.sh"))
         self.assertIn("zaten yüklü", r.stdout)
 
@@ -77,6 +93,15 @@ class SekmeTest(unittest.TestCase):
         self.run_cmd(str(HERE / "install.sh"))
         s = self.settings()
         self.assertEqual((s["accent"], s["font"]), ("#C8102E", ""))
+
+    def test_theme_manifest(self):
+        m = json.loads((HERE / "tema/manifest.json").read_text(encoding="utf-8"))
+        colors = m["theme"]["colors"]
+        self.assertEqual(colors["toolbar"], [23, 23, 26])
+        for key, value in colors.items():
+            self.assertIn(len(value), (3, 4), key)
+            self.assertTrue(all(isinstance(v, (int, float)) and 0 <= v <= 255 for v in value), key)
+        self.assertNotIn("chrome_url_overrides", m)          # a theme may not carry anything else
 
     def test_manifest(self):
         m = json.loads((HERE / "eklenti/manifest.json").read_text(encoding="utf-8"))

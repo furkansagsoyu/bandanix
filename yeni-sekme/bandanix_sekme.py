@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""bandanix-sekme: the Bandanix new tab page for Brave.
+"""bandanix-sekme: the Bandanix new tab page and colour theme for Brave.
 
-  bandanix-sekme             is the page loaded in Brave, which wallpaper it shows
+  bandanix-sekme             are the page and the theme loaded in Brave, which wallpaper it shows
   bandanix-sekme guncelle    take the colours from theme.toml and the current desktop wallpaper
   bandanix-sekme ac          open brave://extensions (to load or remove the extension)
 
-The extension lives in ~/.local/share/bandanix/yeni-sekme/eklenti. Brave reads its files from
+The new tab page lives in ~/.local/share/bandanix/yeni-sekme/eklenti, the theme next to it in
+.../yeni-sekme/tema (Brave does not allow a theme and a page in one extension). Brave reads its files from
 there on every new tab, so writing a new background or ayar.js needs no reload.
 """
 from __future__ import annotations
@@ -23,6 +24,7 @@ HOME = Path.home()
 DATA = Path(os.environ.get("XDG_DATA_HOME") or HOME / ".local/share")
 CONFIG = Path(os.environ.get("XDG_CONFIG_HOME") or HOME / ".config")
 EXT = DATA / "bandanix" / "yeni-sekme" / "eklenti"
+THEME_DIR = DATA / "bandanix" / "yeni-sekme" / "tema"
 THEME = CONFIG / "bandanix" / "theme.toml"
 WALLS = DATA / "backgrounds" / "bandanix"
 URI_KEY = "/org/cinnamon/desktop/background/picture-uri"
@@ -31,9 +33,10 @@ BRAVE_DIRS = (CONFIG / "BraveSoftware" / "Brave-Browser",
 PICTURE_EXT = (".jpg", ".jpeg", ".png", ".webp")
 
 USAGE = """Kullanım:
-  bandanix-sekme             yeni sekme Brave'de yüklü mü, hangi duvar kağıdını gösteriyor
+  bandanix-sekme             yeni sekme ve tema Brave'de yüklü mü, hangi duvar kağıdı görünüyor
   bandanix-sekme guncelle    renkleri theme.toml'dan, arka planı masaüstü duvar kağıdından al
-  bandanix-sekme ac          Brave'de eklentiler sayfasını aç"""
+  bandanix-sekme ac          Brave'de eklentiler sayfasını aç
+  bandanix-sekme ac tema     Brave'de görünüm ayarlarını aç (temayı kaldırmak için)"""
 
 
 def say(msg: str) -> None:
@@ -112,8 +115,8 @@ def set_background(source: Path) -> None:
 
 
 # ---- Brave --------------------------------------------------------------------------------
-def loaded_in_brave() -> bool | None:
-    """True if a Brave profile has this folder loaded as an extension; None if Brave was never run."""
+def loaded_in_brave(folder: Path = EXT) -> bool | None:
+    """True if a Brave profile has this folder loaded (page or theme); None if Brave was never run."""
     seen = False
     for base in BRAVE_DIRS:
         if not base.is_dir():
@@ -126,7 +129,7 @@ def loaded_in_brave() -> bool | None:
                 continue
             settings = (data.get("extensions") or {}).get("settings") or {}
             for ext in settings.values():
-                if isinstance(ext, dict) and ext.get("path") == str(EXT):
+                if isinstance(ext, dict) and ext.get("path") == str(folder):
                     return True
     return False if seen else None
 
@@ -141,11 +144,11 @@ def brave_command() -> list[str] | None:
     return None
 
 
-def open_extensions() -> bool:
+def open_extensions(page: str = "brave://extensions") -> bool:
     cmd = brave_command()
     if cmd is None:
         return False
-    subprocess.Popen([*cmd, "brave://extensions"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+    subprocess.Popen([*cmd, page], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
                      start_new_session=True)
     return True
 
@@ -155,11 +158,12 @@ def cmd_show() -> int:
     if not (EXT / "manifest.json").is_file():
         say("Yeni sekme kurulu değil. Bandanix klasöründe: ./install.sh yeni-sekme")
         return 1
-    state = loaded_in_brave()
-    print("Brave'de      " + {True: "yüklü", False: "yüklü değil (bandanix-sekme ac)", None: "Brave hiç açılmamış"}[state])
+    words = {True: "Brave'de yüklü", False: "Brave'de yüklü değil (bandanix-sekme ac)", None: "Brave hiç açılmamış"}
+    print(f"Yeni sekme    {words[loaded_in_brave(EXT)]}")
+    if (THEME_DIR / "manifest.json").is_file():
+        print(f"Tema          {words[loaded_in_brave(THEME_DIR)]}")
     source = read_settings().get("kaynak") or "-"
     print(f"Arka plan     {source}")
-    print(f"Klasör        {EXT}")
     return 0
 
 
@@ -183,10 +187,14 @@ def main(argv: list[str]) -> int:
     cmd = argv[0]
     if cmd == "guncelle" and len(argv) == 1:
         return cmd_update()
-    if cmd == "ac" and len(argv) == 1:
-        if not open_extensions():
+    if cmd == "ac" and len(argv) <= 2 and argv[1:] in ([], ["tema"]):
+        if not open_extensions("brave://settings/appearance" if argv[1:] == ["tema"] else "brave://extensions"):
             say("Brave bulunamadı.")
             return 1
+        return 0
+    if cmd == "_durum" and len(argv) == 1:              # for install.sh
+        print(json.dumps({"eklenti": str(EXT), "tema": str(THEME_DIR),
+                          "eklenti_yuklu": loaded_in_brave(EXT), "tema_yuklu": loaded_in_brave(THEME_DIR)}))
         return 0
     if cmd == "_arka-plan" and len(argv) == 2:         # called by bandanix-duvar after a change
         source = Path(argv[1])

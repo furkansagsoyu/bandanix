@@ -42,15 +42,33 @@ document.getElementById("arama").addEventListener("submit", (event) => {
 });
 
 // ---- most visited -------------------------------------------------------------------------
+// how a site is named under its icon: the subdomain when it says more than the domain
+// (gemini.google.com → Gemini, uzem.gop.edu.tr → Uzem), proper spelling for well-known sites
+const BILINEN = {
+  "mail.google.com": "Gmail", "outlook.live.com": "Outlook", "outlook.office.com": "Outlook",
+  "drive.google.com": "Drive", "docs.google.com": "Docs", "web.whatsapp.com": "WhatsApp",
+  github: "GitHub", youtube: "YouTube", linkedin: "LinkedIn", whatsapp: "WhatsApp",
+  chatgpt: "ChatGPT", openai: "OpenAI", stackoverflow: "Stack Overflow", tiktok: "TikTok",
+  udemy: "Udemy", claude: "Claude",
+};
+const ATLA = new Set(["www", "www2", "m", "web", "app", "open", "accounts", "login", "my", "en", "tr"]);
+
 function kisaAd(url) {
+  let host;
   try {
-    const host = new URL(url).hostname.replace(/^www\d?\./, "");
-    const parts = host.split(".");
-    const name = parts.length > 2 && parts[parts.length - 2].length <= 3 ? parts[parts.length - 3] : parts[parts.length - 2] || host;
-    return name.charAt(0).toLocaleUpperCase("tr-TR") + name.slice(1);
+    host = new URL(url).hostname.toLowerCase();
   } catch (e) {
     return url;
   }
+  if (BILINEN[host]) return BILINEN[host];
+  const parts = host.split(".");
+  // registrable part: "gop.edu.tr" and "bbc.co.uk" keep three labels, "google.com" two
+  const keep = parts.length > 2 && parts[parts.length - 1].length === 2 && parts[parts.length - 2].length <= 3 ? 3 : 2;
+  const domain = parts[parts.length - keep] || host;
+  const subs = parts.slice(0, Math.max(0, parts.length - keep)).filter((p) => !ATLA.has(p));
+  const name = subs.length ? subs[0] : domain;
+  if (BILINEN[name]) return BILINEN[name];
+  return name.charAt(0).toLocaleUpperCase("tr-TR") + name.slice(1);
 }
 
 function ikonAdresi(url) {

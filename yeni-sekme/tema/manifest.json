@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "Bandanix",
+  "version": "1.0.0",
+  "description": "Bandanix Brave teması: koyu bordo sekme şeridi, koyu gri araç çubuğu.",
+  "theme": {
+    "colors": {
+      "frame": [58, 11, 21],
+      "frame_inactive": [42, 8, 16],
+      "frame_incognito": [32, 5, 10],
+      "frame_incognito_inactive": [24, 4, 8],
+      "background_tab": [58, 11, 21],
+      "background_tab_inactive": [42, 8, 16],
+      "toolbar": [23, 23, 26],
+      "tab_text": [242, 242, 245],
+      "tab_background_text": [216, 184, 190],
+      "tab_background_text_inactive": [176, 148, 154],
+      "tab_background_text_incognito": [216, 184, 190],
+      "bookmark_text": [216, 216, 222],
+      "toolbar_text": [216, 216, 222],
+      "toolbar_button_icon": [216, 216, 222],
+      "omnibox_background": [14, 14, 16],
+      "omnibox_text": [242, 242, 245],
+      "button_background": [0, 0, 0, 0],
+      "ntp_background": [14, 14, 16],
+      "ntp_text": [242, 242, 245],
+      "ntp_link": [200, 16, 46]
+    },
+    "properties": {
+      "ntp_background_alignment": "center"
+    }
+  }
+}
