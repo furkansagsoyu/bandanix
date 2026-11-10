@@ -4,6 +4,8 @@
 
 Bütün Bandanix ayarları tek pencerede. Menüde **Bandanix Ayarlar**, terminalde `bandanix`.
 
+![Bandanix Ayarlar](../docs/ayarlar.png)
+
 | Bölüm | Ne var |
 |---|---|
 | **Görünüm** | Vurgu rengi ve yazı tipi. "Uygula" tema, ikonlar, imleç, panel, saat ve adaları yeni renkle yeniden üretir (bir dakika kadar sürer, altta ilerleme görünür). |

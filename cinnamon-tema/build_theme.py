@@ -179,6 +179,48 @@ def gtk4_css(accent: str) -> str:
 """
 
 
+def gtk3_override(accent: str) -> str:
+    """Mint-Y paints "suggested" buttons (Apply, Install, Save) green; Bandanix makes them the accent."""
+    h, l, s = hls(hex_to_rgb(accent))
+    hover = rgb_to_hex(from_hls(h, min(l + 0.07, 0.9), s))
+    pressed = rgb_to_hex(from_hls(h, max(l - 0.07, 0.1), s))
+    border = rgb_to_hex(from_hls(h, max(l - 0.12, 0.08), s))
+    return f"""
+/* >>> bandanix >>> suggested buttons in the accent colour instead of Mint-Y's green */
+button.suggested-action,
+headerbar button.suggested-action {{
+  background-image: none;
+  background-color: {accent};
+  border-color: {border};
+  color: #F5F3F0;
+  text-shadow: none;
+  box-shadow: none;
+}}
+button.suggested-action:hover,
+headerbar button.suggested-action:hover {{
+  background-color: {hover};
+  border-color: {border};
+}}
+button.suggested-action:active,
+button.suggested-action:checked,
+headerbar button.suggested-action:active {{
+  background-color: {pressed};
+  border-color: {border};
+}}
+button.suggested-action:disabled,
+headerbar button.suggested-action:disabled {{
+  background-color: #26262B;
+  border-color: #2E2E34;
+  color: #737380;
+}}
+button.suggested-action label,
+button.suggested-action:hover label {{
+  color: inherit;
+}}
+/* <<< bandanix <<< */
+"""
+
+
 def build(source: Path, target: Path, accent: str, name: str = "Bandanix") -> dict:
     if not (source / "gtk-3.0").is_dir():
         sys.exit(f"Kaynak tema bulunamadı ya da eksik: {source}")
@@ -209,6 +251,11 @@ def build(source: Path, target: Path, accent: str, name: str = "Bandanix") -> di
         text = re.sub(r"(?m)^(Name|GtkTheme)=.*$", lambda m: f"{m.group(1)}={name}", text)
         text = re.sub(r"(?m)^Comment=.*$", "Comment=Bandanix: Mint-Y tabanlı koyu tema", text)
         index.write_text(text, encoding="utf-8")
+
+    for css in (target / "gtk-3.0" / "gtk.css", target / "gtk-3.0" / "gtk-dark.css"):
+        if css.is_file() and not css.is_symlink():
+            with css.open("a", encoding="utf-8") as fh:
+                fh.write(gtk3_override(accent))
 
     cinnamon_css = target / "cinnamon" / "cinnamon.css"
     if cinnamon_css.is_file():

@@ -75,9 +75,13 @@ Menüyü atlamak da mümkün:
 ```
 
 Her şey yalnızca senin kullanıcın için kurulur (`~/.local`). Parçaların çoğu Mint'te zaten yüklü olan Python ve GTK ile çalışır; sadece adalar (Sound Island, Sistem Adası) Qt kullanır ve onu ortak tek bir Python ortamına kurar.
-Eksik sistem paketleri `apt` ile kurulur (şifren sorulur). Sistem dosyalarına sadece Pil Sağlığı, Güç Modları ve Giriş Ekranı dokunur; üçü de önceki ayarı saklar.
+Eksik sistem paketleri `apt` ile kurulur (şifren sorulur). Sistem dosyalarına sadece Pil Sağlığı, Güç Modları, Giriş Ekranı ve Açılış Ekranı dokunur; hepsi kaldırılınca önceki hâline döner. Spotify Teması da Spotify'ın klasörüne yazma izni ister (Spicetify'ın kendi önerisi).
 
 Kurduktan sonra her şeyi menüdeki **Bandanix Ayarlar** uygulamasından (ya da terminalde `bandanix`) yönetebilirsin.
+
+<p align="center">
+  <img src="docs/ayarlar.png" alt="Bandanix Ayarlar penceresi" width="720">
+</p>
 
 ### Güncelleme
 
