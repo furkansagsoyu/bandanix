@@ -1,0 +1,40 @@
+/* Bandanix for Spotify: small touches on top of the colour scheme.
+   Spotify renames its classes now and then; data-testid and the x-* classes are the stable ones.
+   If one of these stops matching after an update, nothing breaks, the colour scheme still applies. */
+
+/* the big round play button: white icon on red instead of black on green */
+[data-testid="play-button"] > span,
+.main-playButton-PlayButton > span {
+  background-color: var(--spice-button) !important;
+  color: #ffffff !important;
+}
+[data-testid="play-button"]:hover > span,
+.main-playButton-PlayButton:hover > span {
+  background-color: var(--spice-button-active) !important;
+}
+
+/* progress and volume bars: red while you hover or drag */
+.x-progressBar-fillColor {
+  background-color: var(--spice-text) !important;
+}
+.progress-bar:hover .x-progressBar-fillColor,
+.playback-bar:hover .x-progressBar-fillColor,
+.volume-bar:hover .x-progressBar-fillColor {
+  background-color: var(--spice-button) !important;
+}
+
+/* the playing track's title in lists */
+.main-trackList-playingIcon,
+.main-trackList-rowTitle.main-trackList-rowTitleActive,
+[aria-selected="true"] .main-trackList-rowTitle {
+  color: var(--spice-button) !important;
+}
+
+/* thin, quiet scrollbars like the rest of Bandanix */
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-thumb {
+  background: var(--spice-highlight-elevated);
+  border-radius: 5px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}

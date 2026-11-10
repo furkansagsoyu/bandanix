@@ -22,6 +22,7 @@ NAMES = {
     "sound-island": "Sound Island", "terminal": "Terminal", "widget": "Saat Widget'ı",
     "ayarlar": "Bandanix Ayarlar", "guc": "Güç Modları", "vscode-tema": "VS Code Teması",
     "acilis-ekrani": "Açılış Ekranı", "yeni-sekme": "Brave: Yeni Sekme ve Tema",
+    "spotify-tema": "Spotify Teması",
 }
 # used when the Bandanix folder can't be found (install.sh files hold the same "# kurulu:" lines)
 MARKERS = {
@@ -35,6 +36,7 @@ MARKERS = {
     "vscode-tema": "~/.local/share/bandanix/vscode-tema/kurulu",
     "acilis-ekrani": "/usr/share/plymouth/themes/bandanix/bandanix.plymouth",
     "yeni-sekme": "~/.local/share/bandanix/yeni-sekme/eklenti/manifest.json",
+    "spotify-tema": "~/.local/share/bandanix/spotify-tema/bandanix_spotify.py",
 }
 
 

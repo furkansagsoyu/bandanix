@@ -32,6 +32,7 @@ Birbirine yakışan küçük araçlar. İstersen hepsini kur, istersen sadece be
 | [**Terminal**](terminal/) | İki satırlı prompt (git, Python ortamı, hata kodu), bandana kırmızısı renk şeması ve her yeni pencerede `bandanix-fetch`. |
 | [**VS Code Teması**](vscode-tema/) | Bandanix Dark: nötr koyu arayüz, bandana kırmızısı vurgular ve sıcak tonlu kod renkleri. |
 | [**Brave: Yeni Sekme ve Tema**](yeni-sekme/) | Yeni sekmede duvar kağıdı, büyük saat, arama ve en çok girdiğin 8 site; pencerede koyu bordo sekme şeridi. |
+| [**Spotify Teması**](spotify-tema/) | Spotify'da koyu gri zemin; yeşil olan her şey bandana kırmızısı (Spicetify ile). |
 
 **Adalar ve masaüstü**
 
