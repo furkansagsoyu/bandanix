@@ -29,6 +29,7 @@ Birbirine yakışan küçük araçlar. İstersen hepsini kur, istersen sadece be
 | [**Panel Düzeni**](panel-duzeni/) | Paneli yüzen adalara çevirir: Windows 11 gibi ortada menü ve pencereler, sağda tepsi (ya da üç ada). |
 | [**Giriş Ekranı**](giris-ekrani/) | Şifre yazdığın giriş ekranında duvar kağıdının bulanık hâli, Bandanix teması, ikonları ve imleci. |
 | [**Terminal**](terminal/) | İki satırlı prompt (git, Python ortamı, hata kodu), bandana kırmızısı renk şeması ve her yeni pencerede `bandanix-fetch`. |
+| [**VS Code Teması**](vscode-tema/) | Bandanix Dark: nötr koyu arayüz, bandana kırmızısı vurgular ve sıcak tonlu kod renkleri. |
 
 **Adalar ve masaüstü**
 
