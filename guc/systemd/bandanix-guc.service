@@ -1,0 +1,10 @@
+[Unit]
+Description=Bandanix: güç modunu açılışta ve uykudan uyanınca uygula
+After=multi-user.target suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/bandanix-guc-yaz --kayitli
+
+[Install]
+WantedBy=multi-user.target suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target

@@ -20,7 +20,7 @@ NAMES = {
     "ikonlar": "İkonlar ve İmleç", "not-kutusu": "Hızlı Not", "panel-duzeni": "Panel Düzeni",
     "pano": "Pano Geçmişi", "pil": "Pil Sağlığı", "sistem-adasi": "Sistem Adası",
     "sound-island": "Sound Island", "terminal": "Terminal", "widget": "Saat Widget'ı",
-    "ayarlar": "Bandanix Ayarlar",
+    "ayarlar": "Bandanix Ayarlar", "guc": "Güç Modları",
 }
 # used when the Bandanix folder can't be found (install.sh files hold the same "# kurulu:" lines)
 MARKERS = {
@@ -30,7 +30,7 @@ MARKERS = {
     "pano": "~/.local/bin/bandanix-pano", "pil": "~/.local/bin/bandanix-pil",
     "sistem-adasi": "~/.local/bin/bandanix-sistem", "sound-island": "~/.local/bin/sound-island",
     "terminal": "~/.local/bin/bandanix-fetch", "widget": "~/.local/bin/bandanix-widget",
-    "ayarlar": "~/.local/bin/bandanix",
+    "ayarlar": "~/.local/bin/bandanix", "guc": "~/.local/bin/bandanix-guc",
 }
 
 

@@ -45,6 +45,7 @@ Birbirine yakışan küçük araçlar. İstersen hepsini kur, istersen sadece be
 | [**Hızlı Not**](not-kutusu/) | Super+N ile açılan küçük not kutusu: yaz, Enter'a bas, kaybolsun. Notlar tek bir Markdown dosyasında, yapılacak işler işaretlenebilir. |
 | [**Pano Geçmişi**](pano/) | Super+V ile son kopyaladıkların: ara, seç, otomatik yapıştır. Sık kullandıklarını sabitle; şifre yöneticilerinden kopyalananlar saklanmaz. |
 | [**Pil Sağlığı**](pil/) | Şarjı %80'de durdurarak pilin ömrünü uzatır, pil azalınca uyarır; gerektiğinde tek komutla bir seferlik tam şarj. |
+| [**Güç Modları**](guc/) | Serin, Eco, Dengeli ve Turbo modları, fan modu ve Cooler Boost. Serin mod işlemcinin turbo'sunu kapatır: dizi izlerken bilgisayar serin ve sessiz kalır. |
 | [**Bandanix Ayarlar**](ayarlar/) | Bütün parçaların ayarları tek pencerede: renk, duvar kağıdı, panel, adalar, pil, kısayollar; parça kurma ve kaldırma, yedekler. |
 
 <p align="center">
@@ -70,7 +71,7 @@ Menüyü atlamak da mümkün:
 ```
 
 Her şey yalnızca senin kullanıcın için kurulur (`~/.local`). Parçaların çoğu Mint'te zaten yüklü olan Python ve GTK ile çalışır; sadece adalar (Sound Island, Sistem Adası) Qt kullanır ve onu ortak tek bir Python ortamına kurar.
-Eksik sistem paketleri `apt` ile kurulur (şifren sorulur). Sistem dosyalarına sadece Pil Sağlığı ve Giriş Ekranı dokunur; ikisi de önce yedek alır.
+Eksik sistem paketleri `apt` ile kurulur (şifren sorulur). Sistem dosyalarına sadece Pil Sağlığı, Güç Modları ve Giriş Ekranı dokunur; üçü de önceki ayarı saklar.
 
 Kurduktan sonra her şeyi menüdeki **Bandanix Ayarlar** uygulamasından (ya da terminalde `bandanix`) yönetebilirsin.
 

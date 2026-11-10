@@ -1,0 +1,113 @@
+#!/bin/bash
+# bandanix-guc-yaz: the ONLY thing that runs as root for Bandanix power modes.
+# It can set four things, each only to a listed value:
+#   MSI power mode, MSI fan mode, MSI Cooler Boost, CPU turbo on/off.
+#
+#   bandanix-guc-yaz mod serin|eco|dengeli|turbo    apply now and keep for every boot
+#   bandanix-guc-yaz fan auto|silent                apply now and keep for every boot
+#   bandanix-guc-yaz boost on|off                   fans at full speed; "on" turns itself off after 5 min
+#   bandanix-guc-yaz --kayitli                      re-apply the kept mode (boot and after sleep)
+#   bandanix-guc-yaz geri SHIFT FAN TURBO           put back raw values from before Bandanix (uninstall)
+#
+# Installed to /usr/local/sbin, owned by root; the user may run it without a password
+# through /etc/sudoers.d/bandanix-guc. Every argument is checked below.
+set -euo pipefail
+export PATH=/usr/sbin:/usr/bin:/sbin:/bin
+
+EC=/sys/devices/platform/msi-ec
+NO_TURBO=/sys/devices/system/cpu/intel_pstate/no_turbo
+BOOST=/sys/devices/system/cpu/cpufreq/boost
+CONF=/etc/bandanix-guc.conf
+SELF=/usr/local/sbin/bandanix-guc-yaz
+BOOST_SECONDS=300
+
+listed() {      # listed VALUE FILE: is VALUE one of the lines of FILE?
+  [ -f "$2" ] && grep -qxF -- "$1" "$2"
+}
+
+set_shift() {   # only a mode the firmware itself lists
+  if listed "$1" "$EC/available_shift_modes"; then echo "$1" > "$EC/shift_mode"; fi
+}
+
+set_fan() {
+  if listed "$1" "$EC/available_fan_modes"; then echo "$1" > "$EC/fan_mode"; fi
+}
+
+set_turbo() {   # on|off, for Intel (no_turbo) or AMD (boost)
+  if [ -f "$NO_TURBO" ]; then
+    [ "$1" = on ] && echo 0 > "$NO_TURBO" || echo 1 > "$NO_TURBO"
+  elif [ -f "$BOOST" ]; then
+    [ "$1" = on ] && echo 1 > "$BOOST" || echo 0 > "$BOOST"
+  fi
+}
+
+apply_mode() {
+  case "$1" in
+    serin)   set_shift comfort; set_turbo off ;;
+    eco)     set_shift eco;     set_turbo on ;;
+    dengeli) set_shift comfort; set_turbo on ;;
+    turbo)   set_shift turbo;   set_turbo on ;;
+    *) return 1 ;;
+  esac
+}
+
+keep() {        # keep KEY VALUE in the conf file (two fixed keys only)
+  local other
+  umask 022
+  other=$(grep -v "^$1=" "$CONF" 2>/dev/null | grep -E '^(MOD|FAN)=[a-z]+$' || true)
+  { [ -n "$other" ] && printf '%s\n' "$other"; printf '%s=%s\n' "$1" "$2"; } > "$CONF.yeni"
+  mv -f "$CONF.yeni" "$CONF"
+}
+
+kept() {        # kept KEY -> value, only if it is a plain lowercase word
+  sed -n "s/^$1=\([a-z]\{2,10\}\)$/\1/p" "$CONF" 2>/dev/null | head -n 1
+}
+
+case "${1:-}" in
+  mod)
+    [ "$#" -eq 2 ] || exit 2
+    case "$2" in serin|eco|dengeli|turbo) ;; *) echo "Geçersiz mod." >&2; exit 2 ;; esac
+    apply_mode "$2"
+    keep MOD "$2"
+    ;;
+  fan)
+    [ "$#" -eq 2 ] || exit 2
+    case "$2" in auto|silent) ;; *) echo "Geçersiz fan modu." >&2; exit 2 ;; esac
+    listed "$2" "$EC/available_fan_modes" || { echo "Bu bilgisayar bu fan modunu desteklemiyor." >&2; exit 3; }
+    set_fan "$2"
+    keep FAN "$2"
+    ;;
+  boost)
+    [ "$#" -eq 2 ] || exit 2
+    [ -f "$EC/cooler_boost" ] || { echo "Bu bilgisayarda Cooler Boost yok." >&2; exit 3; }
+    systemctl stop bandanix-boost-kapat.timer >/dev/null 2>&1 || true
+    case "$2" in
+      on)
+        echo on > "$EC/cooler_boost"
+        systemd-run --quiet --unit=bandanix-boost-kapat --on-active="$BOOST_SECONDS" "$SELF" boost off
+        ;;
+      off) echo off > "$EC/cooler_boost" ;;
+      *) exit 2 ;;
+    esac
+    ;;
+  --kayitli)
+    [ "$#" -eq 1 ] || exit 2
+    for _ in 1 2 3 4 5 6 7 8 9 10; do [ -d "$EC" ] && break; sleep 1; done   # driver may load late
+    mode=$(kept MOD); fan=$(kept FAN)
+    [ -n "$mode" ] && apply_mode "$mode" || true
+    case "$fan" in auto|silent) set_fan "$fan" ;; esac
+    ;;
+  geri)
+    [ "$#" -eq 4 ] || exit 2
+    case "$2" in eco|comfort|turbo|sport|-) ;; *) exit 2 ;; esac
+    case "$3" in auto|silent|advanced|basic|-) ;; *) exit 2 ;; esac
+    case "$4" in on|off|-) ;; *) exit 2 ;; esac
+    [ "$2" = - ] || set_shift "$2"
+    [ "$3" = - ] || set_fan "$3"
+    [ "$4" = - ] || set_turbo "$4"
+    rm -f "$CONF"
+    ;;
+  *)
+    exit 2
+    ;;
+esac

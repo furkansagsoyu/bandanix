@@ -12,6 +12,7 @@ Bütün Bandanix ayarları tek pencerede. Menüde **Bandanix Ayarlar**, terminal
 | **Sound Island** | Albüm kapağı rengi, boşta gizlenme, ses çubukları, ses ve parlaklık göstergesi. Ada kendiliğinden yeniden başlar. |
 | **Sistem adası ve saat** | Uyarı sınırları; hava durumu şehrini arayıp seçme. |
 | **Pil** | Şarj sınırı kaydırıcısı, düşük pil uyarısı, pilin durumu ve sağlığı. |
+| **Performans** | Güç modu (Serin, Eco, Dengeli, Turbo), fan modu, Cooler Boost. |
 | **Kısayollar** | Not kutusu ve pano kısayolları; yeni tuşa basarak değiştirilir, dolu tuşlar için uyarır. |
 | **Parçalar** | Hangi parça kurulu; tek tıkla kur ya da kaldır (şifre ya da onay gerekebileceği için terminal penceresinde çalışır). |
 | **Yedekler** | Masaüstü yedekleri; yedek al ya da geri yükle. |

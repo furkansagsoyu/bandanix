@@ -398,6 +398,79 @@ class Pil(Page):
         self.win.say("Düşük pil uyarısı kaydedildi.")
 
 
+# ---- Performans ---------------------------------------------------------------------------
+class Performans(Page):
+    id, title = "performans", "Performans"
+    heading = "Performans"
+    description = ("Serin modda işlemcinin turbo'su kapalıdır: dizi, ders ve yazı için fark edilmez, "
+                   "bilgisayar belirgin şekilde serin ve sessiz kalır. Seçtiğin mod her açılışta uygulanır.")
+    component = "guc"
+    MODES = [("serin", "Serin"), ("eco", "Eco"), ("dengeli", "Dengeli"), ("turbo", "Turbo")]
+    HINTS = {"serin": "turbo kapalı; dizi, ders, yazı", "eco": "pilde uzun kullanım",
+             "dengeli": "günlük kullanım", "turbo": "oyun, derleme"}
+
+    def build(self, box):
+        self.info = label("", "bx-mono")
+        box.pack_start(self.info, False, False, 0)
+        self.mode_buttons: dict[str, Gtk.Button] = {}
+        modes = Gtk.Box(spacing=8)
+        for mid, name in self.MODES:
+            b = button(name, lambda m=mid: self.run([m]))
+            b.set_tooltip_text(self.HINTS[mid])
+            b.set_size_request(96, -1)
+            self.mode_buttons[mid] = b
+            modes.pack_start(b, False, False, 0)
+        self.fan = combo([("otomatik", "Otomatik"), ("sessiz", "Sessiz")])
+        self.fan.connect("changed", lambda *_: None if self.loading else
+                         self.run(["fan", self.fan.get_active_id() or "otomatik"]))
+        self.boost = button("5 dakika aç", self.toggle_boost)
+        self.fan_row = row("Fan modu", "Sessiz modda fanlar daha geç devreye girer", self.fan)
+        self.boost_row = row("Cooler Boost", "Fanlar tam hız; 5 dakika sonra kendiliğinden kapanır", self.boost)
+        box.pack_start(group("", [
+            row("Mod", "Düğmenin üzerine gelince ne için olduğu yazar", modes),
+            self.fan_row, self.boost_row,
+        ]), False, False, 0)
+        self.boost_on = False
+
+    def load(self):
+        ok, out = isler.quick([str(BIN / "bandanix-guc"), "_json"])
+        try:
+            s = json.loads(out) if ok else {}
+        except ValueError:
+            s = {}
+        for mid, b in self.mode_buttons.items():
+            b.set_sensitive(mid in s.get("modlar", []))
+            ctx = b.get_style_context()
+            if mid == s.get("mod"):
+                ctx.add_class("suggested-action")
+            else:
+                ctx.remove_class("suggested-action")
+        fans = s.get("fanlar", [])
+        self.fan_row.set_visible(bool(fans))
+        self.fan.set_active_id({"auto": "otomatik", "silent": "sessiz"}.get(s.get("fan", ""), "otomatik"))
+        self.boost_row.set_visible(bool(s.get("boost_var")))
+        self.boost_on = bool(s.get("boost"))
+        self.boost.set_label("Kapat" if self.boost_on else "5 dakika aç")
+        parts = []
+        if s.get("sicaklik") is not None:
+            parts.append(f"Sıcaklık {s['sicaklik']:.0f}°C")
+        if s.get("turbo") is not None:
+            parts.append("turbo " + ("açık" if s["turbo"] else "kapalı"))
+        if not s.get("msi"):
+            parts.append("MSI fan kontrolü yok")
+        self.info.set_text("  ·  ".join(parts))
+
+    def toggle_boost(self):
+        self.run(["boost", "kapat"] if self.boost_on else ["boost"])
+
+    def run(self, args: list[str]):
+        def done(ok, out):
+            last = out.strip().splitlines()[-1].lstrip("• ") if out.strip() else ""
+            self.win.say(last or ("Tamam." if ok else "Değiştirilemedi; parçayı yeniden kur."))
+            self.refresh()
+        isler.background([str(BIN / "bandanix-guc"), *args], done)
+
+
 # ---- 7. Kısayollar ------------------------------------------------------------------------
 class Kisayollar(Page):
     id, title = "kisayollar", "Kısayollar"
@@ -570,4 +643,4 @@ class Yedekler(Page):
             self.win.say("Geri yükleme terminal penceresinde; neyin değişeceğini gösterip onay isteyecek.", 10)
 
 
-PAGES = [Gorunum, Duvar, Panel, SoundIsland, Sistem, Pil, Kisayollar, Parcalar, Yedekler]
+PAGES = [Gorunum, Duvar, Panel, SoundIsland, Sistem, Pil, Performans, Kisayollar, Parcalar, Yedekler]
