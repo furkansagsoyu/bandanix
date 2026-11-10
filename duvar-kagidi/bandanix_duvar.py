@@ -109,6 +109,17 @@ def chosen() -> tuple[str, str, Path] | None:
 def apply(wall: tuple[str, str, Path]) -> None:
     dconf_write(URI_KEY, f"'file://{wall[2]}'")
     dconf_write(OPTIONS_KEY, "'zoom'")
+    follow_new_tab(wall[2])
+
+
+def follow_new_tab(picture: Path) -> None:
+    """The Brave new tab page (yeni-sekme) shows the same wallpaper, if it is installed."""
+    sekme = HOME / ".local" / "bin" / "bandanix-sekme"
+    if sekme.is_file():
+        try:
+            subprocess.run([str(sekme), "_arka-plan", str(picture)], capture_output=True, timeout=20)
+        except (OSError, subprocess.TimeoutExpired):
+            pass
 
 
 def cmd_list() -> int:

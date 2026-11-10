@@ -31,6 +31,7 @@ Birbirine yakışan küçük araçlar. İstersen hepsini kur, istersen sadece be
 | [**Açılış Ekranı**](acilis-ekrani/) | Açılışta ve kapanışta siyah zeminde BANDANIX ve ince kırmızı bir çizgi; GRUB menüsü de aynı görünümde. |
 | [**Terminal**](terminal/) | İki satırlı prompt (git, Python ortamı, hata kodu), bandana kırmızısı renk şeması ve her yeni pencerede `bandanix-fetch`. |
 | [**VS Code Teması**](vscode-tema/) | Bandanix Dark: nötr koyu arayüz, bandana kırmızısı vurgular ve sıcak tonlu kod renkleri. |
+| [**Yeni Sekme**](yeni-sekme/) | Brave'in yeni sekmesinde duvar kağıdı, büyük saat, arama kutusu ve en çok girdiğin 8 site. |
 
 **Adalar ve masaüstü**
 

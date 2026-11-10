@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "Bandanix Yeni Sekme",
+  "version": "1.0.0",
+  "description": "Bandanix duvar kağıdı, saat, arama ve en çok girdiğin siteler.",
+  "chrome_url_overrides": {
+    "newtab": "sekme.html"
+  },
+  "permissions": ["topSites", "search", "storage", "favicon"],
+  "icons": {
+    "128": "ikon.png"
+  }
+}

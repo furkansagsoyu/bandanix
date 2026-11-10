@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <title>Yeni Sekme</title>
+  <link rel="stylesheet" href="sekme.css">
+  <script src="ayar.js"></script>
+</head>
+<body>
+  <div class="arka" id="arka"></div>
+  <main>
+    <div class="saat" id="saat">--:--</div>
+    <div class="tarih" id="tarih"></div>
+    <form class="arama" id="arama" autocomplete="off">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="kutu" type="text" placeholder="Ara ya da adres yaz" spellcheck="false" aria-label="Ara">
+    </form>
+    <nav class="kisayollar" id="kisayollar"></nav>
+    <p class="bos" id="bos" hidden>En çok girdiğin siteler burada görünecek.</p>
+  </main>
+  <script src="sekme.js"></script>
+</body>
+</html>
