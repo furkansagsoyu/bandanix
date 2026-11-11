@@ -17,7 +17,8 @@ ada_kur() {
   fi
   mkdir -p "$ADA_DIR/lib"
   rm -rf "$ADA_DIR/lib/bandanix_ada"
-  cp -r "$here/bandanix_ada" "$ADA_DIR/lib/"
+  mkdir -p "$ADA_DIR/lib/bandanix_ada"
+  cp "$here"/bandanix_ada/*.py "$ADA_DIR/lib/bandanix_ada/"
   if [ ! -x "$ADA_PY" ]; then
     echo "• Adalar için ortak Python ortamı oluşturuluyor: $ADA_DIR"
     /usr/bin/python3 -m venv "$ADA_DIR/.venv"

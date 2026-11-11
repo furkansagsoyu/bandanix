@@ -207,31 +207,28 @@ class Panel(Page):
 
 # ---- 4. Sound Island ----------------------------------------------------------------------
 class SoundIsland(Page):
-    id, title = "sound-island", "Sound Island"
-    heading = "Sound Island"
+    id, title = "sound-island", "Bandanix Adası"
+    heading = "Bandanix Adası"
     description = "Değişince ada kendiliğinden yeniden başlar."
     component = "sound-island"
 
     def build(self, box):
         self.follow = Gtk.Switch()
-        self.hide = Gtk.Switch()
         self.indicator = Gtk.Switch()
         self.bars = combo([("auto", "Gerçek ses (cava)"), ("simulated", "Temsili")])
         box.pack_start(group("", [
             row("Albüm kapağı rengi", "Vurgu rengini çalan şarkının kapağından al", self.follow),
-            row("Boşta gizlen", "Çalan bir şey yokken adayı gizle", self.hide),
             row("Ses ve parlaklık göstergesi", "Kapalıysa Cinnamon'ın kendi göstergesi çıkar", self.indicator),
             row("Ses çubukları", "Gerçek ses cava ile, sadece müzik çalarken çalışır", self.bars),
         ]), False, False, 0)
         self.restart = Debounce(700, isler.restart_sound_island)
-        for sw in (self.follow, self.hide, self.indicator):
+        for sw in (self.follow, self.indicator):
             sw.connect("notify::active", self.on_change)
         self.bars.connect("changed", self.on_change)
 
     def load(self):
         data = ortam.load()
         self.follow.set_active(ortam.get("sound-island", "follow_cover", True, data))
-        self.hide.set_active(ortam.get("sound-island", "hide_when_idle", True, data))
         self.indicator.set_active(ortam.get("sound-island", "gosterge", True, data))
         self.bars.set_active_id(ortam.get("sound-island", "bars", "auto", data))
 
@@ -240,13 +237,12 @@ class SoundIsland(Page):
             return
         before = ortam.get("sound-island", "gosterge", True)
         ortam.set_values("sound-island", {"follow_cover": self.follow.get_active(),
-                                          "hide_when_idle": self.hide.get_active(),
                                           "gosterge": self.indicator.get_active(),
                                           "bars": self.bars.get_active_id() or "auto"})
         if before != self.indicator.get_active():
             isler.cinnamon_osd(self.indicator.get_active())
         self.restart()
-        self.win.say("Sound Island ayarları kaydedildi.")
+        self.win.say("Bandanix Adası ayarları kaydedildi.")
 
 
 # ---- 5. Sistem adası ve saat --------------------------------------------------------------
@@ -287,7 +283,7 @@ class Sistem(Page):
         choose = Gtk.Box(spacing=6)
         choose.pack_start(self.results, False, False, 0)
         choose.pack_start(pick, False, False, 0)
-        self.city_group = group("Saat widget'ı: hava durumu", [
+        self.city_group = group("Hava durumu", [
             row("Şehir", "", self.city_now),
             row("Şehir ara", "Open-Meteo'da aranır", search),
             row("Sonuçlar", "", choose),
@@ -300,11 +296,18 @@ class Sistem(Page):
         data = ortam.load()
         for key, *_rest, default in self.LIMITS:
             self.spins[key].set_value(ortam.get("sistem-adasi", key, default, data))
-        has_sys, has_widget = ortam.installed("sistem-adasi"), ortam.installed("widget")
+        has_sys = ortam.installed("sistem-adasi")
+        island_helper = ortam.DATA / "bandanix/sound-island/bandanix_widget.py"
+        if ortam.installed("widget"):
+            self.weather_command = [str(BIN / "bandanix-widget")]
+        elif island_helper.is_file():
+            self.weather_command = ["/usr/bin/python3", str(island_helper)]
+        else:
+            self.weather_command = []
         self.limits_group.set_visible(has_sys)
         self.limits_missing.set_visible(not has_sys)
-        self.city_group.set_visible(has_widget)
-        self.city_missing.set_visible(not has_widget)
+        self.city_group.set_visible(bool(self.weather_command))
+        self.city_missing.set_visible(not self.weather_command)
         self.city_now.set_text(ortam.get("widget", "sehir", "", data) or "ayarlı değil")
 
     def save_limits(self):
@@ -332,7 +335,7 @@ class Sistem(Page):
             else:
                 self.win.say("Bulunamadı (internet bağlantısı var mı?).")
 
-        isler.background([str(BIN / "bandanix-widget"), "_ara", text], done)
+        isler.background([*self.weather_command, "_ara", text], done)
 
     def pick(self):
         index = self.results.get_active()
@@ -345,7 +348,7 @@ class Sistem(Page):
             self.win.say(f"Şehir: {place['ad']}" if ok else "Şehir kaydedildi ama hava durumu alınamadı.")
             self.refresh()
 
-        isler.background([str(BIN / "bandanix-widget"), "_sec", place["sehir"] or place["ad"],
+        isler.background([*self.weather_command, "_sec", place["sehir"] or place["ad"],
                           str(place["enlem"]), str(place["boylam"])], done)
 
 

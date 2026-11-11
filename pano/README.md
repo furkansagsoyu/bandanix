@@ -4,6 +4,8 @@
 
 Kopyaladığın yazıların listesi, Windows 11'deki Win+V gibi. **Super+V**'ye bas, aradığını seç, Enter: seçtiğin yazı bulunduğun pencereye yapıştırılır.
 
+[Sound Island](../sound-island/) çalışırken `Super+V` ilgili sekmeyi adada açar. Ada kapalıyken bu bileşenin kendi penceresi açılır.
+
 ## Kullanım
 
 | Tuş | Ne yapar |

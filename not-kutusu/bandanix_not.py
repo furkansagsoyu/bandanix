@@ -13,6 +13,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.append(str(Path(__file__).resolve().parents[1] / "core"))
 import notes  # noqa: E402
 
 USAGE = """Kullanım:
@@ -60,6 +61,13 @@ def cmd_add(text: str) -> int:
 # ---- entry ------------------------------------------------------------------------------
 def main(argv: list[str]) -> int:
     if not argv:
+        try:
+            from bandanix_ada_istek import open_panel
+        except ImportError:
+            pass
+        else:
+            if open_panel("not"):
+                return 0
         from not_kutusu_ui import run   # GTK is imported only for the box itself
         return run(APP_ID)
     cmd = argv[0]

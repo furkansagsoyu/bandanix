@@ -4,6 +4,8 @@
 
 Aklına bir şey geldiğinde iki saniyede not al: **Super+N**'ye bas, yaz, **Enter**. Kutu kaybolur, not kaydedilir.
 
+[Sound Island](../sound-island/) çalışırken `Super+N` ilgili sekmeyi adada açar. Ada kapalıyken bu bileşenin kendi penceresi açılır.
+
 ## Kullanım
 
 | Tuş | Ne yapar |

@@ -41,7 +41,7 @@ Birbirine yakışan küçük araçlar. İstersen hepsini kur, istersen sadece be
 
 | Parça | Ne yapar |
 |---|---|
-| [**Sound Island**](sound-island/) | Spotify ve diğer oynatıcılar için ekranın üstünde duran "şimdi çalıyor" hapı. Üzerine gelince kontrolleri ve senkron şarkı sözleriyle küçük bir oynatıcıya dönüşür; ses ya da parlaklık değişince kısa bir süre göstergeye dönüşür. |
+| [**Bandanix Adası**](sound-island/) | Üst kenarda sürekli duran kompakt ada. Üzerine gelince saat ve hava durumu, müzik, hızlı ayarlar, bildirimler, pano geçmişi, notlar, odak sayacı, ekran yakalama ve dosya rafı açılır. |
 | [**Sistem Adası**](sistem-adasi/) | Normalde görünmez; işlemci, sıcaklık, RAM ya da disk sınırı aşınca Sound Island'ın yanında beliren uyarı hapı. Üzerine gelince sorunun kaynağını gösterir. |
 | [**Saat Widget'ı**](widget/) | Masaüstünün ortasında büyük ince saat, Türkçe tarih ve tek satırda hava durumu ile sistem bilgisi. Üzerine gelince 3 günlük tahmin. |
 
@@ -56,9 +56,7 @@ Birbirine yakışan küçük araçlar. İstersen hepsini kur, istersen sadece be
 | [**Bandanix Ayarlar**](ayarlar/) | Bütün parçaların ayarları tek pencerede: renk, duvar kağıdı, panel, adalar, pil, kısayollar; parça kurma ve kaldırma, yedekler. |
 
 <p align="center">
-  <img src="docs/duvar-kagitlari.jpg" alt="Bandanix duvar kağıtları" width="100%"><br><br>
-  <img src="docs/sound-island-hap.png" alt="Sound Island hap modu" width="329"><br><br>
-  <img src="docs/sound-island-oynatici.png" alt="Sound Island oynatıcı modu" width="467">
+  <img src="docs/duvar-kagitlari.jpg" alt="Bandanix duvar kağıtları" width="100%">
 </p>
 
 ## Kurulum

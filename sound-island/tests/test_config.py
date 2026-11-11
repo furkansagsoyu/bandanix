@@ -23,7 +23,7 @@ class ThemeTests(unittest.TestCase):
             '[sound-island]\nfollow_cover = false\nhide_when_idle = false\n'
             'bars = "simulated"\ngosterge = false\n'))
         self.assertEqual(theme, Theme(accent="#1DB954", font="Inter",
-                                      follow_cover=False, hide_when_idle=False,
+                                      follow_cover=False,
                                       bars="simulated", gosterge=False))
 
     def test_bad_values_fall_back(self):

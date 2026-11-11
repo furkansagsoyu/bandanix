@@ -1,39 +1,35 @@
-# Sound Island 🏝️
+# Bandanix Adası
 
 *[Bandanix](../README.md) kitinin bir parçası.*
 
-Apple'ın Dynamic Island'ından esinlenen, Linux masaüstü için yüzen bir "şimdi çalıyor" adası.
-Ekranın üstünde ince bir hap olarak durur, üzerine gelince küçük bir oynatıcıya dönüşür.
+Ekranın üst ortasında sürekli duran Bandanix adası. Boşta saati gösterir. Müzik çalarken kompakt görünümde albüm kapağı ve ses çubukları bulunur.
 
-<p align="center">
-  <img src="../docs/sound-island-hap.png" alt="Hap modu" width="329"><br><br>
-  <img src="../docs/sound-island-oynatici.png" alt="Oynatıcı modu" width="467">
-</p>
+Üzerine gelince ada açılır. Sekmelere tıklayarak veya fare tekerleğiyle sırayla geçebilirsin.
 
-**Spotify** ve [MPRIS](https://specifications.freedesktop.org/mpris-spec/latest/) destekleyen her oynatıcıyla çalışır
-(VLC, Firefox, Brave, Chromium, mpv, Rhythmbox…). Spotify hesabı, API anahtarı ya da Premium gerekmez: her şey bilgisayarından okunur.
+- **Saat** günün tarihini ve hava durumunu gösterir. Şehri Bandanix Ayarları → Sistem adası ve saat bölümünden seçebilirsin. Tarihe basarak aylık takvimi açabilirsin. Saat widget'ı da kuruluysa iki bileşen aynı hava durumu verisini kullanır.
+- **Müzik** Spotify ve diğer [MPRIS](https://specifications.freedesktop.org/mpris-spec/latest/) oynatıcılarının kapağını, oynatma kontrollerini, ilerlemesini ve varsa senkron şarkı sözlerini gösterir. `cava` yalnızca müzik çalarken çalışır.
+- **Ayarlar** sesi ve desteklenen ekranlarda parlaklığı değiştirir. Bandanix Ayarları ve Cinnamon Sistem Ayarları buradan açılır.
+- **Bildirimler** oturumdaki standart masaüstü uygulama bildirimlerini gösterir. Yeni bildirim geldiğinde kompakt adada bir nokta belirir. Son 50 bildirim uygulama kapanana kadar bellekte tutulur ve sekmeden temizlenebilir. Ada çalışırken Cinnamon’un bildirim açılır pencereleri kapanır. Adadan çıkınca önceki ayar geri yüklenir.
 
-## Özellikler
+- **Pano** geçmişi kartlarda gösterir. Ara, bir kartı seç ve Enter ile önceki pencereye yapıştır. Sağ tıkla sabitleyebilir veya silebilirsin. `Super+V` doğrudan bu sekmeyi açar.
+- **Notlar** aynı Markdown dosyasındaki hızlı notları ve yapılacakları gösterir. Enter ile kaydet, Shift+Enter ile yeni satır ekle. `Super+N` doğrudan bu sekmeyi açar.
 
-- **Hap modu:** dönen albüm kapağı, şarkı adı ve sanatçı, ince bir ilerleme çizgisi ve müziğin ritmine göre zıplayan çubuklar
-- **Gerçek ses çubukları:** [cava](https://github.com/karlstav/cava) ile hoparlörden çıkan sesi dinler. cava yalnızca müzik çalarken açıktır, duraklatınca kapanır; yani boştayken işlemciye yük bindirmez
-- **Oynatıcı modu (üzerine gelince):** büyük kapak, oynat/duraklat, önceki/sonraki, tıklayınca o saniyeye atlayan ilerleme çubuğu
-- **Senkron şarkı sözleri:** o an söylenen satır, ücretsiz [LRCLIB](https://lrclib.net) servisinden
-- **Uyumlu renk:** vurgu rengi albüm kapağından seçilir (ya da Bandanix'in vurgu rengi kullanılır)
-- **Yeni şarkı bildirimi:** şarkı değişince ada bir anlığına açılır
-- **Ses ve parlaklık göstergesi:** ses ya da ekran parlaklığı değişince ada 1,5 saniyeliğine çubuklu bir göstergeye dönüşür (ada gizliyse sadece bunun için belirir). Cinnamon'ın kendi göstergesi kapatılır, kaldırınca geri gelir
-- Çalan bir şey yokken kendini gizler
-- Sağ tık → Çıkış
+- **Araçlar** odak sayacını, alan ekran görüntüsünü ve ekran kaydını açar. Kayıt X11’de GStreamer ile sessiz WebM olarak Videolar klasörüne kaydedilir. Ada kayıt sırasında kırmızı nokta gösterir. GStreamer veya `gnome-screenshot` yoksa ilgili düğme kapanır.
+- **Dosyalar** adaya sürüklediğin yerel dosyaların yollarını saklar. Dosyayı tıklayıp açabilir veya başka bir uygulamaya sürükleyebilirsin. Raftan kaldırmak dosyayı silmez.
+
+Kısayola tekrar basınca ya da Esc ile ada küçülür. Bu iki sekme için `pano` ve `not-kutusu` bileşenlerini de kur. Ada kapalıyken kısayollar kendi pencerelerini açar.
+
+Ses veya parlaklık tuşlarını kullanınca ada kısa süreliğine göstergeye dönüşür. Adadan çıkmak için sağ tık → Çıkış.
 
 ## Kurulum
 
 Bandanix klasöründe:
 
 ```bash
-./install.sh sound-island
+./install.sh sound-island pano not-kutusu
 ```
 
-Bu, uygulama menüsüne **Sound Island**'ı ve bir `sound-island` komutunu ekler, istersen girişte otomatik başlamasını da ayarlar.
+Kurulum adayı bir oturum bileşeni olarak ekler ve önceki uygulama menüsü kaydını temizler. Oturum açılışında başlayabilir. Elle başlatmak için `sound-island` komutu kullanılabilir.
 
 Başka bir oynatıcı için `--player` kullan (isimleri `playerctl -l` gösterir):
 
@@ -48,12 +44,11 @@ sound-island --player vlc
 ```toml
 [sound-island]
 follow_cover = true       # vurgu rengini albüm kapağından al
-hide_when_idle = true     # çalan bir şey yokken gizlen
 bars = "auto"             # "auto" = cava ile gerçek ses, "simulated" = temsili çubuklar
 gosterge = true           # ses ve parlaklık göstergesi (false = Cinnamon'ın kendi göstergesi)
 ```
 
-Bu ayarlar Bandanix Ayarlar → Sound Island'dan da değiştirilebilir; orada ada kendiliğinden yeniden başlar. Dosyayı elle düzenlediysen adayı yeniden başlat; `gosterge` ayarını değiştirdiysen `./install.sh sound-island` komutunu çalıştır.
+Bu ayarlar Bandanix Ayarlar → Bandanix Adası'dan da değiştirilebilir; orada ada kendiliğinden yeniden başlar. Dosyayı elle düzenlediysen adayı yeniden başlat; `gosterge` ayarını değiştirdiysen `./install.sh sound-island` komutunu çalıştır.
 
 Not: cava bilgisayarın çaldığı **bütün** sesi dinler, sadece Spotify'ı değil. Aynı anda bir video açıksa çubuklar onun sesine de tepki verir.
 

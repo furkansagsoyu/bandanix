@@ -23,6 +23,7 @@ BRIGHTNESS_MONITOR = ["monitor", "--session", "--dest", "org.cinnamon.SettingsDa
 
 
 class Levels(QObject):
+    volume_changed = Signal(int, bool)
     changed = Signal(str, int, bool)     # "ses" | "parlaklik", percent, muted
 
     def __init__(self, parent: QObject | None = None):
@@ -41,21 +42,24 @@ class Levels(QObject):
         self._query = QProcess(self)
         self._query.finished.connect(self._read_query)
 
+        self._control = QProcess(self)
+        self._control.finished.connect(lambda *_: self._ask_volume())
+        self._control.setStandardErrorFile(QProcess.nullDevice())
         self._monitor = QProcess(self)
         self._monitor.readyReadStandardOutput.connect(self._read_monitor)
         self._monitor.finished.connect(lambda *_: self._restart(self._start_monitor, 10000))
 
     # ---- lifecycle -----------------------------------------------------------------
-    def start(self) -> None:
+    def start(self, *, monitor_brightness: bool = True) -> None:
         if shutil.which("pactl"):
             self._start_events()
             self._ask_volume()
-        if shutil.which("gdbus"):
+        if monitor_brightness and shutil.which("gdbus"):
             self._start_monitor()
 
     def stop(self) -> None:
         self._stopping = True
-        for proc in (self._events, self._query, self._monitor):
+        for proc in (self._events, self._query, self._control, self._monitor):
             if proc.state() != QProcess.ProcessState.NotRunning:
                 proc.kill()
                 proc.waitForFinished(500)
@@ -86,7 +90,21 @@ class Levels(QObject):
         if any(is_volume_event(line) for line in self._lines("pactl", self._events)):
             self._ask_volume()
 
+    def adjust_volume(self, change: str) -> None:
+        if self._control.state() != QProcess.ProcessState.NotRunning:
+            return
+        if change == "mute":
+            args = ["set-sink-mute", "@DEFAULT_SINK@", "toggle"]
+        elif self._volume is not None:
+            value = min(100, max(0, self._volume[0] + (5 if change == "up" else -5)))
+            args = ["set-sink-volume", "@DEFAULT_SINK@", f"{value}%"]
+        else:
+            return
+        self._control.start("pactl", args)
+
     def _ask_volume(self) -> None:
+        if self._stopping:
+            return
         if self._query.state() != QProcess.ProcessState.NotRunning:
             self._pending = True               # one more read once this one is done
             return
@@ -96,9 +114,12 @@ class Levels(QObject):
         text = bytes(self._query.readAllStandardOutput()).decode("utf-8", "replace")
         reading = parse_volume(text)
         if reading is not None:
-            if self._volume is not None and reading != self._volume:
-                self.changed.emit("ses", reading[0], reading[1])
+            previous = self._volume
             self._volume = reading
+            if reading != previous:
+                self.volume_changed.emit(*reading)
+                if previous is not None:
+                    self.changed.emit("ses", *reading)
         if self._pending:
             self._pending = False
             QTimer.singleShot(0, self._ask_volume)

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# description: Spotify ve diğer oynatıcılar için yüzen "şimdi çalıyor" adası
+# description: Saat, hava durumu, müzik, ayarlar ve bildirimler için üst kenar adası
 # kurulu: ~/.local/bin/sound-island
 set -euo pipefail
 
@@ -21,7 +21,7 @@ ask() {
 
 # 1) system packages for Sound Island itself
 missing=()
-for pkg in playerctl cava; do
+for pkg in playerctl cava python3-gi; do
   dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -q "install ok installed" \
     || missing+=("$pkg")
 done
@@ -36,10 +36,13 @@ ada_kur
 echo "• Dosyalar kopyalanıyor: $APP_DIR"
 mkdir -p "$APP_DIR"
 rm -rf "$APP_DIR/sound_island" "$APP_DIR/.venv" "$APP_DIR/requirements.txt"   # old private env
-cp -r "$HERE/sound_island" "$APP_DIR/"
+mkdir -p "$APP_DIR/sound_island"
+cp "$HERE"/sound_island/*.py "$APP_DIR/sound_island/"
+cp "$HERE/../widget/bandanix_widget.py" "$APP_DIR/"
 
-# 3) launcher command, icon, app menu entry
-mkdir -p "$(dirname "$BIN")" "$(dirname "$DESKTOP")" "$(dirname "$ICON")"
+# 3) Komut ve eski uygulama menüsü kaydının temizlenmesi
+mkdir -p "$(dirname "$BIN")"
+rm -f -- "$DESKTOP" "$ICON"
 cat > "$BIN" <<EOF
 #!/usr/bin/env bash
 export PYTHONPATH="$APP_DIR:$ADA_DIR/lib"
@@ -47,21 +50,6 @@ export QT_QPA_PLATFORM=xcb      # the island places itself on screen; Wayland do
 exec "$ADA_PY" -m sound_island "\$@"
 EOF
 chmod +x "$BIN"
-cp "$HERE/data/$ID.svg" "$ICON"
-
-cat > "$DESKTOP" <<EOF
-[Desktop Entry]
-Type=Application
-Name=Sound Island
-Comment=Yüzen "şimdi çalıyor" adası (Bandanix)
-Exec=$BIN
-Icon=$ID
-Terminal=false
-Categories=AudioVideo;Audio;Utility;
-StartupNotify=false
-EOF
-echo "• Uygulama menüsüne eklendi: Sound Island"
-
 # 4) volume / brightness indicator replaces Cinnamon's own on-screen display
 YEDEK="$HOME/.local/bin/bandanix-yedek"
 OSD_KEY=/org/cinnamon/show-media-keys-osd
@@ -83,9 +71,19 @@ if gsettings writable org.cinnamon show-media-keys-osd >/dev/null 2>&1 && [ -x "
 fi
 
 # 5) optional autostart
-if ask "Sound Island oturum açınca otomatik başlasın mı?"; then
+if ask "Bandanix adası oturum açınca otomatik başlasın mı?"; then
   mkdir -p "$(dirname "$AUTOSTART")"
-  { cat "$DESKTOP"; echo "X-GNOME-Autostart-enabled=true"; echo "X-GNOME-Autostart-Delay=4"; } > "$AUTOSTART"
+  cat > "$AUTOSTART" <<EOF
+[Desktop Entry]
+Type=Application
+Name=Bandanix Adası
+Exec="$BIN"
+NoDisplay=true
+Terminal=false
+StartupNotify=false
+X-GNOME-Autostart-enabled=true
+X-GNOME-Autostart-Delay=4
+EOF
   echo "• Otomatik başlatma açık"
 else
   rm -f "$AUTOSTART"
@@ -94,8 +92,8 @@ fi
 
 # 6) restart it with the new version
 pkill -f "python -m sound_island" 2>/dev/null || true
-if ask "Sound Island şimdi başlatılsın mı?"; then
+if ask "Bandanix adası şimdi başlatılsın mı?"; then
   sleep 0.5
   setsid "$BIN" >/dev/null 2>&1 < /dev/null &
-  echo "• Çalışıyor. Spotify'da bir şey çal; kapatmak için adaya sağ tıkla."
+  echo "• Çalışıyor. Adayı açmak için üzerine gel, sekmeler arasında geçmek için kaydır."
 fi

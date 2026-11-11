@@ -12,6 +12,7 @@ import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.append(str(Path(__file__).resolve().parents[1] / "core"))
 import pano_gecmis as pano  # noqa: E402
 
 APP_ID = "io.github.furkansagsoyu.bandanix.pano"
@@ -41,6 +42,13 @@ def cmd_clear() -> int:
 
 def main(argv: list[str]) -> int:
     if not argv:
+        try:
+            from bandanix_ada_istek import open_panel
+        except ImportError:
+            pass
+        else:
+            if open_panel("pano"):
+                return 0
         from pano_ui import run          # GTK is imported only for the window itself
         return run(APP_ID)
     cmd = argv[0]

@@ -16,6 +16,7 @@ import os
 import re
 import subprocess
 import sys
+import tempfile
 import time
 import urllib.parse
 import urllib.request
@@ -160,9 +161,15 @@ def build_weather(data: dict, city: str, now: float) -> dict:
 
 def write_cache(data: dict) -> None:
     CACHE.parent.mkdir(parents=True, exist_ok=True)
-    tmp = CACHE.with_suffix(".tmp")
-    tmp.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
-    os.replace(tmp, CACHE)
+    file = tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=CACHE.parent,
+                                       prefix=".hava-", delete=False)
+    tmp = Path(file.name)
+    try:
+        with file:
+            json.dump(data, file, ensure_ascii=False)
+        os.replace(tmp, CACHE)
+    finally:
+        tmp.unlink(missing_ok=True)
 
 
 def read_cache() -> dict:

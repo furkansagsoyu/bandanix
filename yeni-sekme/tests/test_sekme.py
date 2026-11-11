@@ -16,6 +16,8 @@ class SekmeTest(unittest.TestCase):
         self.home = Path(self.tmp.name)
         bin_dir = self.home / "stubs"
         bin_dir.mkdir()
+        for utility in ("bash", "basename", "cat", "chmod", "cp", "dirname", "mkdir", "rm", "wc"):
+            (bin_dir / utility).symlink_to(Path("/usr/bin") / utility)
         self.wall = self.home / "Resimler" / "deneme duvar.jpg"
         self.wall.parent.mkdir()
         self.wall.write_bytes((REPO / "duvar-kagidi/resimler/galata.jpg").read_bytes())
@@ -23,7 +25,7 @@ class SekmeTest(unittest.TestCase):
         (bin_dir / "dconf").chmod(0o755)
         (self.home / ".config/bandanix").mkdir(parents=True)
         (self.home / ".config/bandanix/theme.toml").write_text('[colors]\naccent = "#1E90FF"\n[fonts]\nui = "Inter"\n')
-        self.env = {"HOME": str(self.home), "PATH": f"{bin_dir}:/usr/bin:/bin", "LANG": "C.UTF-8"}
+        self.env = {"HOME": str(self.home), "PATH": str(bin_dir), "LANG": "C.UTF-8"}
         self.ext = self.home / ".local/share/bandanix/yeni-sekme/eklenti"
 
     def tearDown(self):

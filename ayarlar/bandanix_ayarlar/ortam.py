@@ -19,7 +19,7 @@ NAMES = {
     "cinnamon-tema": "Cinnamon Teması", "duvar-kagidi": "Duvar Kağıtları", "giris-ekrani": "Giriş Ekranı",
     "ikonlar": "İkonlar ve İmleç", "not-kutusu": "Hızlı Not", "panel-duzeni": "Panel Düzeni",
     "pano": "Pano Geçmişi", "pil": "Pil Sağlığı", "sistem-adasi": "Sistem Adası",
-    "sound-island": "Sound Island", "terminal": "Terminal", "widget": "Saat Widget'ı",
+    "sound-island": "Bandanix Adası", "terminal": "Terminal", "widget": "Saat Widget'ı",
     "ayarlar": "Bandanix Ayarlar", "guc": "Güç Modları", "vscode-tema": "VS Code Teması",
     "acilis-ekrani": "Açılış Ekranı", "yeni-sekme": "Brave: Yeni Sekme ve Tema",
     "spotify-tema": "Spotify Teması",
