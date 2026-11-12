@@ -127,11 +127,14 @@ def background(argv: list[str], on_done) -> None:
 def restart_sound_island() -> None:
     if not ortam.installed("sound-island"):
         return
-    running = quick(["pgrep", "-f", "python -m sound_island"])[0]
-    subprocess.run(["pkill", "-f", "python -m sound_island"], check=False)
+    running = quick(["pgrep", "-f", "(^|/)python( -X faulthandler)? -m sound_island( |$)"])[0]
+    subprocess.run(["pkill", "-f", "(^|/)python( -X faulthandler)? -m sound_island( |$)"], check=False)
     if running:
+        launcher = ortam.BIN / "bandanix-ada"
+        if not launcher.exists():
+            launcher = ortam.BIN / "sound-island"
         GLib.timeout_add(600, lambda: subprocess.Popen(
-            [str(ortam.BIN / "sound-island")], stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+            [str(launcher)], stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL, start_new_session=True) and False)
 
 

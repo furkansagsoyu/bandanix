@@ -28,6 +28,7 @@ QListWidget#clipboardCards::item {
 QListWidget#clipboardCards::item:selected { background: #37313f; border-color: #685b73; }
 QPushButton { background: #26262e; border: 0; border-radius: 8px; padding: 6px 12px; }
 QPushButton:hover { background: #383842; }
+QPushButton:disabled { color: #777783; }
 """
 
 
@@ -179,14 +180,25 @@ class NotesPanel(QWidget):
         self.editor.setFixedHeight(65)
 
         self.items = QListWidget()
+        self.items.installEventFilter(self)
+        self.items.setStyleSheet("""
+            QListWidget::indicator { width: 14px; height: 14px; border-radius: 4px;
+                                      border: 1px solid #81818e; background: #1c1c23; }
+            QListWidget::indicator:checked { background: #38836d; border-color: #62aa93; }
+        """)
         self.items.itemActivated.connect(self.copy)
         self.items.itemChanged.connect(self.toggle_task)
+        self.remove_button = QPushButton("Seçileni sil")
+        self.remove_button.clicked.connect(self.delete_selected)
+        self.remove_button.setEnabled(False)
+        self.items.currentRowChanged.connect(lambda row: self.remove_button.setEnabled(row >= 0))
         self.hint = QLabel()
         save = QPushButton("Kaydet")
         save.clicked.connect(self.save)
 
         footer = QHBoxLayout()
         footer.addWidget(self.hint, 1)
+        footer.addWidget(self.remove_button)
         footer.addWidget(save)
         box = QVBoxLayout(self)
         box.setContentsMargins(0, 0, 0, 0)
@@ -207,17 +219,23 @@ class NotesPanel(QWidget):
 
     def refresh(self) -> None:
         self.hint.setText("Enter kaydet · Shift+Enter yeni satır")
-        self.notes = self.backend.read_notes(self.backend.notes_path())[:20]
+        selected = self.items.currentRow()
+        self.notes = self.backend.read_notes(self.backend.notes_path())
         previous = self.items.blockSignals(True)
         try:
             self.items.clear()
             for index, note in enumerate(self.notes):
                 row = QListWidgetItem(note.title, self.items)
                 row.setData(USER_ROLE, index)
-                if note.todo is not None:
-                    row.setCheckState(Qt.CheckState.Checked if note.todo else Qt.CheckState.Unchecked)
+                row.setCheckState(Qt.CheckState.Checked if note.todo else Qt.CheckState.Unchecked)
+                if note.todo:
+                    font = row.font()
+                    font.setStrikeOut(True)
+                    row.setFont(font)
         finally:
             self.items.blockSignals(previous)
+        self.items.setCurrentRow(min(selected, len(self.notes) - 1))
+        self.remove_button.setEnabled(self.items.currentRow() >= 0)
 
     def save(self) -> None:
         try:
@@ -236,14 +254,30 @@ class NotesPanel(QWidget):
     def toggle_task(self, row) -> None:
         note = self.notes[row.data(USER_ROLE)]
         try:
-            changed = self.backend.toggle(self.backend.notes_path(), note)
-        except OSError:
+            changed = self.backend.toggle(self.backend.notes_path(), note, include_plain=True)
+        except (OSError, ValueError):
             changed = False
         self.refresh()
         if not changed:
             self.hint.setText("Not güncellenemedi")
 
+    def delete_selected(self) -> None:
+        row = self.items.currentItem()
+        if row is None:
+            return
+        note = self.notes[row.data(USER_ROLE)]
+        try:
+            removed = self.backend.delete(self.backend.notes_path(), note)
+        except (OSError, ValueError):
+            removed = False
+        self.refresh()
+        self.hint.setText("Not silindi" if removed else "Not silinemedi")
+
     def eventFilter(self, watched, event) -> bool:
+        if (watched == self.items and event.type() == QEvent.Type.KeyPress
+                and event.key() == Qt.Key.Key_Delete):
+            self.delete_selected()
+            return True
         if (watched == self.editor and event.type() == QEvent.Type.KeyPress
                 and event.key() in (Qt.Key.Key_Return, Qt.Key.Key_Enter)
                 and not event.modifiers() & Qt.KeyboardModifier.ShiftModifier):

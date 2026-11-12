@@ -55,6 +55,15 @@ Birbirine yakışan küçük araçlar. İstersen hepsini kur, istersen sadece be
 | [**Güç Modları**](guc/) | Serin, Eco, Dengeli ve Turbo modları, fan modu ve Cooler Boost. Serin mod işlemcinin turbo'sunu kapatır: dizi izlerken bilgisayar serin ve sessiz kalır. |
 | [**Bandanix Ayarlar**](ayarlar/) | Bütün parçaların ayarları tek pencerede: renk, duvar kağıdı, panel, adalar, pil, kısayollar; parça kurma ve kaldırma, yedekler. |
 
+### Bandanix Adası
+
+<p align="center">
+  <img src="docs/bandanix-adasi-saat.png" alt="Bandanix Adası saat ve hava durumu sekmesi" width="440">
+  <img src="docs/bandanix-adasi-notlar.png" alt="Bandanix Adası Notlar sekmesinde açık ve tamamlanmış görevler" width="440">
+</p>
+
+`Super+N` ile Notlar sekmesini aç. Bir notun kutusunu işaretleyerek tamamla, işareti kaldırarak yeniden aç. Notu seçip **Seçileni sil** düğmesine veya `Delete` tuşuna basarak kaldır.
+
 <p align="center">
   <img src="docs/duvar-kagitlari.jpg" alt="Bandanix duvar kağıtları" width="100%">
 </p>

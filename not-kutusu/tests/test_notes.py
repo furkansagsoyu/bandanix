@@ -69,6 +69,28 @@ class NotesFile(unittest.TestCase):
         self.assertIsNone(note.todo)
         self.assertFalse(notes.toggle(self.path, note))
 
+    def test_plain_note_can_be_completed_and_reopened_in_island(self):
+        note = notes.add(self.path, "ilk satır\nikinci satır", T)
+        self.assertTrue(notes.toggle(self.path, note, include_plain=True))
+        completed, = notes.read_notes(self.path)
+        self.assertTrue(completed.todo)
+        self.assertEqual(completed.text, note.text)
+        self.assertTrue(notes.toggle(self.path, completed))
+        self.assertIs(notes.read_notes(self.path)[0].todo, False)
+
+    def test_delete_keeps_other_blocks_and_refuses_stale_data(self):
+        self.path.parent.mkdir(parents=True)
+        before = b"# My notes\r\n\r\n"
+        target = b"## 2026-11-08 20:50\r\n[x] delete me\r\n\r\n"
+        after = b"## 2026-11-07 12:00\r\nkeep me\r\n"
+        self.path.write_bytes(before + target + after)
+        note = notes.read_notes(self.path)[0]
+        self.path.write_bytes(before + target.replace(b"delete me", b"edited") + after)
+        self.assertFalse(notes.delete(self.path, note))
+        self.path.write_bytes(before + target + after)
+        self.assertTrue(notes.delete(self.path, note))
+        self.assertEqual(self.path.read_bytes(), before + after)
+
 
 class Ago(unittest.TestCase):
     def test_texts(self):

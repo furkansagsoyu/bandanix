@@ -12,10 +12,12 @@ Ekranın üst ortasında sürekli duran Bandanix adası. Boşta saati gösterir.
 - **Bildirimler** oturumdaki standart masaüstü uygulama bildirimlerini gösterir. Yeni bildirim geldiğinde kompakt adada bir nokta belirir. Son 50 bildirim uygulama kapanana kadar bellekte tutulur ve sekmeden temizlenebilir. Ada çalışırken Cinnamon’un bildirim açılır pencereleri kapanır. Adadan çıkınca önceki ayar geri yüklenir.
 
 - **Pano** geçmişi kartlarda gösterir. Ara, bir kartı seç ve Enter ile önceki pencereye yapıştır. Sağ tıkla sabitleyebilir veya silebilirsin. `Super+V` doğrudan bu sekmeyi açar.
-- **Notlar** aynı Markdown dosyasındaki hızlı notları ve yapılacakları gösterir. Enter ile kaydet, Shift+Enter ile yeni satır ekle. `Super+N` doğrudan bu sekmeyi açar.
+- **Notlar** aynı Markdown dosyasındaki hızlı notları ve yapılacakları gösterir. Enter ile kaydet, Shift+Enter ile yeni satır ekle. Kutuyu işaretleyerek notu tamamla veya işareti kaldırarak yeniden aç. Notu seçip **Seçileni sil** düğmesiyle ya da `Delete` ile kaldır. `Super+N` doğrudan bu sekmeyi açar.
 
 - **Araçlar** odak sayacını, alan ekran görüntüsünü ve ekran kaydını açar. Kayıt X11’de GStreamer ile sessiz WebM olarak Videolar klasörüne kaydedilir. Ada kayıt sırasında kırmızı nokta gösterir. GStreamer veya `gnome-screenshot` yoksa ilgili düğme kapanır.
 - **Dosyalar** adaya sürüklediğin yerel dosyaların yollarını saklar. Dosyayı tıklayıp açabilir veya başka bir uygulamaya sürükleyebilirsin. Raftan kaldırmak dosyayı silmez.
+
+![Notlar sekmesinde açık ve tamamlanmış görevler](../docs/bandanix-adasi-notlar.png)
 
 Kısayola tekrar basınca ya da Esc ile ada küçülür. Bu iki sekme için `pano` ve `not-kutusu` bileşenlerini de kur. Ada kapalıyken kısayollar kendi pencerelerini açar.
 
@@ -29,12 +31,12 @@ Bandanix klasöründe:
 ./install.sh sound-island pano not-kutusu
 ```
 
-Kurulum adayı bir oturum bileşeni olarak ekler ve önceki uygulama menüsü kaydını temizler. Oturum açılışında başlayabilir. Elle başlatmak için `sound-island` komutu kullanılabilir.
+Kurulum adayı bir oturum bileşeni olarak ekler ve önceki uygulama menüsü kaydını temizler. Oturum açılışında başlayabilir. Elle başlatmak için `bandanix-ada` komutunu kullan. Terminali kapatsan da ada çalışmaya devam eder.
 
 Başka bir oynatıcı için `--player` kullan (isimleri `playerctl -l` gösterir):
 
 ```bash
-sound-island --player vlc
+bandanix-ada --player vlc
 ```
 
 ## Ayarlar
@@ -54,10 +56,12 @@ Not: cava bilgisayarın çaldığı **bütün** sesi dinler, sadece Spotify'ı d
 
 ## Sorun giderme
 
+Ada beklenmedik şekilde kapanırsa başlatıcı yeniden açmayı dener. Son oturumun hata kaydı `~/.local/state/bandanix/ada-son-oturum.log` dosyasındadır (`XDG_STATE_HOME` ayarlıysa onun altında).
+
 Şarkı sözleri gelmiyorsa adayı hata ayıklama modunda başlat, terminalde her söz isteğinin sonucu yazılır:
 
 ```bash
-SOUND_ISLAND_DEBUG=1 sound-island
+SOUND_ISLAND_DEBUG=1 bandanix-ada
 ```
 
 ## Kaynak koddan çalıştırma (geliştirme)

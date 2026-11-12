@@ -157,8 +157,8 @@ def add(path: Path, text: str, now: dt.datetime | None = None) -> Note | None:
     return Note(stamp, body)
 
 
-def toggle(path: Path, note: Note) -> bool:
-    """Flip [ ] <-> [x] on the given task. Re-reads the file so hand edits are respected."""
+def toggle(path: Path, note: Note, *, include_plain: bool = False) -> bool:
+    """Toggle a task, optionally turning a plain note into a completed task."""
     try:
         lines = path.read_text(encoding="utf-8").splitlines()
     except OSError:
@@ -169,13 +169,32 @@ def toggle(path: Path, note: Note) -> bool:
         for i in range(s + 1, e):
             if lines[i].strip():
                 m = TODO_RE.match(lines[i])
-                if not m:
+                if m:
+                    mark = " " if m.group(2) != " " else "x"
+                    lines[i] = lines[i][:m.start(2)] + mark + lines[i][m.end(2):]
+                elif include_plain:
+                    lines[i] = "[x] " + lines[i]
+                else:
                     return False
-                mark = " " if m.group(2) != " " else "x"
-                lines[i] = lines[i][:m.start(2)] + mark + lines[i][m.end(2):]
                 _write(path, "\n".join(lines) + "\n")
                 return True
         return False
+    return False
+
+
+def delete(path: Path, note: Note) -> bool:
+    """Remove the matching note block and preserve the surrounding Markdown."""
+    try:
+        with path.open(encoding="utf-8", newline="") as file:
+            original = file.read()
+    except OSError:
+        return False
+    lines = original.splitlines()
+    for start, end in _blocks(lines):
+        if HEADING_RE.match(lines[start]).group(1) == note.stamp and _body(lines, start, end) == note.body:
+            raw = original.splitlines(keepends=True)
+            _write(path, "".join(raw[:start] + raw[end:]))
+            return True
     return False
 
 

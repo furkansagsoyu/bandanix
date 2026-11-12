@@ -113,6 +113,8 @@ class Island(QWidget):
         self.shelf_page = 0
         self.shelf_message = ""
         self.shelf_press: tuple[int, QPointF] | None = None
+        self.file_drag_active = False
+        self.file_dialog: QFileDialog | None = None
         self.calendar_month: QDate | None = None
         self.last_minute = ""
         self.last_weather_minute = ""
@@ -188,7 +190,8 @@ class Island(QWidget):
         self.anim.start()
 
     def _maybe_collapse(self) -> None:
-        if not self.hover and self.tool_panel is None:
+        if (not self.hover and not self.file_drag_active and self.tool_panel is None
+                and self.file_dialog is None):
             self._animate_to(0.0)
 
     def _apply_t(self, t) -> None:
@@ -718,18 +721,42 @@ class Island(QWidget):
         paths = self.shelf.paths_from_urls(urls)
         if not paths:
             return False
-        self.shelf.add(paths)
+        saved = self.shelf.add(paths)
         self.shelf_page = 0
-        self.shelf_message = ""
+        self.shelf_message = "" if saved else "Raf kaydedilemedi"
         self.update()
         return True
 
+    def _open_file_dialog(self) -> None:
+        if self.file_dialog is not None:
+            self.file_dialog.raise_()
+            return
+        self.leave_timer.stop()
+        dialog = QFileDialog(self)
+        self.file_dialog = dialog
+        dialog.setOption(QFileDialog.Option.DontUseNativeDialog)
+        dialog.setWindowTitle("Dosya rafına ekle")
+        dialog.setFileMode(QFileDialog.FileMode.ExistingFiles)
+        dialog.filesSelected.connect(self._add_selected_files)
+        dialog.finished.connect(self._finish_file_dialog)
+        dialog.open()
+
+    def _add_selected_files(self, files: list[str]) -> None:
+        self._add_files([QUrl.fromLocalFile(path) for path in files])
+
+    def _finish_file_dialog(self, _result: int) -> None:
+        dialog, self.file_dialog = self.file_dialog, None
+        if dialog is not None:
+            dialog.deleteLater()
+        if not self.hover:
+            self.leave_timer.start()
+
     def dragEnterEvent(self, event) -> None:
-        if (event.possibleActions() & Qt.DropAction.CopyAction
-                and self.shelf.paths_from_urls(event.mimeData().urls())):
+        if event.possibleActions() & Qt.DropAction.CopyAction and event.mimeData().hasUrls():
+            self.file_drag_active = True
             self.leave_timer.stop()
-            self._set_tab(FILES_TAB)
-            self._animate_to(1.0)
+            self.anim.stop()
+            self.tool_height.stop()
             self._accept_file_copy(event)
 
     @staticmethod
@@ -738,18 +765,40 @@ class Island(QWidget):
         event.accept()
 
     def dragMoveEvent(self, event) -> None:
-        self._accept_file_copy(event)
+        if self.file_drag_active and event.possibleActions() & Qt.DropAction.CopyAction:
+            self._accept_file_copy(event)
 
-    def dragLeaveEvent(self, event) -> None:
+    def _finish_file_drag(self, *, open_shelf: bool = False) -> None:
+        self.file_drag_active = False
+        self.hover = self.underMouse()
+        self._animate_tool_height(TOOL_EXTRA_HEIGHT if self.tool_panel is not None else 0)
+        if self.hover or open_shelf:
+            self._animate_to(1.0)
         if not self.hover:
             self.leave_timer.start()
+
+    def dragLeaveEvent(self, event) -> None:
+        self._finish_file_drag()
         event.accept()
 
     def dropEvent(self, event) -> None:
-        if self._add_files(event.mimeData().urls()):
-            self._accept_file_copy(event)
-            if not self.hover:
-                self.leave_timer.start()
+        if not event.possibleActions() & Qt.DropAction.CopyAction:
+            self._finish_file_drag()
+            return
+        # Veriyi Xdnd işlemi sürerken kopyala. Pencereyi ve rafı işlem
+        # bittikten sonra güncelle.
+        urls = event.mimeData().urls()
+        if not any(url.isLocalFile() and not url.host() for url in urls):
+            self._finish_file_drag()
+            return
+        self._accept_file_copy(event)
+        QTimer.singleShot(0, lambda: self._show_dropped_files(urls))
+
+    def _show_dropped_files(self, urls: list[QUrl]) -> None:
+        added = self._add_files(urls)
+        if added:
+            self._set_tab(FILES_TAB)
+        self._finish_file_drag(open_shelf=added)
 
     def _paint_notifications(self, p: QPainter, w: int) -> None:
         items = self.notifications.items
@@ -989,8 +1038,11 @@ class Island(QWidget):
     # ---- mouse ------------------------------------------------------------
     def enterEvent(self, _event) -> None:
         self.hover = True
+        if self.file_drag_active:
+            return
         self.wheel_delta = 0
-        if self.tool_panel is None and self.t < 0.5:
+        if (self.tool_panel is None and self.t < 0.5
+                and self.anim.state() != QVariantAnimation.State.Running):
             self._capture_target()
             self._set_tab(0)
         self.leave_timer.stop()
@@ -1050,17 +1102,14 @@ class Island(QWidget):
             if executable := self.settings_commands[action]:
                 QProcess.startDetached(executable, [])
         elif action == "file_add":
-            self.leave_timer.stop()
-            files, _ = QFileDialog.getOpenFileNames(self, "Dosya rafına ekle")
-            self._add_files([QUrl.fromLocalFile(path) for path in files])
-            if not self.hover:
-                self.leave_timer.start()
+            self._open_file_dialog()
         elif action == "file_prev":
             self.shelf_page -= 1
         elif action == "file_next":
             self.shelf_page += 1
         elif action.startswith("file_remove_"):
-            self.shelf.remove(int(action.removeprefix("file_remove_")))
+            saved = self.shelf.remove(int(action.removeprefix("file_remove_")))
+            self.shelf_message = "" if saved else "Raf kaydedilemedi"
             self.shelf_page = min(self.shelf_page, max(0, (len(self.shelf.paths) - 1) // 3))
         elif action.startswith("file_item_"):
             self.shelf_press = int(action.removeprefix("file_item_")), pos

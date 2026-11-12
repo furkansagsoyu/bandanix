@@ -7,7 +7,7 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ID="bandanix-sound-island"
 DATA="${XDG_DATA_HOME:-$HOME/.local/share}"
 APP_DIR="$DATA/bandanix/sound-island"
-BIN="$HOME/.local/bin/sound-island"
+BIN="$HOME/.local/bin/bandanix-ada"
 DESKTOP="$DATA/applications/$ID.desktop"
 ICON="$DATA/icons/hicolor/scalable/apps/$ID.svg"
 AUTOSTART="${XDG_CONFIG_HOME:-$HOME/.config}/autostart/$ID.desktop"
@@ -38,7 +38,7 @@ mkdir -p "$APP_DIR"
 rm -rf "$APP_DIR/sound_island" "$APP_DIR/.venv" "$APP_DIR/requirements.txt"   # old private env
 mkdir -p "$APP_DIR/sound_island"
 cp "$HERE"/sound_island/*.py "$APP_DIR/sound_island/"
-cp "$HERE/../widget/bandanix_widget.py" "$APP_DIR/"
+cp "$HERE/../widget/bandanix_widget.py" "$HERE/oturum.sh" "$APP_DIR/"
 
 # 3) Komut ve eski uygulama menüsü kaydının temizlenmesi
 mkdir -p "$(dirname "$BIN")"
@@ -47,9 +47,14 @@ cat > "$BIN" <<EOF
 #!/usr/bin/env bash
 export PYTHONPATH="$APP_DIR:$ADA_DIR/lib"
 export QT_QPA_PLATFORM=xcb      # the island places itself on screen; Wayland does not allow that
-exec "$ADA_PY" -m sound_island "\$@"
+export ADA_PY="$ADA_PY"
+case "\${1:-}" in
+  -h|--help) exec bash "$APP_DIR/oturum.sh" "\$@" ;;
+esac
+exec setsid -f bash "$APP_DIR/oturum.sh" "\$@" </dev/null >/dev/null 2>&1
 EOF
 chmod +x "$BIN"
+ln -sfn bandanix-ada "$HOME/.local/bin/sound-island"
 # 4) volume / brightness indicator replaces Cinnamon's own on-screen display
 YEDEK="$HOME/.local/bin/bandanix-yedek"
 OSD_KEY=/org/cinnamon/show-media-keys-osd
@@ -91,7 +96,7 @@ else
 fi
 
 # 6) restart it with the new version
-pkill -f "python -m sound_island" 2>/dev/null || true
+pkill -f "(^|/)python( -X faulthandler)? -m sound_island( |$)" 2>/dev/null || true
 if ask "Bandanix adası şimdi başlatılsın mı?"; then
   sleep 0.5
   setsid "$BIN" >/dev/null 2>&1 < /dev/null &

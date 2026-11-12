@@ -11,7 +11,7 @@ from pathlib import Path
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        prog="sound-island",
+        prog="bandanix-ada",
         description="Bandanix ekran adası.")
     parser.add_argument("--player", default="spotify",
                         help="`playerctl -l` çıktısındaki oynatıcı adı (varsayılan: spotify)")
@@ -38,10 +38,12 @@ def main() -> int:
     runtime.mkdir(parents=True, exist_ok=True)
     lock = QLockFile(str(runtime / "sound-island.lock"))
     if not lock.tryLock(100):
-        print("Sound Island zaten çalışıyor.", file=sys.stderr)
+        print("Bandanix Adası zaten çalışıyor.", file=sys.stderr)
         return 0
 
     app = QApplication(sys.argv)
+    # Ada bir araç penceresi. Dosya seçici kapanınca Qt oturumu sonlandırmasın.
+    app.setQuitOnLastWindowClosed(False)
     app.setApplicationName("Bandanix Adası")
     app.setDesktopFileName("bandanix-sound-island")
     signal.signal(signal.SIGINT, lambda *_: app.quit())

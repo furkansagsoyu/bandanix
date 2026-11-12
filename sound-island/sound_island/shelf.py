@@ -21,18 +21,22 @@ class FileShelf:
         for url in urls:
             if url.isLocalFile() and not url.host():
                 path = Path(url.toLocalFile())
-                if path.is_absolute() and path.is_file():
-                    paths.append(path)
+                try:
+                    if path.is_absolute() and path.is_file():
+                        paths.append(path)
+                except (OSError, ValueError):
+                    continue
         return paths
 
-    def add(self, paths: list[Path]) -> None:
+    def add(self, paths: list[Path]) -> bool:
         self.paths = list(dict.fromkeys([*paths, *self.paths]))[:self.LIMIT]
-        self._save()
+        return self._save()
 
-    def remove(self, index: int) -> None:
+    def remove(self, index: int) -> bool:
         self.paths.pop(index)
-        self._save()
+        return self._save()
 
-    def _save(self) -> None:
+    def _save(self) -> bool:
         self.settings.setValue("dosya-rafi", [str(path) for path in self.paths])
         self.settings.sync()
+        return self.settings.status() == QSettings.Status.NoError
